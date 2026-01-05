@@ -1,0 +1,289 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-card">
+                <div class="welcome-content">
+                    <h2>Welcome to Admin Panel</h2>
+                    <p class="text-muted">Manage your products, users, and roles from this central dashboard.</p>
+                </div>
+                <div class="welcome-icon">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card stat-card-primary">
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value" id="productsCount">--</h3>
+                        <p class="stat-label">Total Products</p>
+                    </div>
+                </div>
+                <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="stat-card-footer">
+                    <span>Manage Products</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card stat-card-success">
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value" id="usersCount">--</h3>
+                        <p class="stat-label">Total Users</p>
+                    </div>
+                </div>
+                <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="stat-card-footer">
+                    <span>Manage Users</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card stat-card-warning">
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value" id="rolesCount">--</h3>
+                        <p class="stat-label">Total Roles</p>
+                    </div>
+                </div>
+                <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="stat-card-footer">
+                    <span>Manage Roles</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card stat-card-info">
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value">Live</h3>
+                        <p class="stat-label">Store Status</p>
+                    </div>
+                </div>
+                <a asp-area="Ecommerce" asp-controller="Shop" asp-action="Index" class="stat-card-footer">
+                    <span>View Store</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Charts -->
+    <div class="row g-4 mb-4">
+        <!-- User Growth Chart -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-bottom-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0">User Registration Growth</h5>
+                    <small class="text-muted">New users over the last 30 days</small>
+                </div>
+                <div class="card-body">
+                    <canvas id="userChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs Chart -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-bottom-0 pt-4 px-4 d-flex justify-content-between">
+                    <div>
+                        <h5 class="fw-bold mb-0">System Activity</h5>
+                        <small class="text-muted">API Calls & Response Times</small>
+                    </div>
+                    <div class="text-end">
+                        <h6 class="fw-bold text-primary mb-0" id="avgResponseTime">-- ms</h6>
+                        <small class="text-muted">Avg Response Time</small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="logsChart" style="max-height: 300px;"></canvas>
+                    <div class="mt-3 d-flex justify-content-center gap-3 text-muted small">
+                        <span><i class="bi bi-circle-fill text-success"></i> Success</span>
+                        <span><i class="bi bi-circle-fill text-warning"></i> Client Error</span>
+                        <span><i class="bi bi-circle-fill text-danger"></i> Server Error</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Info -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white pt-4 px-4 border-bottom-0">
+                    <h5 class="card-title mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="quick-action-btn">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Add Product</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="quick-action-btn">
+                                <i class="bi bi-person-plus"></i>
+                                <span>Add User</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="quick-action-btn">
+                                <i class="bi bi-shield-plus"></i>
+                                <span>Add Role</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header pt-4 px-4 border-bottom-0">
+                    <h5 class="card-title mb-0"><i class="bi bi-info-circle"></i> System Info</h5>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="list-unstyled mb-0">
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Application</span>
+                            <strong>Common Architecture</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Version</span>
+                            <strong>1.0.0</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-2">
+                            <span class="text-muted">Environment</span>
+                            <strong class="text-success">Development</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Chart.js Dark Theme Defaults
+        Chart.defaults.color = '#cbd5e1'; 
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+        $(document).ready(function() {
+            // Load Basic Counts
+            loadBasicStats();
+            // Load Analytics Charts
+            loadAnalytics();
+        });
+
+        function loadBasicStats() {
+            $.get('/Admin/Products/GetAll?PageSize=1', function(response) {
+                if (response.success && response.data) $('#productsCount').text(response.data.totalCount || 0);
+            });
+            $.get('/Admin/Users/GetAll?PageSize=1', function(response) {
+                if (response.success && response.data) $('#usersCount').text(response.data.totalCount || 0);
+            });
+            $.get('/Admin/Roles/GetAll?PageSize=1', function(response) {
+                if (response.success && response.data) $('#rolesCount').text(response.data.totalCount || 0);
+            });
+        }
+
+        function loadAnalytics() {
+            $.get('/Admin/Dashboard/GetStats', function(response) {
+                if (response.success && response.data) {
+                    renderUserChart(response.data.userRegistrations);
+                    renderLogsChart(response.data.apiCalls, response.data.averageResponseTime);
+                    $('#avgResponseTime').text(Math.round(response.data.averageResponseTime) + ' ms');
+                }
+            });
+        }
+
+        function renderUserChart(data) {
+            const ctx = document.getElementById('userChart').getContext('2d');
+            const dates = data.map(d => new Date(d.date).toLocaleDateString());
+            const counts = data.map(d => d.count);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'New Registrations',
+                        data: counts,
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderLogsChart(data, avg) {
+            const ctx = document.getElementById('logsChart').getContext('2d');
+            const dates = data.map(d => new Date(d.date).toLocaleDateString());
+            const counts = data.map(d => d.count);
+            // Assuming data has 'avg' too? The request returned Avg for whole period.
+            // If we want daily avg, we need to update DTO.
+            // But per request "how many api call on daily based", "Avg api time".
+            // We have daily counts.
+            // We can plot counts as bars.
+            
+            // For now simple daily calls.
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'API Calls',
+                        data: counts,
+                        backgroundColor: '#20c997',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    </script>
+}

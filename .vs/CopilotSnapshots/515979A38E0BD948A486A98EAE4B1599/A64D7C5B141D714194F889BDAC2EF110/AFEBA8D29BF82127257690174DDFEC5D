@@ -1,0 +1,49 @@
+﻿using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Users.CreateUser;
+
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserDto>
+{
+    private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    {
+        _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    {
+        var user = new User
+        {
+            Name = request.Name,
+            Email = request.Email,
+            Mobile = request.Mobile,
+            RoleId = request.RoleId,
+            ProfileImagePath = request.ProfileImagePath,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var createdUser = await _userRepository.AddAsync(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        // Reload to include Role navigation property
+        var userWithRole = await _userRepository.GetByIdAsync(createdUser.Id);
+
+        return new UserDto
+        {
+            Id = userWithRole!.Id,
+            Name = userWithRole.Name,
+            Email = userWithRole.Email,
+            Mobile = userWithRole.Mobile,
+            RoleId = userWithRole.RoleId,
+            RoleName = userWithRole.Role?.RoleName,
+            ProfileImagePath = userWithRole.ProfileImagePath
+        };
+    }
+}
+

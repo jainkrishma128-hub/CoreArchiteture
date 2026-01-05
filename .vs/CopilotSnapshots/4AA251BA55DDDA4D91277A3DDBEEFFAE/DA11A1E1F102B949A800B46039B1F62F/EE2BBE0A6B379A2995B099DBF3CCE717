@@ -1,0 +1,15 @@
+﻿{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=DESKTOP-10Q9Q13\\SQLEXPRESS;Database=CommonArchitectureDb;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
+  },
+  "ApiSettings": {
+    "BaseUrl": "http://localhost:5089"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

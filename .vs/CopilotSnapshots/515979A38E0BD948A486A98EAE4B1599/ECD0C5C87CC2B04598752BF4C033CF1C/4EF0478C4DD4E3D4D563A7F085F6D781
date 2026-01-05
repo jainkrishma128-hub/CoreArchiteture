@@ -1,0 +1,6 @@
+﻿using MediatR;
+using CommonArchitecture.Core.DTOs;
+
+namespace CommonArchitecture.Application.Queries.Dashboard.GetDashboardStats;
+
+public record GetDashboardStatsQuery : IRequest<DashboardStatsDto>;

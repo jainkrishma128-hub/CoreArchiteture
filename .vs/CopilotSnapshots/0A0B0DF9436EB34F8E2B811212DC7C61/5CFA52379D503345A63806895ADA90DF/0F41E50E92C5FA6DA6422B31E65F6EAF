@@ -1,0 +1,340 @@
+﻿@{
+    ViewData["Title"] = "Menu Management";
+Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+<div>
+       <h1 class="fw-bold text-dark mb-1">Menu Management</h1>
+    <p class="text-muted mb-0">Configure navigation menus and site structure</p>
+    </div>
+<button class="btn btn-primary rounded-pill px-4 shadow-sm" id="btnCreateMenu">
+        <i class="fas fa-plus me-2"></i> Add Menu Item
+        </button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+    <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+             <div class="d-flex align-items-center mb-2">
+          <div class="icon-box bg-primary-subtle text-primary rounded-circle me-3">
+     <i class="fas fa-bars"></i>
+      </div>
+         <span class="text-muted fw-medium text-uppercase small">Total Menus</span>
+        </div>
+              <h2 class="fw-bold mb-0 text-dark" id="statTotalMenus">...</h2>
+            </div>
+        </div>
+    <div class="col-md-4">
+            <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+     <div class="d-flex align-items-center mb-2">
+             <div class="icon-box bg-success-subtle text-success rounded-circle me-3">
+       <i class="fas fa-check-circle"></i>
+   </div>
+  <span class="text-muted fw-medium text-uppercase small">Active</span>
+          </div>
+  <h2 class="fw-bold mb-0 text-dark" id="statActiveMenus">...</h2>
+            </div>
+ </div>
+        <div class="col-md-4">
+         <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+      <div class="d-flex align-items-center mb-2">
+             <div class="icon-box bg-info-subtle text-info rounded-circle me-3">
+         <i class="fas fa-sitemap"></i>
+      </div>
+       <span class="text-muted fw-medium text-uppercase small">Parent Items</span>
+      </div>
+    <h2 class="fw-bold mb-0 text-dark" id="statParentMenus">...</h2>
+  </div>
+        </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <!-- Advanced Filter Bar -->
+        <div class="card-header bg-white border-bottom p-4">
+            <div class="row g-3 align-items-center">
+     <div class="col-md-5">
+        <div class="input-group">
+       <span class="input-group-text bg-light border-0 ps-3 rounded-start-pill text-muted">
+    <i class="fas fa-search"></i>
+       </span>
+        <input type="text" id="searchBox" class="form-control bg-light border-0 py-2 rounded-end-pill" placeholder="Search menus by name or URL...">
+       </div>
+            </div>
+    <div class="col-md-3">
+ <select id="pageSizeSelect" class="form-select border-0 bg-light py-2 rounded-pill ps-3">
+              <option value="10" selected>10 per page</option>
+         <option value="25">25 per page</option>
+          <option value="50">50 per page</option>
+      </select>
+             </div>
+      <div class="col-md-4 text-end">
+        <button class="btn btn-primary rounded-pill px-4" id="btnFilter">
+       <i class="fas fa-filter me-2"></i> Filter
+           </button>
+    <button class="btn btn-light text-muted rounded-pill px-3 ms-2" id="btnClearSearch">
+  Reset
+            </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert messages -->
+        <div id="alertContainer" class="px-4 pt-3"></div>
+
+        <!-- Modern Table -->
+        <div class="card-body p-0">
+      <div class="table-responsive">
+         <table class="table table-hover align-middle mb-0" id="menusTable">
+      <thead class="bg-light">
+    <tr>
+      <th class="ps-4 py-3 text-uppercase text-muted small fw-bold">Menu Item</th>
+           <th class="py-3 text-uppercase text-muted small fw-bold sortable cursor-pointer" data-column="DisplayOrder">Order <i class="fas fa-sort text-muted small ms-1"></i></th>
+           <th class="py-3 text-uppercase text-muted small fw-bold">URL</th>
+               <th class="py-3 text-uppercase text-muted small fw-bold">Parent</th>
+           <th class="py-3 text-uppercase text-muted small fw-bold">Status</th>
+       <th class="pe-4 py-3 text-uppercase text-muted small fw-bold text-end">Actions</th>
+          </tr>
+      </thead>
+         <tbody id="menusTableBody" class="border-top-0">
+           <!-- Data loaded via JS -->
+      </tbody>
+                </table>
+      </div>
+
+        <!-- Loading & Empty States -->
+            <div id="loadingIndicator" class="text-center py-5" style="display: none;">
+         <div class="spinner-border text-primary" role="status"></div>
+  <p class="mt-2 text-muted">Loading menu items...</p>
+    </div>
+
+      <div id="emptyState" class="text-center py-5" style="display: none;">
+    <div class="mb-3">
+           <i class="fas fa-bars text-muted opacity-25" style="font-size: 3rem;"></i>
+                </div>
+       <h5 class="text-muted">No menu items found</h5>
+            <p class="text-muted small">Try adjusting your filters</p>
+            </div>
+
+            <!-- Modern Pagination -->
+       <div class="p-4 border-top d-flex justify-content-between align-items-center bg-light bg-opacity-10">
+                <span class="text-muted small" id="resultInfo">Showing results</span>
+      <nav>
+               <ul class="pagination pagination-sm mb-0 shadow-sm" id="pagination"></ul>
+          </nav>
+   </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create/Edit Modal -->
+<div class="modal fade" id="menuModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+  <div class="modal-header border-bottom-0 bg-primary text-white p-4">
+      <div>
+        <h5 class="modal-title fw-bold" id="menuModalLabel">Create Menu</h5>
+      <p class="mb-0 text-white-50 small">Add a new navigation menu item</p>
+        </div>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+ </div>
+ <form id="menuForm">
+    <div class="modal-body p-4 bg-light bg-opacity-50">
+        <input type="hidden" id="menuId" />
+
+              <div class="row g-4">
+        <div class="col-md-12">
+             <div class="card border-0 shadow-sm rounded-3">
+  <div class="card-body p-4">
+    <div class="mb-3">
+  <label for="menuName" class="form-label text-muted small fw-bold text-uppercase">Menu Name</label>
+    <input type="text" class="form-control bg-light border-0" id="menuName" name="Name" maxlength="128" required placeholder="e.g. Dashboard">
+           <span class="text-danger small" id="error-Name"></span>
+      </div>
+
+           <div class="mb-3">
+          <label for="menuUrl" class="form-label text-muted small fw-bold text-uppercase">URL / Route</label>
+        <input type="text" class="form-control bg-light border-0" id="menuUrl" name="Url" maxlength="256" required placeholder="e.g. /Admin/Products">
+       <span class="text-danger small" id="error-Url"></span>
+     </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+ <label for="menuIcon" class="form-label text-muted small fw-bold text-uppercase">Icon Class</label>
+          <div class="input-group">
+         <span class="input-group-text bg-light border-0 text-muted">
+      <i class="fas fa-icons"></i>
+          </span>
+        <input type="text" class="form-control bg-light border-0" id="menuIcon" name="Icon" maxlength="64" placeholder="e.g. fas fa-box">
+       </div>
+      <small class="text-muted d-block mt-1">Use Font Awesome icon classes</small>
+             <span class="text-danger small" id="error-Icon"></span>
+   </div>
+                <div class="col-md-6 mb-3">
+            <label for="menuDisplayOrder" class="form-label text-muted small fw-bold text-uppercase">Display Order</label>
+        <input type="number" class="form-control bg-light border-0" id="menuDisplayOrder" name="DisplayOrder" min="0" value="0" required>
+            <span class="text-danger small" id="error-DisplayOrder"></span>
+    </div>
+            </div>
+
+       <div class="mb-3">
+       <label for="menuParentId" class="form-label text-muted small fw-bold text-uppercase">Parent Menu (Optional)</label>
+           <select class="form-select bg-light border-0" id="menuParentId" name="ParentMenuId">
+  <option value="">-- None (Top Level) --</option>
+         </select>
+    <small class="text-muted d-block mt-1">Leave empty for top-level menu items</small>
+            <span class="text-danger small" id="error-ParentMenuId"></span>
+          </div>
+
+      <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="menuIsActive" name="IsActive" checked>
+        <label class="form-check-label" for="menuIsActive">
+  <span class="text-muted small fw-bold text-uppercase">Active Menu</span>
+     </label>
+</div>
+   </div>
+   </div>
+       </div>
+    </div>
+      </div>
+      <div class="modal-footer border-top-0 bg-light">
+                    <button type="button" class="btn btn-light border rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
+      <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold" id="btnSaveMenu">
+        <span class="spinner-border spinner-border-sm d-none me-2" id="saveSpinner"></span>
+                <span id="saveButtonText">Save Menu</span>
+       </button>
+  </div>
+</form>
+     </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+       <div class="modal-body text-center p-5">
+          <div class="icon-box bg-danger-subtle text-danger rounded-circle mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2rem;">
+    <i class="fas fa-trash-alt"></i>
+  </div>
+        <h4 class="fw-bold mb-2">Delete Menu Item?</h4>
+     <p class="text-muted mb-4">Are you sure you want to delete <strong id="deleteMenuName" class="text-dark"></strong>?<br>This action cannot be undone.</p>
+
+<div class="d-flex justify-content-center gap-2">
+        <button type="button" class="btn btn-light border rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
+         <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" id="btnConfirmDelete">
+        <span class="spinner-border spinner-border-sm d-none me-2" id="deleteSpinner"></span>
+           Yes, Delete
+          </button>
+</div>
+      </div>
+     </div>
+    </div>
+</div>
+
+<style>
+    /* Shared Premium Styles */
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    .icon-box { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; font-size: 1.25rem; }
+    .stat-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important; }
+    .cursor-pointer { cursor: pointer; }
+
+    /* Table Styles */
+    #menusTable thead th { letter-spacing: 0.05em; }
+    #menusTable tbody tr { transition: background-color 0.2s; }
+    #menusTable tbody tr:hover { background-color: #f8f9fa; }
+
+    .menu-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: #e7f1ff; border-radius: 12px; color: #0d6efd !important; border: 1px solid #cce5ff; }
+
+    /* Pagination */
+.pagination .page-link { border-radius: 8px; margin: 0 3px; border: none; color: #6c757d; font-weight: 500; }
+    .pagination .page-item.active .page-link { background-color: #0d6efd; box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3); color: white; }
+</style>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+    <script>
+        window.adminAreaPrefix = '/Admin';
+    </script>
+    <script src="~/js/admin-menus.js"></script>
+
+    <script>
+        // Inline override for rendering menus table
+        $(document).ready(function() {
+  window.renderMenusTable = function(menus) {
+       const tbody = $('#menusTableBody');
+           tbody.empty();
+
+    if (menus.length === 0) {
+       $('#emptyState').show();
+         $('#menusTable').hide();
+        return;
+         }
+
+         $('#emptyState').hide();
+         $('#menusTable').show();
+
+      menus.forEach(function(menu) {
+   const statusBadge = menu.isActive 
+    ? '<span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Active</span>'
+      : '<span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3">Inactive</span>';
+
+      const parentName = menu.parentMenuId ? '(Submenu)' : 'Top Level';
+      
+      // Get icon or use default
+    const iconClass = menu.icon && menu.icon.trim() ? menu.icon : 'bi bi-link';
+
+          const row = `
+     <tr>
+     <td class="ps-4">
+   <div class="d-flex align-items-center">
+       <div class="menu-icon me-3 shadow-sm border" style="color: #0d6efd;">
+    <i class="${iconClass}"></i>
+    </div>
+          <div>
+        <h6 class="mb-0 fw-bold text-dark">${escapeHtml(menu.name)}</h6>
+          <small class="text-muted">${menu.parentMenuId ? '↳ Submenu' : '↳ Main'}</small>
+</div>
+        </div>
+         </td>
+     <td>
+      <span class="badge bg-light text-dark rounded-pill px-3 fw-bold">${menu.displayOrder}</span>
+    </td>
+   <td>
+          <code class="text-muted small">${escapeHtml(menu.url)}</code>
+              </td>
+  <td><span class="text-muted small fw-medium">${parentName}</span></td>
+          <td>${statusBadge}</td>
+ <td class="pe-4 text-end">
+  <button class="btn btn-light btn-sm rounded-pill px-3 text-primary fw-bold me-1" onclick="editMenu(${menu.id})">
+       <i class="fas fa-edit me-1"></i> Edit
+</button>
+     <button class="btn btn-light btn-sm rounded-pill px-3 text-danger fw-bold" onclick="deleteMenu(${menu.id}, '${escapeHtml(menu.name)}')">
+    <i class="fas fa-trash me-1"></i> Delete
+     </button>
+      </td>
+       </tr>
+          `;
+     tbody.append(row);
+      });
+
+    // Update stats
+      $('#statTotalMenus').text(menus.length);
+        $('#statActiveMenus').text(menus.filter(m => m.isActive).length);
+         $('#statParentMenus').text(menus.filter(m => !m.parentMenuId).length);
+      };
+
+       function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, function (m) { return map[m]; });
+ }
+ });
+    </script>
+}

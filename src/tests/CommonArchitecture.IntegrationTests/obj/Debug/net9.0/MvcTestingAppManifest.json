@@ -1,0 +1,6 @@
+{
+  "CommonArchitecture.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "D:\\My Archi\\Git\\CoreArchiteture-main\\src\\CommonArchitecture.API",
+  "CommonArchitecture.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "D:\\My Archi\\Git\\CoreArchiteture-main\\src\\CommonArchitecture.Application",
+  "CommonArchitecture.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "D:\\My Archi\\Git\\CoreArchiteture-main\\src\\CommonArchitecture.Core",
+  "CommonArchitecture.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "D:\\My Archi\\Git\\CoreArchiteture-main\\src\\CommonArchitecture.Infrastructure"
+}

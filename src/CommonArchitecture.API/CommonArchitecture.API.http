@@ -1,0 +1,6 @@
+@CommonArchitecture.API_HostAddress = http://localhost:5089
+
+GET {{CommonArchitecture.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

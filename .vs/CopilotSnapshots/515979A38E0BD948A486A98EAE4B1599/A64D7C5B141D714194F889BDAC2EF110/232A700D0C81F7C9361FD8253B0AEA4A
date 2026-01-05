@@ -1,0 +1,34 @@
+﻿using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Menus.UpdateMenu;
+
+public class UpdateMenuCommandHandler : IRequestHandler<UpdateMenuCommand, bool>
+{
+ private readonly IMenuRepository _menuRepository;
+ private readonly IUnitOfWork _unitOfWork;
+
+ public UpdateMenuCommandHandler(IMenuRepository menuRepository, IUnitOfWork unitOfWork)
+ {
+ _menuRepository = menuRepository;
+ _unitOfWork = unitOfWork;
+ }
+
+ public async Task<bool> Handle(UpdateMenuCommand request, CancellationToken cancellationToken)
+ {
+ var menu = await _menuRepository.GetByIdAsync(request.Id);
+ if (menu == null) return false;
+
+ menu.Name = request.Name;
+ menu.Icon = request.Icon;
+ menu.Url = request.Url;
+ menu.ParentMenuId = request.ParentMenuId;
+ menu.DisplayOrder = request.DisplayOrder;
+ menu.IsActive = request.IsActive;
+ menu.UpdatedAt = DateTime.UtcNow;
+
+ await _menuRepository.UpdateAsync(menu);
+ await _unitOfWork.SaveChangesAsync(cancellationToken);
+ return true;
+ }
+}

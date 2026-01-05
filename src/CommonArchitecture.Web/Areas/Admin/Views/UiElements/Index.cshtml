@@ -1,0 +1,211 @@
+@{
+    ViewData["Title"] = "UI Elements";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row g-4">
+    <div class="col-12">
+        <div class="welcome-card mb-4">
+            <div class="welcome-content">
+                <h2 class="fw-bold mb-2">UI Elements Gallery</h2>
+                <p class="mb-0 text-white-50">Reference guide for all Admin HUD components</p>
+            </div>
+            <div class="welcome-icon">
+                <i class="bi bi-palette"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="col-md-6">
+        <h5 class="text-muted text-uppercase small fw-bold mb-3">Cards & Panels</h5>
+        
+        <!-- Standard Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Standard Card Header</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">This is a standard card body. It has the HUD glassmorphism effect, white text, and corner brackets.</p>
+                <button class="btn btn-primary">Action Button</button>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Card Footer Information</small>
+            </div>
+        </div>
+
+        <!-- Stat Card -->
+        <div class="stat-card mb-4">
+            <div class="stat-card-body">
+                <div class="stat-icon text-info border-info">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">1,234</div>
+                    <div class="stat-label">Total Validations</div>
+                </div>
+            </div>
+            <a href="#" class="stat-card-footer">
+                View Report <i class="bi bi-arrow-right ms-auto"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Forms Section -->
+    <div class="col-md-6">
+        <h5 class="text-muted text-uppercase small fw-bold mb-3">Form Controls</h5>
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Text Input</label>
+                    <input type="text" class="form-control" placeholder="Enter text...">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" value="password123">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Select Dropdown</label>
+                    <select class="form-select">
+                        <option>Option 1</option>
+                        <option>Option 2</option>
+                        <option>Option 3</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Multiple Select</label>
+                    <select class="form-select" multiple>
+                        <option>Multi 1</option>
+                        <option>Multi 2</option>
+                        <option>Multi 3</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">File Input</label>
+                    <input type="file" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Date Picker</label>
+                    <input type="date" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="check1" checked>
+                        <label class="form-check-label" for="check1">
+                            Checked Checkbox
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="check2">
+                        <label class="form-check-label" for="check2">
+                            Unchecked Checkbox
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="radio" id="radio1" checked>
+                        <label class="form-check-label" for="radio1">
+                            Radio Active
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="radio" id="radio2">
+                        <label class="form-check-label" for="radio2">
+                            Radio Inactive
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Grid/Table -->
+    <div class="col-12">
+        <h5 class="text-muted text-uppercase small fw-bold mb-3">Data Grid</h5>
+        <div class="card">
+            <div class="table-admin-wrapper table-responsive">
+                <table class="table table-hover align-middle mb-0 table-admin">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Status</th>
+                            <th>User</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ps-4">#1234</td>
+                            <td><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill">Completed</span></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-primary bg-opacity-25 text-primary d-flex align-items-center justify-content-center rounded-circle me-2" style="width:32px;height:32px;">AB</div>
+                                    <span>Alice Baker</span>
+                                </div>
+                            </td>
+                            <td>Oct 24, 2025</td>
+                            <td>$1,200.00</td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ps-4">#1235</td>
+                            <td><span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill">Pending</span></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-info bg-opacity-25 text-info d-flex align-items-center justify-content-center rounded-circle me-2" style="width:32px;height:32px;">CD</div>
+                                    <span>Charlie Day</span>
+                                </div>
+                            </td>
+                            <td>Oct 23, 2025</td>
+                            <td>$850.50</td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buttons Section -->
+     <div class="col-12">
+        <h5 class="text-muted text-uppercase small fw-bold mb-3">Buttons</h5>
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-primary">Primary</button>
+                    <button class="btn btn-secondary">Secondary</button>
+                    <button class="btn btn-success"><i class="bi bi-check-lg me-1"></i> Success</button>
+                    <button class="btn btn-danger"><i class="bi bi-exclamation-triangle me-1"></i> Danger</button>
+                    <button class="btn btn-warning"><i class="bi bi-star me-1"></i> Warning</button>
+                    <button class="btn btn-info"><i class="bi bi-info-circle me-1"></i> Info</button>
+                    <button class="btn btn-light">Light</button>
+                    <button class="btn btn-dark">Dark</button>
+                </div>
+                <hr class="border-white opacity-25" />
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-primary">Outline Primary</button>
+                    <button class="btn btn-outline-success">Outline Success</button>
+                    <button class="btn btn-outline-danger">Outline Danger</button>
+                    <button class="btn btn-sm btn-primary">Small Button</button>
+                    <button class="btn btn-lg btn-primary">Large Button</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

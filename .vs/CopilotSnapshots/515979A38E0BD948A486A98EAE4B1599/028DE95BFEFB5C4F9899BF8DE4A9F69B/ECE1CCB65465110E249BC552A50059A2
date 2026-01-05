@@ -1,0 +1,15 @@
+﻿using CommonArchitecture.Application.Commands;
+using CommonArchitecture.Application.DTOs;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Products.CreateProduct;
+
+public record CreateProductCommand(
+    string Name,
+    string Description,
+    decimal Price,
+    int Stock
+) : IRequest<ProductDto>, ICacheInvalidator
+{
+    public string[] CacheKeys => new[] { "Products_" }; // We use a prefix approach or just "Products_" for simplicity
+}

@@ -1,0 +1,67 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonArchitecture.API", "CommonArchitecture.API\CommonArchitecture.API.csproj", "{4B3A7B6D-5C4B-4E3D-9F8A-7B6D5C4B3A2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonArchitecture.Infrastructure", "CommonArchitecture.Infrastructure\CommonArchitecture.Infrastructure.csproj", "{3A2D6C5B-4B3A-4D2C-8E79-6B5C4B3A2D1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonArchitecture.Web", "CommonArchitecture.Web\CommonArchitecture.Web.csproj", "{2D1C5B4A-3A2D-4C1B-7D68-5B4A3D2C1B0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonArchitecture.Core", "CommonArchitecture.Core\CommonArchitecture.Core.csproj", "{9A892C1B-0B9A-498E-4A35-2B1C0B9A8978}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonArchitecture.Application", "CommonArchitecture.Application\CommonArchitecture.Application.csproj", "{89781B0A-9A89-487D-3924-1B0A9A897867}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonArchitecture.UnitTests", "tests\CommonArchitecture.UnitTests\CommonArchitecture.UnitTests.csproj", "{0B9A3D2C-1B0B-4A9F-5B46-3A2D1C0B9A89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonArchitecture.IntegrationTests", "tests\CommonArchitecture.IntegrationTests\CommonArchitecture.IntegrationTests.csproj", "{A89781B0-9A89-487D-3924-1B0A9A897867}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{78670A99-8978-476C-2813-0A9989786756}"
+	ProjectSection(SolutionItems) = preSolution
+		Documents\01. Architecture.md = Documents\01. Architecture.md
+		Documents\02. Database Migration and Deployment Guide.md = Documents\02. Database Migration and Deployment Guide.md
+		Documents\03. Adding a New Module Guide.md = Documents\03. Adding a New Module Guide.md
+		Documents\04. JWT Token Authentication Guide.md = Documents\04. JWT Token Authentication Guide.md
+		Documents\05. Authentication and Authorization Guide.md = Documents\05. Authentication and Authorization Guide.md
+		Documents\06. UI Libraries and Assets Guide.md = Documents\06. UI Libraries and Assets Guide.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4B3A7B6D-5C4B-4E3D-9F8A-7B6D5C4B3A2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B3A7B6D-5C4B-4E3D-9F8A-7B6D5C4B3A2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B3A7B6D-5C4B-4E3D-9F8A-7B6D5C4B3A2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B3A7B6D-5C4B-4E3D-9F8A-7B6D5C4B3A2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A2D6C5B-4B3A-4D2C-8E79-6B5C4B3A2D1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A2D6C5B-4B3A-4D2C-8E79-6B5C4B3A2D1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A2D6C5B-4B3A-4D2C-8E79-6B5C4B3A2D1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A2D6C5B-4B3A-4D2C-8E79-6B5C4B3A2D1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D1C5B4A-3A2D-4C1B-7D68-5B4A3D2C1B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D1C5B4A-3A2D-4C1B-7D68-5B4A3D2C1B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D1C5B4A-3A2D-4C1B-7D68-5B4A3D2C1B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D1C5B4A-3A2D-4C1B-7D68-5B4A3D2C1B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A892C1B-0B9A-498E-4A35-2B1C0B9A8978}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A892C1B-0B9A-498E-4A35-2B1C0B9A8978}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A892C1B-0B9A-498E-4A35-2B1C0B9A8978}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A892C1B-0B9A-498E-4A35-2B1C0B9A8978}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89781B0A-9A89-487D-3924-1B0A9A897867}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89781B0A-9A89-487D-3924-1B0A9A897867}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89781B0A-9A89-487D-3924-1B0A9A897867}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89781B0A-9A89-487D-3924-1B0A9A897867}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B9A3D2C-1B0B-4A9F-5B46-3A2D1C0B9A89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B9A3D2C-1B0B-4A9F-5B46-3A2D1C0B9A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B9A3D2C-1B0B-4A9F-5B46-3A2D1C0B9A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B9A3D2C-1B0B-4A9F-5B46-3A2D1C0B9A89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A89781B0-9A89-487D-3924-1B0A9A897867}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A89781B0-9A89-487D-3924-1B0A9A897867}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A89781B0-9A89-487D-3924-1B0A9A897867}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A89781B0-9A89-487D-3924-1B0A9A897867}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,100 @@
+﻿using CommonArchitecture.Application.DTOs;
+using System.Net.Http.Json;
+
+namespace CommonArchitecture.Web.Services;
+
+public class ProductApiService : IProductApiService
+{
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<ProductApiService> _logger;
+
+    public ProductApiService(HttpClient httpClient, ILogger<ProductApiService> logger)
+    {
+        _httpClient = httpClient;
+        _logger = logger;
+    }
+
+    public async Task<PaginatedResult<ProductDto>> GetAllAsync(ProductQueryParameters parameters)
+    {
+        try
+        {
+            // Build query string
+            var queryString = $"api/products?PageNumber={parameters.PageNumber}&PageSize={parameters.PageSize}&SortBy={parameters.SortBy}&SortOrder={parameters.SortOrder}";
+            
+            if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            {
+                queryString += $"&SearchTerm={Uri.EscapeDataString(parameters.SearchTerm)}";
+            }
+
+            var result = await _httpClient.GetFromJsonAsync<PaginatedResult<ProductDto>>(queryString);
+            return result ?? new PaginatedResult<ProductDto>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching products from API");
+            return new PaginatedResult<ProductDto>();
+        }
+    }
+
+    public async Task<ProductDto?> GetByIdAsync(int id)
+    {
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<ProductDto>($"api/products/{id}");
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching product {ProductId} from API", id);
+            return null;
+        }
+    }
+
+    public async Task<ProductDto> CreateAsync(CreateProductDto createDto)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/products", createDto);
+            response.EnsureSuccessStatusCode();
+            
+            var product = await response.Content.ReadFromJsonAsync<ProductDto>();
+            return product ?? throw new Exception("Failed to deserialize created product");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating product via API");
+            throw;
+        }
+    }
+
+    public async Task<bool> UpdateAsync(int id, UpdateProductDto updateDto)
+    {
+        try
+        {
+            var response = await _httpClient.PutAsJsonAsync($"api/products/{id}", updateDto);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating product {ProductId} via API", id);
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        try
+        {
+            var response = await _httpClient.DeleteAsync($"api/products/{id}");
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting product {ProductId} via API", id);
+            return false;
+        }
+    }
+}

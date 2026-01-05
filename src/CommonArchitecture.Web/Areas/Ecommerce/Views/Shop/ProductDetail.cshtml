@@ -1,0 +1,138 @@
+@model ProductDto
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="product-detail-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="product-breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="Ecommerce" asp-controller="Shop" asp-action="Index">Shop</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+
+        <div class="product-detail-card">
+            <div class="row">
+                <!-- Product Image -->
+                <div class="col-lg-5">
+                    <div class="product-image-wrapper">
+                        <div class="product-image-main">
+                            <img src="https://picsum.photos/seed/@Model.Id/600/600" alt="@Model.Name" />
+                            <div class="image-badges">
+                                @if (Model.Stock > 0)
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> In Stock</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Out of Stock</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="col-lg-7">
+                    <div class="product-info">
+                        <h1 class="product-title">@Model.Name</h1>
+                        
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                            </div>
+                            <span class="rating-count">(4.5) 128 Reviews</span>
+                        </div>
+
+                        <div class="product-price-block">
+                            <span class="current-price">$@Model.Price.ToString("N2")</span>
+                            <span class="original-price">$@((Model.Price * 1.2m).ToString("N2"))</span>
+                            <span class="discount-badge">-20%</span>
+                        </div>
+
+                        <div class="product-description">
+                            <h5>Description</h5>
+                            <p>@Model.Description</p>
+                        </div>
+
+                        <div class="product-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">SKU:</span>
+                                <span class="meta-value">PRD-@Model.Id.ToString("D5")</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Availability:</span>
+                                <span class="meta-value text-success">@Model.Stock units available</span>
+                            </div>
+                        </div>
+
+                        <div class="product-actions">
+                            <div class="quantity-control">
+                                <label>Quantity:</label>
+                                <div class="quantity-input">
+                                    <button class="qty-btn minus" onclick="updateQty(-1)">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input type="number" id="productQty" value="1" min="1" max="@Model.Stock" />
+                                    <button class="qty-btn plus" onclick="updateQty(1)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-lg btn-add-to-cart" data-product-id="@Model.Id">
+                                    <i class="bi bi-cart-plus"></i> Add to Cart
+                                </button>
+                                <button class="btn btn-outline-secondary btn-lg btn-wishlist">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-guarantees">
+                            <div class="guarantee-item">
+                                <i class="bi bi-truck"></i>
+                                <span>Free shipping on orders over $50</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <i class="bi bi-arrow-repeat"></i>
+                                <span>30-day easy returns</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <i class="bi bi-shield-check"></i>
+                                <span>Secure checkout</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="back-to-shop">
+            <a asp-area="Ecommerce" asp-controller="Shop" asp-action="Index" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateQty(delta) {
+            const input = document.getElementById('productQty');
+            const newValue = parseInt(input.value) + delta;
+            const max = parseInt(input.max);
+            if (newValue >= 1 && newValue <= max) {
+                input.value = newValue;
+            }
+        }
+    </script>
+}
+

@@ -1,0 +1,132 @@
+﻿using CommonArchitecture.Infrastructure.Persistence;
+using FluentValidation;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.EntityFrameworkCore;
+using NToastNotify;
+using CommonArchitecture.Web.Services;
+using CommonArchitecture.Web.Handlers;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Cookie policy configuration for secure token storage
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+ options.HttpOnly = HttpOnlyPolicy.Always;
+ options.Secure = CookieSecurePolicy.SameAsRequest; // Use SameAsRequest for development, Always for production
+ options.MinimumSameSitePolicy = SameSiteMode.Strict;
+});
+
+// Add Memory Cache for token storage
+builder.Services.AddMemoryCache();
+
+// Add Session support (for user display info in Admin area)
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+ options.IdleTimeout = TimeSpan.FromMinutes(30);
+ options.Cookie.HttpOnly = true;
+ options.Cookie.IsEssential = true;
+ options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+ options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
+// Add HttpContextAccessor for token storage
+builder.Services.AddHttpContextAccessor();
+
+// Register Token Service and handler for single-flight refresh
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddTransient<RefreshTokenHandler>();
+
+// Register Token Storage Service
+builder.Services.AddScoped<CommonArchitecture.Web.Services.ITokenStorageService, CommonArchitecture.Web.Services.TokenStorageService>();
+
+// Register AuthApiService first (without handler, as it's used by the handler)
+builder.Services.AddHttpClient<CommonArchitecture.Web.Services.IAuthApiService, CommonArchitecture.Web.Services.AuthApiService>(client =>
+{
+ client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5089");
+ client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+// Register HttpClient with RefreshTokenHandler for API communication
+builder.Services.AddHttpClient<CommonArchitecture.Web.Services.IProductApiService, CommonArchitecture.Web.Services.ProductApiService>(client =>
+{
+ client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5089");
+ client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.AddHttpMessageHandler<RefreshTokenHandler>();
+
+builder.Services.AddHttpClient<CommonArchitecture.Web.Services.IRoleApiService, CommonArchitecture.Web.Services.RoleApiService>(client =>
+{
+ client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5089");
+ client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.AddHttpMessageHandler<RefreshTokenHandler>();
+
+builder.Services.AddHttpClient<CommonArchitecture.Web.Services.IUserApiService, CommonArchitecture.Web.Services.UserApiService>(client =>
+{
+ client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5089");
+ client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.AddHttpMessageHandler<RefreshTokenHandler>();
+
+// Register JwtTokenHandler (kept for compatibility if used elsewhere)
+builder.Services.AddTransient<CommonArchitecture.Web.Services.JwtTokenHandler>();
+
+// Register FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<CommonArchitecture.Web.Validators.CreateProductDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CommonArchitecture.Web.Validators.CreateRoleDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CommonArchitecture.Web.Validators.CreateUserDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CommonArchitecture.Web.Validators.CreateUserDtoValidator>();
+
+// Register NToastNotify with ControllersWithViews
+builder.Services.AddControllersWithViews().AddNToastNotifyNoty(new NotyOptions
+{
+ ProgressBar = true,
+ Timeout =5000,
+ Theme = "metroui"
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+ app.UseExceptionHandler("/Home/Error");
+ // The default HSTS value is30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+ app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// Use Cookie Policy middleware
+app.UseCookiePolicy();
+
+// Use Session middleware (must be before UseAuthorization)
+app.UseSession();
+
+app.UseAuthorization();
+
+// Add NToastNotify middleware
+app.UseNToastNotify();
+
+app.MapStaticAssets();
+
+// Area routing (must be before default route)
+app.MapControllerRoute(
+ name: "areas",
+ pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+// Default route - Home/Index as default landing page
+app.MapControllerRoute(
+ name: "default",
+ pattern: "{controller=Home}/{action=Index}/{id?}")
+ .WithStaticAssets();
+
+app.Run();

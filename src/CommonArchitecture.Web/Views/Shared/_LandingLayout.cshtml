@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Common Architecture</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Google Fonts for more premium feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .navbar-landing {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-landing fixed-top py-3">
+            <div class="container">
+                <a class="navbar-brand fw-bold text-primary d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-layers-half me-2 fs-4"></i>
+                    <span>Common<span class="text-dark">Arch</span></span>
+                </a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-medium">
+                        <li class="nav-item me-3">
+                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin Portal</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link text-dark" asp-area="Ecommerce" asp-controller="Shop" asp-action="Index">Storefront</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary text-white px-4 rounded-pill" href="https://github.com/your-repo" target="_blank">
+                                <i class="bi bi-github me-2"></i>Source Code
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- No Container wrapper here - Full Width Content -->
+    <main role="main" class="flex-grow-1 p-0 m-0">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-dark text-white pt-5 pb-3 mt-auto">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                     <h5 class="fw-bold text-white mb-3">Common Architecture</h5>
+                     <p class="text-white-50">An enterprise-grade reference architecture for .NET 9, implementing Clean Architecture, CQRS, and Domain-Driven Design principles.</p>
+                </div>
+                <div class="col-lg-2 offset-lg-1">
+                    <h6 class="fw-bold text-white mb-3">Modules</h6>
+                    <ul class="list-unstyled text-white-50">
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Admin Panel</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">E-Commerce</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">API Reference</a></li>
+                    </ul>
+                </div>
+                 <div class="col-lg-2">
+                    <h6 class="fw-bold text-white mb-3">Resources</h6>
+                    <ul class="list-unstyled text-white-50">
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Documentation</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Architecture</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-top border-secondary pt-3 text-center text-white-50 small">
+                &copy; 2025 - Common Architecture. Built with .NET 9 & ❤️
+            </div>
+        </div>
+    </footer>
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

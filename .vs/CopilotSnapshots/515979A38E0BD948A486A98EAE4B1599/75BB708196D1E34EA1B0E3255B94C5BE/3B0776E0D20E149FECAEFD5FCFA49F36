@@ -1,0 +1,52 @@
+﻿using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Queries.Users.GetAllUsers;
+
+public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, PaginatedResult<UserDto>>
+{
+    private readonly IUserRepository _userRepository;
+
+    public GetAllUsersQueryHandler(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+    public async Task<PaginatedResult<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    {
+        var parameters = request.Parameters;
+        
+        // Get paginated users
+        var users = await _userRepository.GetPagedAsync(
+            parameters.SearchTerm,
+            parameters.SortBy,
+            parameters.SortOrder,
+            parameters.PageNumber,
+            parameters.PageSize);
+        
+        // Get total count for pagination metadata
+        var totalCount = await _userRepository.GetTotalCountAsync(parameters.SearchTerm);
+        
+        // Map to DTOs
+        var userDtos = users.Select(u => new UserDto
+        {
+            Id = u.Id,
+            Name = u.Name,
+            Email = u.Email,
+            Mobile = u.Mobile,
+            RoleId = u.RoleId,
+            RoleName = u.Role?.RoleName,
+            ProfileImagePath = u.ProfileImagePath
+        });
+        
+        return new PaginatedResult<UserDto>
+        {
+            Items = userDtos,
+            TotalCount = totalCount,
+            PageNumber = parameters.PageNumber,
+            PageSize = parameters.PageSize
+        };
+    }
+}
+

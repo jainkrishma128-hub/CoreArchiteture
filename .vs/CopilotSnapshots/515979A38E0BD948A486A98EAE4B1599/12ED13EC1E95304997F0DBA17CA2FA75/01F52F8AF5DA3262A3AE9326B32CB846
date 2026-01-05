@@ -1,0 +1,23 @@
+﻿using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Menus.DeleteMenu;
+
+public class DeleteMenuCommandHandler : IRequestHandler<DeleteMenuCommand, bool>
+{
+ private readonly IMenuRepository _menuRepository;
+
+ public DeleteMenuCommandHandler(IMenuRepository menuRepository)
+ {
+ _menuRepository = menuRepository;
+ }
+
+ public async Task<bool> Handle(DeleteMenuCommand request, CancellationToken cancellationToken)
+ {
+ var menu = await _menuRepository.GetByIdAsync(request.Id);
+ if (menu == null) return false;
+
+ await _menuRepository.DeleteAsync(request.Id);
+ return true;
+ }
+}

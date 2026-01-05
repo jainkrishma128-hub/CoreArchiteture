@@ -1,0 +1,56 @@
+﻿using CommonArchitecture.Application.Commands.Products.CreateProduct;
+using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using FluentAssertions;
+using Moq;
+using Xunit;
+
+namespace CommonArchitecture.UnitTests.Products;
+
+public class CreateProductCommandHandlerTests
+{
+    private readonly Mock<IProductRepository> _productRepositoryMock;
+    private readonly CreateProductCommandHandler _handler;
+
+    public CreateProductCommandHandlerTests()
+    {
+        _productRepositoryMock = new Mock<IProductRepository>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(1);
+
+        _handler = new CreateProductCommandHandler(_productRepositoryMock.Object, unitOfWorkMock.Object);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCreateProductAndReturnDto()
+    {
+        // Arrange
+        var command = new CreateProductCommand(
+            Name: "New Product",
+            Description: "New Description",
+            Price: 99.99m,
+            Stock: 50
+        );
+
+        _productRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Product>()))
+            .ReturnsAsync((Product p) => 
+            {
+                p.Id = 1; // Simulate DB assigning ID
+                return p;
+            });
+
+        // Act
+        var result = await _handler.Handle(command, System.Threading.CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(1);
+        result.Name.Should().Be("New Product");
+        result.Price.Should().Be(99.99m);
+        
+        _productRepositoryMock.Verify(x => x.AddAsync(It.Is<Product>(p => 
+            p.Name == "New Product" && 
+            p.Price == 99.99m)), Times.Once);
+    }
+}

@@ -1,0 +1,328 @@
+@{
+    ViewData["Title"] = "Role Permissions";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-dark mb-1">Role Permissions</h1>
+            <p class="text-muted mb-0">Manage menu access and permissions for each role</p>
+        </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <!-- Filter Bar -->
+        <div class="card-header border-bottom p-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label for="roleSelect" class="form-label text-muted small fw-bold text-uppercase">Select Role</label>
+                    <select id="roleSelect" class="form-select border-0 py-2 rounded-pill ps-3">
+                        <option value="">-- Choose a Role --</option>
+                    </select>
+                </div>
+                <div class="col-md-6 text-end pt-4">
+                    <button class="btn btn-primary rounded-pill px-4" id="btnSavePermissions" style="display: none;">
+                        <span class="spinner-border spinner-border-sm d-none me-2" id="saveSpinner"></span>
+                        <i class="bi bi-check-circle me-2"></i> Save Permissions
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert messages -->
+        <div id="alertContainer" class="px-4 pt-3"></div>
+
+        <!-- Permissions Table -->
+        <div class="card-body p-4">
+            <div id="loadingState" style="display: none;">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Loading permissions...</p>
+                </div>
+            </div>
+
+            <div id="emptyState" style="display: none;">
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-inbox text-muted opacity-25" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="text-muted">Select a role to view and manage permissions</h5>
+                </div>
+            </div>
+
+            <div id="permissionsContainer" style="display: none;">
+                <h5 class="fw-bold text-dark mb-4">
+                    <i class="bi bi-shield-check me-2"></i>
+                    <span id="selectedRoleName"></span> Permissions
+                </h5>
+
+                <div class="table-admin-wrapper table-responsive">
+                    <table class="table table-hover align-middle table-admin">
+                        <thead>
+                            <tr>
+                                <th class="ps-4 py-3 text-uppercase text-muted small fw-bold">Menu Item</th>
+                                <th class="py-3 text-uppercase text-muted small fw-bold text-center">
+                                    <i class="bi bi-plus-circle me-1"></i> Create
+                                </th>
+                                <th class="py-3 text-uppercase text-muted small fw-bold text-center">
+                                    <i class="bi bi-eye me-1"></i> Read
+                                </th>
+                                <th class="py-3 text-uppercase text-muted small fw-bold text-center">
+                                    <i class="bi bi-pencil me-1"></i> Update
+                                </th>
+                                <th class="py-3 text-uppercase text-muted small fw-bold text-center">
+                                    <i class="bi bi-trash me-1"></i> Delete
+                                </th>
+                                <th class="py-3 text-uppercase text-muted small fw-bold text-center">
+                                    <i class="bi bi-lightning me-1"></i> Execute
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissionsTableBody" class="border-top-0">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 pt-3 border-top">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light border rounded-pill px-4 fw-bold" id="btnSelectAll">
+                            <i class="bi bi-check-all me-1"></i> Select All
+                        </button>
+                        <button class="btn btn-light border rounded-pill px-4 fw-bold" id="btnDeselectAll">
+                            <i class="bi bi-x-circle me-1"></i> Deselect All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let allMenus = [];
+            let currentRoleId = null;
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            // Initialize
+            loadRoles();
+            attachEventHandlers();
+
+            function attachEventHandlers() {
+                // Role selection change
+                $('#roleSelect').change(function () {
+                    currentRoleId = parseInt($(this).val());
+                    if (currentRoleId > 0) {
+                        loadRolePermissions(currentRoleId);
+                    } else {
+                        resetPermissionsView();
+                    }
+                });
+
+                // Save permissions
+                $('#btnSavePermissions').click(function () {
+                    savePermissions();
+                });
+
+                // Select All
+                $('#btnSelectAll').click(function () {
+                    $('#permissionsTableBody input[type="checkbox"]').prop('checked', true);
+                });
+
+                // Deselect All
+                $('#btnDeselectAll').click(function () {
+                    $('#permissionsTableBody input[type="checkbox"]').prop('checked', false);
+                });
+            }
+
+            function loadRoles() {
+                $.ajax({
+                    url: '/Admin/RoleMenus/GetAllRoles',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success && response.data) {
+                            const roleSelect = $('#roleSelect');
+                            response.data.forEach(function (role) {
+                                roleSelect.append(`<option value="${role.id}">${role.roleName}</option>`);
+                            });
+                        }
+                    },
+                    error: function () {
+                        showAlert('danger', 'Error loading roles');
+                    }
+                });
+            }
+
+            function loadRolePermissions(roleId) {
+                $('#loadingState').show();
+                $('#permissionsContainer').hide();
+                $('#emptyState').hide();
+
+                $.ajax({
+                    url: '/Admin/RoleMenus/GetRolePermissions?roleId=' + roleId,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#loadingState').hide();
+                        if (response.success) {
+                            renderPermissions(response.data);
+                        } else {
+                            showAlert('danger', response.message);
+                        }
+                    },
+                    error: function () {
+                        $('#loadingState').hide();
+                        showAlert('danger', 'Error loading role permissions');
+                    }
+                });
+            }
+
+            function renderPermissions(data) {
+                $('#selectedRoleName').text(data.roleName);
+                const tbody = $('#permissionsTableBody');
+                tbody.empty();
+
+                // Get all menus first
+                $.ajax({
+                    url: '/Admin/RoleMenus/GetAllMenus',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success && response.data) {
+                            allMenus = response.data;
+
+                            // Create a map of existing permissions
+                            const permissionMap = {};
+                            data.menuPermissions.forEach(function (perm) {
+                                permissionMap[perm.menuId] = perm;
+                            });
+
+                            // Render all menus with their permission checkboxes
+                            allMenus.forEach(function (menu) {
+                                const perm = permissionMap[menu.id];
+                                const row = `
+                                            <tr data-menu-id="${menu.id}">
+                                                <td class="ps-4">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="icon-box me-3">
+                                                            <i class="${menu.icon || 'bi bi-link'}"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0 fw-bold text-dark">${escapeHtml(menu.name)}</h6>
+                                                            <small class="text-muted">${escapeHtml(menu.url)}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="permission-cell text-center">
+                                                    <input type="checkbox" class="form-check-input permission-checkbox" data-permission="canCreate" ${perm && perm.canCreate ? 'checked' : ''}>
+                                                </td>
+                                                <td class="permission-cell text-center">
+                                                    <input type="checkbox" class="form-check-input permission-checkbox" data-permission="canRead" ${perm && perm.canRead ? 'checked' : ''}>
+                                                </td>
+                                                <td class="permission-cell text-center">
+                                                    <input type="checkbox" class="form-check-input permission-checkbox" data-permission="canUpdate" ${perm && perm.canUpdate ? 'checked' : ''}>
+                                                </td>
+                                                <td class="permission-cell text-center">
+                                                    <input type="checkbox" class="form-check-input permission-checkbox" data-permission="canDelete" ${perm && perm.canDelete ? 'checked' : ''}>
+                                                </td>
+                                                <td class="permission-cell text-center">
+                                                    <input type="checkbox" class="form-check-input permission-checkbox" data-permission="canExecute" ${perm && perm.canExecute ? 'checked' : ''}>
+                                                </td>
+                                            </tr>
+                                        `;
+                                tbody.append(row);
+                            });
+
+                            $('#permissionsContainer').show();
+                            $('#btnSavePermissions').show();
+                        }
+                    }
+                });
+            }
+
+            function savePermissions() {
+                const menuPermissions = [];
+
+                $('#permissionsTableBody tr').each(function () {
+                    const menuId = $(this).data('menu-id');
+                    const menu = allMenus.find(m => m.id === menuId);
+
+                    const permissions = {
+                        menuId: menuId,
+                        menuName: menu.name,
+                        canCreate: $(this).find('[data-permission="canCreate"]').is(':checked'),
+                        canRead: $(this).find('[data-permission="canRead"]').is(':checked'),
+                        canUpdate: $(this).find('[data-permission="canUpdate"]').is(':checked'),
+                        canDelete: $(this).find('[data-permission="canDelete"]').is(':checked'),
+                        canExecute: $(this).find('[data-permission="canExecute"]').is(':checked')
+                    };
+
+                    menuPermissions.push(permissions);
+                });
+
+                // Check if at least one permission is selected
+                const hasPermission = menuPermissions.some(m => m.canCreate || m.canRead || m.canUpdate || m.canDelete || m.canExecute);
+                if (!hasPermission) {
+                    showAlert('warning', 'Please select at least one permission for at least one menu');
+                    return;
+                }
+
+                $('#saveSpinner').removeClass('d-none');
+                $('#btnSavePermissions').prop('disabled', true);
+
+                $.ajax({
+                    url: '/Admin/RoleMenus/UpdatePermissions?roleId=' + currentRoleId,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(menuPermissions),
+                    headers: { 'RequestVerificationToken': token },
+                    success: function (response) {
+                        if (response.success) {
+                            showAlert('success', response.message);
+                            loadRolePermissions(currentRoleId);
+                        } else {
+                            showAlert('danger', response.message);
+                        }
+                    },
+                    error: function () {
+                        showAlert('danger', 'An error occurred while saving permissions');
+                    },
+                    complete: function () {
+                        $('#saveSpinner').addClass('d-none');
+                        $('#btnSavePermissions').prop('disabled', false);
+                    }
+                });
+            }
+
+            function resetPermissionsView() {
+                $('#loadingState').hide();
+                $('#permissionsContainer').hide();
+                $('#btnSavePermissions').hide();
+                $('#emptyState').show();
+                currentRoleId = null;
+            }
+
+            function showAlert(type, message) {
+                const alert = `
+                               <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                 ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                           </div>
+                       `;
+                $('#alertContainer').html(alert);
+                setTimeout(function () {
+                    $('.alert').fadeOut('slow', function () { $(this).remove(); });
+                }, 5000);
+            }
+
+            function escapeHtml(text) {
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+                return text.replace(/[&<>"']/g, function (m) { return map[m]; });
+            }
+        });
+    </script>
+}

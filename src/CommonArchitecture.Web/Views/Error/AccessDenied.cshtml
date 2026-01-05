@@ -1,0 +1,78 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-5">
+                    <!-- Lock Icon -->
+                    <div class="mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-lock-fill text-danger" viewBox="0 0 16 16">
+                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                        </svg>
+                    </div>
+
+                    <!-- Title -->
+                    <h1 class="display-4 text-danger mb-3">Access Denied</h1>
+                    <h2 class="h4 text-secondary mb-4">403 Forbidden</h2>
+
+                    <!-- Error Message -->
+                    <p class="lead text-muted mb-4">
+                        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                        {
+                            @Model.ErrorMessage
+                        }
+                        else
+                        {
+                            <text>You do not have permission to access this resource. Please contact your administrator if you believe this is a mistake.</text>
+                        }
+                    </p>
+
+                    <!-- Request ID -->
+                    @if (Model.ShowRequestId)
+                    {
+                        <div class="alert alert-secondary" role="alert">
+                            <small>
+                                <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                            </small>
+                        </div>
+                    }
+
+                    <!-- Action Buttons -->
+                    <div class="mt-4">
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left"></i> Go Back
+                        </a>
+                        <a href="/" class="btn btn-primary">
+                            <i class="bi bi-house"></i> Go to Home
+                        </a>
+                        <a href="/Admin/Auth/Login" class="btn btn-outline-primary ms-2">
+                            <i class="bi bi-person"></i> Log In
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+    }
+    
+    .btn {
+        border-radius: 25px;
+        padding: 10px 25px;
+    }
+    
+    code {
+        background-color: #f8f9fa;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+</style>

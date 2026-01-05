@@ -1,0 +1,13 @@
+﻿using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Users.UpdateUser;
+
+public record UpdateUserCommand(
+    int Id,
+    string Name,
+    string Email,
+    string Mobile,
+    int RoleId,
+    string? ProfileImagePath
+) : IRequest<bool>;
+

@@ -1,0 +1,30 @@
+﻿<#
+Run API, Web, and Angular dev server in separate PowerShell windows.
+Usage:
+ Open PowerShell in repository root and run:
+ .\run-all.ps1
+Notes:
+ - Requires dotnet, npm and PowerShell available on PATH.
+ - Angular uses `npm start` (reads package.json). If you don't have global @angular/cli, npm start will use local CLI.
+ - If execution policy prevents running scripts, run PowerShell as admin and: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+#>
+
+$root = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+Write-Host "Repository root: $root"
+
+$apiPath = Join-Path $root 'src\CommonArchitecture.API'
+$webPath = Join-Path $root 'src\CommonArchitecture.Web'
+$ngPath = Join-Path $root 'ecommerce-angular'
+
+Write-Host "Starting API in new window: $apiPath"
+Start-Process powershell -ArgumentList "-NoExit","-Command","cd '$apiPath'; dotnet run" -WorkingDirectory $apiPath
+
+Start-Sleep -Milliseconds500
+Write-Host "Starting Web in new window: $webPath"
+Start-Process powershell -ArgumentList "-NoExit","-Command","cd '$webPath'; dotnet run" -WorkingDirectory $webPath
+
+Start-Sleep -Milliseconds500
+Write-Host "Starting Angular dev server in new window: $ngPath"
+Start-Process powershell -ArgumentList "-NoExit","-Command","cd '$ngPath'; npm install; npm start" -WorkingDirectory $ngPath
+
+Write-Host "All processes started. Watch the three windows for output."

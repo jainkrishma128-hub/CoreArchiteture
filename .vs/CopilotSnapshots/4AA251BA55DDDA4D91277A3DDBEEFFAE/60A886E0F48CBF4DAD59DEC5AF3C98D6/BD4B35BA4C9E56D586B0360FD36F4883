@@ -1,0 +1,566 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- Hero Section with Modern Design -->
+<div class="hero-section">
+    <div class="hero-background">
+        <div class="hero-gradient"></div>
+    </div>
+    <div class="container">
+        <div class="hero-content text-center">
+     <div class="hero-icon-wrapper">
+         <i class="bi bi-code-square"></i>
+            </div>
+    <h1 class="hero-title">Common Architecture</h1>
+       <p class="hero-subtitle">A professional enterprise-grade .NET 9 application with Clean Architecture, CQRS pattern, Admin Dashboard, and E-commerce capabilities</p>
+         <div class="hero-buttons mt-4">
+             <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-primary btn-lg btn-icon me-3">
+ <i class="bi bi-shield-lock"></i> Admin Dashboard
+   </a>
+      <a asp-area="Ecommerce" asp-controller="Shop" asp-action="Index" class="btn btn-outline-primary btn-lg btn-icon">
+           <i class="bi bi-shop"></i> E-commerce Store
+ </a>
+            </div>
+     </div>
+    </div>
+</div>
+
+<!-- Features Overview Section -->
+<div class="container mt-5 mb-5">
+    <div class="row g-4 justify-content-center mb-5">
+        <!-- Admin Card -->
+  <div class="col-lg-5 col-md-6">
+       <div class="feature-card admin-card h-100">
+             <div class="card-icon">
+      <i class="bi bi-shield-lock-fill"></i>
+          </div>
+   <div class="card-content">
+     <h3>Admin Panel</h3>
+     <p class="card-description">Powerful dashboard to manage your entire system with ease</p>
+                 <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-sm btn-primary">
+     <i class="bi bi-arrow-right"></i> Access Admin
+        </a>
+        </div>
+<div class="card-features">
+         <span class="badge bg-primary">Dashboard</span>
+        <span class="badge bg-primary">CRUD Operations</span>
+       <span class="badge bg-primary">User Management</span>
+                </div>
+      </div>
+     </div>
+
+   <!-- E-commerce Card -->
+     <div class="col-lg-5 col-md-6">
+     <div class="feature-card ecommerce-card h-100">
+      <div class="card-icon">
+    <i class="bi bi-bag-heart-fill"></i>
+      </div>
+      <div class="card-content">
+       <h3>E-commerce Store</h3>
+             <p class="card-description">Beautiful storefront for browsing and shopping products</p>
+       <a asp-area="Ecommerce" asp-controller="Shop" asp-action="Index" class="btn btn-sm btn-danger">
+   <i class="bi bi-arrow-right"></i> Visit Store
+     </a>
+  </div>
+<div class="card-features">
+            <span class="badge bg-danger">Shopping</span>
+    <span class="badge bg-danger">Catalog</span>
+     <span class="badge bg-danger">Cart</span>
+     </div>
+   </div>
+        </div>
+    </div>
+
+    <!-- Architecture Features Section -->
+    <div class="row mt-5 mb-5">
+  <div class="col-12">
+            <div class="section-title text-center mb-5">
+  <h2>Architecture & Features</h2>
+      <p class="text-muted">Built with modern design patterns and best practices</p>
+            </div>
+     <div class="architecture-grid">
+   <!-- Admin Area -->
+           <div class="architecture-section">
+             <div class="section-header">
+        <i class="bi bi-shield-lock"></i>
+      <h5>Admin Area</h5>
+            </div>
+   <ul class="feature-list">
+      <li><span class="icon"><i class="bi bi-graph-up"></i></span> <span>Dashboard with statistics</span></li>
+      <li><span class="icon"><i class="bi bi-box-seam"></i></span> <span>Product management (CRUD)</span></li>
+        <li><span class="icon"><i class="bi bi-person"></i></span> <span>User management (CRUD)</span></li>
+      <li><span class="icon"><i class="bi bi-shield-check"></i></span> <span>Role management (CRUD)</span></li>
+  <li><span class="icon"><i class="bi bi-lock-fill"></i></span> <span>JWT Authentication & Auth</span></li>
+     </ul>
+     </div>
+
+       <!-- Ecommerce Area -->
+     <div class="architecture-section">
+         <div class="section-header">
+           <i class="bi bi-shop"></i>
+            <h5>Ecommerce Area</h5>
+          </div>
+      <ul class="feature-list">
+              <li><span class="icon"><i class="bi bi-search"></i></span> <span>Product catalog with search</span></li>
+               <li><span class="icon"><i class="bi bi-card-text"></i></span> <span>Product detail pages</span></li>
+ <li><span class="icon"><i class="bi bi-bag-plus"></i></span> <span>Shopping cart</span></li>
+    <li><span class="icon"><i class="bi bi-heart"></i></span> <span>Wishlist functionality</span></li>
+      <li><span class="icon"><i class="bi bi-star"></i></span> <span>Beautiful UI design</span></li>
+          </ul>
+     </div>
+
+     <!-- Technical Stack -->
+   <div class="architecture-section">
+   <div class="section-header">
+         <i class="bi bi-gear-fill"></i>
+    <h5>Technology Stack</h5>
+          </div>
+  <ul class="feature-list">
+      <li><span class="icon"><i class="bi bi-lightning-fill"></i></span> <span>.NET 9 with C# 13</span></li>
+   <li><span class="icon"><i class="bi bi-diagram-3"></i></span> <span>Clean Architecture Pattern</span></li>
+           <li><span class="icon"><i class="bi bi-bezier"></i></span> <span>CQRS Pattern with MediatR</span></li>
+       <li><span class="icon"><i class="bi bi-database"></i></span> <span>Entity Framework Core 9</span></li>
+  <li><span class="icon"><i class="bi bi-shield-exclamation"></i></span> <span>JWT Authentication</span></li>
+          </ul>
+      </div>
+         </div>
+        </div>
+    </div>
+
+    <!-- Key Benefits Section -->
+    <div class="row mt-5 mb-5">
+        <div class="col-12">
+  <div class="benefits-section">
+    <h3 class="section-title text-center mb-4">Why This Architecture?</h3>
+      <div class="row g-4">
+                 <div class="col-md-6 col-lg-3">
+       <div class="benefit-card">
+    <div class="benefit-icon">
+         <i class="bi bi-shield-check"></i>
+  </div>
+           <h6>Scalable</h6>
+  <p>Clean separation of concerns makes the application easy to scale and maintain</p>
+           </div>
+             </div>
+      <div class="col-md-6 col-lg-3">
+       <div class="benefit-card">
+             <div class="benefit-icon">
+                   <i class="bi bi-puzzle"></i>
+            </div>
+  <h6>Modular</h6>
+             <p>Independent layers allow for better testing and code reusability</p>
+         </div>
+ </div>
+  <div class="col-md-6 col-lg-3">
+    <div class="benefit-card">
+     <div class="benefit-icon">
+          <i class="bi bi-lightning-charge"></i>
+        </div>
+     <h6>Performant</h6>
+  <p>Optimized queries and caching strategies ensure fast response times</p>
+      </div>
+     </div>
+          <div class="col-md-6 col-lg-3">
+      <div class="benefit-card">
+         <div class="benefit-icon">
+           <i class="bi bi-lock-fill"></i>
+ </div>
+  <h6>Secure</h6>
+       <p>JWT authentication, CSRF protection, and best security practices</p>
+        </div>
+            </div>
+                </div>
+     </div>
+ </div>
+ </div>
+</div>
+
+<!-- CSS Styles -->
+<style>
+    /* Hero Section */
+    .hero-section {
+        position: relative;
+ min-height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+   margin-left: -12px;
+ margin-right: -12px;
+margin-top: -1rem;
+        margin-bottom: 3rem;
+    }
+
+    .hero-background {
+        position: absolute;
+ top: 0;
+      left: 0;
+        right: 0;
+ bottom: 0;
+        z-index: 0;
+    }
+
+    .hero-gradient {
+        position: absolute;
+        top: 0;
+      left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        opacity: 0.95;
+    }
+
+    .hero-content {
+        position: relative;
+ z-index: 1;
+        color: white;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .hero-icon-wrapper {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        animation: bounceIn 1s ease-out;
+    }
+
+    .hero-title {
+    font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        letter-spacing: -1px;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+      margin-bottom: 2rem;
+      opacity: 0.95;
+        max-width: 600px;
+    margin-left: auto;
+        margin-right: auto;
+    }
+
+    .btn-icon {
+      display: inline-flex;
+        align-items: center;
+   gap: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+    }
+
+    .btn-icon:hover {
+   transform: translateY(-2px);
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Feature Cards */
+    .feature-card {
+    background: white;
+        border-radius: 12px;
+        padding: 2.5rem 2rem;
+        border: 1px solid #e8e8e8;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+   position: absolute;
+        top: 0;
+  left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .feature-card:hover {
+   transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+    }
+
+    .card-icon {
+        font-size: 3rem;
+  margin-bottom: 1.5rem;
+        display: inline-block;
+    }
+
+    .admin-card .card-icon {
+        color: #667eea;
+    }
+
+    .ecommerce-card .card-icon {
+      color: #dc3545;
+    }
+
+    .feature-card h3 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-description {
+        color: #6c757d;
+ margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .card-features {
+        margin-top: 1.5rem;
+     padding-top: 1.5rem;
+border-top: 1px solid #e8e8e8;
+        display: flex;
+      flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* Architecture Section */
+    .section-title {
+margin-bottom: 2rem;
+ }
+
+    .section-title h2 {
+   font-size: 2.5rem;
+      font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .architecture-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .architecture-section {
+        background: #f8f9fa;
+     border-radius: 12px;
+        padding: 2rem;
+        border-left: 4px solid #667eea;
+     transition: all 0.3s ease;
+    }
+
+    .architecture-section:nth-child(2) {
+ border-left-color: #dc3545;
+    }
+
+    .architecture-section:nth-child(3) {
+        border-left-color: #28a745;
+    }
+
+    .architecture-section:hover {
+        background: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateX(4px);
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-header i {
+        font-size: 1.75rem;
+    }
+
+    .architecture-section:nth-child(1) .section-header i {
+   color: #667eea;
+    }
+
+    .architecture-section:nth-child(2) .section-header i {
+        color: #dc3545;
+    }
+
+    .architecture-section:nth-child(3) .section-header i {
+        color: #28a745;
+    }
+
+    .section-header h5 {
+        margin: 0;
+ font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+}
+
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+   padding: 0.75rem 0;
+ color: #555;
+        border-bottom: 1px solid #e8e8e8;
+    }
+
+    .feature-list li:last-child {
+        border-bottom: none;
+    }
+
+    .feature-list .icon {
+  display: inline-flex;
+    align-items: center;
+        justify-content: center;
+        width: 32px;
+      height: 32px;
+        border-radius: 8px;
+ background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    /* Benefits Section */
+    .benefits-section {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+ border-radius: 12px;
+        padding: 3rem 2rem;
+    }
+
+    .benefit-card {
+        background: white;
+  border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+  transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .benefit-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .benefit-icon {
+        font-size: 2.5rem;
+  margin-bottom: 1rem;
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+   border-radius: 50%;
+        display: flex;
+        align-items: center;
+   justify-content: center;
+   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+    }
+
+    .benefit-card h6 {
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-size: 1.1rem;
+  }
+
+    .benefit-card p {
+ color: #6c757d;
+        margin: 0;
+        font-size: 0.95rem;
+     line-height: 1.6;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+    opacity: 0;
+       transform: translateY(30px);
+  }
+      to {
+      opacity: 1;
+            transform: translateY(0);
+        }
+}
+
+    @keyframes bounceIn {
+        0% {
+   opacity: 0;
+         transform: scale(0.3);
+        }
+   50% {
+ opacity: 1;
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+ }
+        100% {
+            transform: scale(1);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      }
+
+   .hero-section {
+            min-height: 400px;
+   margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .architecture-grid {
+            grid-template-columns: 1fr;
+}
+
+        .benefits-section {
+ padding: 2rem 1rem;
+        }
+
+   .hero-buttons {
+       display: flex;
+            flex-direction: column;
+     gap: 1rem;
+        }
+
+        .btn-lg {
+    width: 100%;
+        }
+    }
+
+    /* Dark mode support (optional) */
+    @media (prefers-color-scheme: dark) {
+        .feature-card {
+       background: #1e1e1e;
+            border-color: #333;
+        }
+
+        .architecture-section {
+            background: #2a2a2a;
+  }
+
+        .architecture-section:hover {
+         background: #333;
+        }
+
+        .benefit-card {
+            background: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        .feature-card h3,
+ .section-header h5,
+     .benefit-card h6 {
+         color: #e0e0e0;
+   }
+
+        .card-description,
+        .feature-list li,
+     .benefit-card p {
+       color: #b0b0b0;
+        }
+    }
+</style>

@@ -1,0 +1,27 @@
+﻿using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Products.DeleteProduct;
+
+public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, bool>
+{
+    private readonly IProductRepository _productRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public DeleteProductCommandHandler(IProductRepository productRepository, IUnitOfWork unitOfWork)
+    {
+        _productRepository = productRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+    {
+        var product = await _productRepository.GetByIdAsync(request.Id);
+        if (product == null)
+            return false;
+
+        await _productRepository.DeleteAsync(request.Id);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+}

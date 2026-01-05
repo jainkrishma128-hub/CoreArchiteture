@@ -1,0 +1,131 @@
+﻿using CommonArchitecture.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace CommonArchitecture.Infrastructure.Persistence;
+
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<Menu> Menus { get; set; } // Added Menu DbSet
+
+    // Logging tables
+    public DbSet<ErrorLog> ErrorLogs { get; set; }
+    public DbSet<RequestResponseLog> RequestResponseLogs { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+      
+        // Configure Product entity
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.Name).IsRequired().HasMaxLength(256);
+            entity.Property(p => p.Description).HasMaxLength(1000);
+            entity.Property(p => p.Price).HasPrecision(18, 2);
+            entity.Property(p => p.Stock).HasDefaultValue(0);
+            entity.Property(p => p.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        // Configure Role entity
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.RoleName).IsRequired().HasMaxLength(128);
+            entity.Property(r => r.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(r => r.RoleName).IsUnique();
+        });
+
+        // Configure User entity
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Name).IsRequired().HasMaxLength(256);
+            entity.Property(u => u.Email).IsRequired().HasMaxLength(256);
+            entity.Property(u => u.Mobile).HasMaxLength(20);
+            entity.Property(u => u.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(u => u.Email).IsUnique();
+            entity.HasIndex(u => u.Mobile);
+
+            // Configure relationship with Role
+            entity.HasOne(u => u.Role)
+                .WithMany()
+                .HasForeignKey(u => u.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configure RefreshToken entity
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(rt => rt.Id);
+            entity.Property(rt => rt.Token).IsRequired().HasMaxLength(500);
+            entity.Property(rt => rt.DeviceFingerprint).HasMaxLength(256);
+            entity.Property(rt => rt.IpAddress).HasMaxLength(45); // IPv6 max length
+            entity.Property(rt => rt.UserAgent).HasMaxLength(500);
+            entity.Property(rt => rt.PreviousToken).HasMaxLength(500);
+            entity.Property(rt => rt.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(rt => rt.Token).IsUnique();
+            entity.HasIndex(rt => rt.UserId);
+            entity.HasIndex(rt => new { rt.UserId, rt.DeviceFingerprint });
+
+            // Configure relationship with User
+            entity.HasOne(rt => rt.User)
+                .WithMany()
+                .HasForeignKey(rt => rt.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure Menu entity
+        modelBuilder.Entity<Menu>(entity =>
+        {
+            entity.HasKey(m => m.Id);
+            entity.Property(m => m.Name).IsRequired().HasMaxLength(128);
+            entity.Property(m => m.Icon).HasMaxLength(64);
+            entity.Property(m => m.Url).IsRequired().HasMaxLength(256);
+            entity.Property(m => m.DisplayOrder).HasDefaultValue(0);
+            entity.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(m => m.DisplayOrder);
+
+            // Self-referencing relationship for parent-child menus
+            entity.HasOne(m => m.ParentMenu)
+                .WithMany(m => m.SubMenus)
+                .HasForeignKey(m => m.ParentMenuId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configure ErrorLog
+        modelBuilder.Entity<ErrorLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Message).IsRequired().HasMaxLength(2000);
+            entity.Property(e => e.StackTrace).HasMaxLength(4000);
+            entity.Property(e => e.Path).HasMaxLength(1024);
+            entity.Property(e => e.Method).HasMaxLength(16);
+            entity.Property(e => e.QueryString).HasMaxLength(2000);
+            entity.Property(e => e.UserId).HasMaxLength(128);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        // Configure RequestResponseLog
+        modelBuilder.Entity<RequestResponseLog>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Method).HasMaxLength(16);
+            entity.Property(r => r.Path).HasMaxLength(1024);
+            entity.Property(r => r.QueryString).HasMaxLength(2000);
+            entity.Property(r => r.RequestBody).HasMaxLength(8000);
+            entity.Property(r => r.ResponseBody).HasMaxLength(8000);
+            entity.Property(r => r.IpAddress).HasMaxLength(45);
+            entity.Property(r => r.UserAgent).HasMaxLength(1000);
+            entity.Property(r => r.UserId).HasMaxLength(128);
+            entity.Property(r => r.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+    }
+}

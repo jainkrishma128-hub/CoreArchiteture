@@ -1,0 +1,176 @@
+﻿using Microsoft.AspNetCore.Http;
+using System.Text.Json;
+
+namespace CommonArchitecture.Web.Services;
+
+public class TokenStorageService : ITokenStorageService
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IMemoryCache _memoryCache;
+    private const string ACCESS_TOKEN_COOKIE = "access_token";
+    private const string REFRESH_TOKEN_COOKIE = "refresh_token";
+    private const string TOKEN_EXPIRES_COOKIE = "token_expires";
+    
+    // Cache keys
+    private const string ACCESS_TOKEN_CACHE_KEY = "cached_access_token";
+    private const string REFRESH_TOKEN_CACHE_KEY = "cached_refresh_token";
+    private const string TOKEN_EXPIRES_CACHE_KEY = "cached_token_expires";
+
+    public TokenStorageService(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
+    {
+        _httpContextAccessor = httpContextAccessor;
+        _memoryCache = memoryCache;
+    }
+
+    public Task<string?> GetAccessTokenAsync()
+    {
+        // First, try to get from HTTP context (user request)
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.Request != null)
+        {
+            var cookieToken = httpContext.Request.Cookies[ACCESS_TOKEN_COOKIE];
+            if (!string.IsNullOrEmpty(cookieToken))
+            {
+                return Task.FromResult<string?>(cookieToken);
+            }
+        }
+
+        // Fallback to memory cache (for background HTTP requests)
+        if (_memoryCache.TryGetValue(ACCESS_TOKEN_CACHE_KEY, out string? cachedToken))
+        {
+            return Task.FromResult(cachedToken);
+        }
+
+        return Task.FromResult<string?>(null);
+    }
+
+    public Task<string?> GetRefreshTokenAsync()
+    {
+        // First, try to get from HTTP context (user request)
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.Request != null)
+        {
+            var cookieToken = httpContext.Request.Cookies[REFRESH_TOKEN_COOKIE];
+            if (!string.IsNullOrEmpty(cookieToken))
+            {
+                return Task.FromResult<string?>(cookieToken);
+            }
+        }
+
+        // Fallback to memory cache (for background HTTP requests)
+        if (_memoryCache.TryGetValue(REFRESH_TOKEN_CACHE_KEY, out string? cachedToken))
+        {
+            return Task.FromResult(cachedToken);
+        }
+
+        return Task.FromResult<string?>(null);
+    }
+
+    public Task SaveTokensAsync(string accessToken, string refreshToken, DateTime expiresAt)
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.Response != null)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = httpContext.Request.IsHttps,
+                SameSite = SameSiteMode.Strict,
+                IsEssential = true,
+                Expires = expiresAt
+            };
+
+            // Access token cookie (shorter expiration)
+            httpContext.Response.Cookies.Append(ACCESS_TOKEN_COOKIE, accessToken, cookieOptions);
+
+            // Refresh token cookie (longer expiration - 7 days)
+            var refreshCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = httpContext.Request.IsHttps,
+                SameSite = SameSiteMode.Strict,
+                IsEssential = true,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+            httpContext.Response.Cookies.Append(REFRESH_TOKEN_COOKIE, refreshToken, refreshCookieOptions);
+
+            // Expiration timestamp cookie
+            httpContext.Response.Cookies.Append(TOKEN_EXPIRES_COOKIE, expiresAt.ToString("O"), cookieOptions);
+        }
+
+        // Also cache in memory for use by JwtTokenHandler
+        _memoryCache.Set(ACCESS_TOKEN_CACHE_KEY, accessToken, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpiration = expiresAt
+        });
+
+        _memoryCache.Set(REFRESH_TOKEN_CACHE_KEY, refreshToken, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpiration = DateTime.UtcNow.AddDays(7)
+        });
+
+        _memoryCache.Set(TOKEN_EXPIRES_CACHE_KEY, expiresAt, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpiration = DateTime.UtcNow.AddDays(7)
+        });
+
+        return Task.CompletedTask;
+    }
+
+    public Task ClearTokensAsync()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.Response != null)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = httpContext.Request.IsHttps,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(-1)
+            };
+
+            httpContext.Response.Cookies.Append(ACCESS_TOKEN_COOKIE, string.Empty, cookieOptions);
+            httpContext.Response.Cookies.Append(REFRESH_TOKEN_COOKIE, string.Empty, cookieOptions);
+            httpContext.Response.Cookies.Append(TOKEN_EXPIRES_COOKIE, string.Empty, cookieOptions);
+        }
+
+        // Clear from cache
+        _memoryCache.Remove(ACCESS_TOKEN_CACHE_KEY);
+        _memoryCache.Remove(REFRESH_TOKEN_CACHE_KEY);
+        _memoryCache.Remove(TOKEN_EXPIRES_CACHE_KEY);
+
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> IsTokenExpiredAsync()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        DateTime? expiresAt = null;
+
+        // First, try to get from HTTP context
+        if (httpContext?.Request != null)
+        {
+            var expiresAtString = httpContext.Request.Cookies[TOKEN_EXPIRES_COOKIE];
+            if (!string.IsNullOrEmpty(expiresAtString) && DateTime.TryParse(expiresAtString, out var parsedTime))
+            {
+                expiresAt = parsedTime;
+            }
+        }
+
+        // Fallback to cache
+        if (expiresAt == null)
+        {
+            _memoryCache.TryGetValue(TOKEN_EXPIRES_CACHE_KEY, out DateTime cachedExpiresAt);
+            expiresAt = cachedExpiresAt;
+        }
+
+        if (expiresAt == null)
+        {
+            return Task.FromResult(true);
+        }
+
+        return Task.FromResult(DateTime.UtcNow >= expiresAt);
+    }
+}
+

@@ -1,0 +1,49 @@
+﻿using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Queries.Products.GetAllProducts;
+
+public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, PaginatedResult<ProductDto>>
+{
+    private readonly IProductRepository _productRepository;
+
+    public GetAllProductsQueryHandler(IProductRepository productRepository)
+    {
+        _productRepository = productRepository;
+    }
+
+    public async Task<PaginatedResult<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+    {
+        var parameters = request.Parameters;
+        
+        // Get paginated products
+        var products = await _productRepository.GetPagedAsync(
+            parameters.SearchTerm,
+            parameters.SortBy,
+            parameters.SortOrder,
+            parameters.PageNumber,
+            parameters.PageSize);
+        
+        // Get total count for pagination metadata
+        var totalCount = await _productRepository.GetTotalCountAsync(parameters.SearchTerm);
+        
+        // Map to DTOs
+        var productDtos = products.Select(p => new ProductDto
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Description = p.Description,
+            Price = p.Price,
+            Stock = p.Stock
+        });
+        
+        return new PaginatedResult<ProductDto>
+        {
+            Items = productDtos,
+            TotalCount = totalCount,
+            PageNumber = parameters.PageNumber,
+            PageSize = parameters.PageSize
+        };
+    }
+}

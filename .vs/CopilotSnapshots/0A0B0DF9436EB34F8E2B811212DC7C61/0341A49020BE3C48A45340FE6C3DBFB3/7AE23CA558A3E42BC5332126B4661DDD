@@ -1,0 +1,13 @@
+﻿using System;
+using System.Threading.Tasks;
+
+namespace CommonArchitecture.Web.Services
+{
+ public interface ITokenService
+ {
+ Task<string?> GetAccessTokenAsync();
+ Task<string?> GetRefreshTokenAsync();
+ Task<bool> RefreshTokensAsync();
+ Task SetTokensAsync(string accessToken, string refreshToken, DateTime? accessTokenExpiresAt = null);
+ }
+}

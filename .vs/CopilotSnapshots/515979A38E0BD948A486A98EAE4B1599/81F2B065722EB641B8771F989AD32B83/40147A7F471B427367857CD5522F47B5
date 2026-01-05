@@ -1,0 +1,43 @@
+﻿using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Queries.RoleMenus.GetRoleMenusByRole;
+
+public class GetRoleMenusByRoleQueryHandler : IRequestHandler<GetRoleMenusByRoleQuery, RoleMenuPermissionsDto?>
+{
+ private readonly IRoleMenuRepository _roleMenuRepository;
+ private readonly IRoleRepository _roleRepository;
+
+ public GetRoleMenusByRoleQueryHandler(IRoleMenuRepository roleMenuRepository, IRoleRepository roleRepository)
+ {
+ _roleMenuRepository = roleMenuRepository;
+ _roleRepository = roleRepository;
+ }
+
+ public async Task<RoleMenuPermissionsDto?> Handle(GetRoleMenusByRoleQuery request, CancellationToken cancellationToken)
+ {
+ var role = await _roleRepository.GetByIdAsync(request.RoleId);
+ if (role == null) return null;
+
+ var roleMenus = await _roleMenuRepository.GetByRoleIdAsync(request.RoleId);
+
+ var menuPermissions = roleMenus.Select(rm => new RoleMenuItemDto
+ {
+ MenuId = rm.MenuId,
+ MenuName = rm.Menu?.Name ?? "Unknown",
+ CanCreate = rm.CanCreate,
+ CanRead = rm.CanRead,
+ CanUpdate = rm.CanUpdate,
+ CanDelete = rm.CanDelete,
+ CanExecute = rm.CanExecute
+ }).ToList();
+
+ return new RoleMenuPermissionsDto
+ {
+ RoleId = role.Id,
+ RoleName = role.RoleName,
+ MenuPermissions = menuPermissions
+ };
+ }
+}

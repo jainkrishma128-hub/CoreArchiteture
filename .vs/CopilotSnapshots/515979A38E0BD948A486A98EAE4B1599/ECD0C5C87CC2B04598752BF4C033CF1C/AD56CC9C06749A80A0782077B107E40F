@@ -1,0 +1,6 @@
+﻿using MediatR;
+using CommonArchitecture.Application.DTOs;
+
+namespace CommonArchitecture.Application.Queries.Products.ExportProducts;
+
+public record ExportProductsQuery : IRequest<byte[]>;

@@ -1,0 +1,14 @@
+﻿using CommonArchitecture.Application.DTOs;
+using MediatR;
+
+namespace CommonArchitecture.Application.Queries.Menus.GetMenuById;
+
+public class GetMenuByIdQuery : IRequest<MenuDto?>
+{
+ public int Id { get; set; }
+
+ public GetMenuByIdQuery(int id)
+ {
+ Id = id;
+ }
+}

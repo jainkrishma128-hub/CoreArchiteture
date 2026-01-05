@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShopMart</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/shop.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CommonArchitecture.Web.styles.css" asp-append-version="true" />
+</head>
+<body class="shop-body">
+    <!-- Top Bar -->
+    <div class="shop-topbar">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="topbar-left">
+                        <span><i class="bi bi-truck"></i> Free Shipping on Orders Over $50</span>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="topbar-right">
+                        <a href="#"><i class="bi bi-question-circle"></i> Help</a>
+                        <a href="#"><i class="bi bi-geo-alt"></i> Track Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="shop-header">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand" asp-area="Ecommerce" asp-controller="Shop" asp-action="Index">
+                    <i class="bi bi-bag-heart-fill brand-icon"></i>
+                    <span class="brand-text">ShopMart</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#shopNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="shopNavbar">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" asp-area="Ecommerce" asp-controller="Shop" asp-action="Index">
+                                <i class="bi bi-grid-3x3-gap"></i> All Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-category="electronics">
+                                <i class="bi bi-cpu"></i> Electronics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-category="fashion">
+                                <i class="bi bi-handbag"></i> Fashion
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-category="home">
+                                <i class="bi bi-house-heart"></i> Home & Living
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="nav-icons">
+                        <div class="search-wrapper">
+                            <input type="text" class="form-control search-input" placeholder="Search products..." id="headerSearchInput" />
+                            <button class="search-btn" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                        <a href="#" class="nav-icon" title="Wishlist">
+                            <i class="bi bi-heart"></i>
+                            <span class="badge">0</span>
+                        </a>
+                        <a asp-area="Ecommerce" asp-controller="Shop" asp-action="Cart" class="nav-icon" title="Cart">
+                            <i class="bi bi-cart3"></i>
+                            <span class="badge cart-count">0</span>
+                        </a>
+                        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="nav-icon admin-link" title="Admin Panel">
+                            <i class="bi bi-shield-lock"></i>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        @Html.AntiForgeryToken()
+    </header>
+
+    <!-- Main Content -->
+    <main class="shop-main">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="shop-footer">
+        <div class="footer-main">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="footer-brand">
+                            <a href="#">
+                                <i class="bi bi-bag-heart-fill"></i>
+                                <span>ShopMart</span>
+                            </a>
+                            <p>Your one-stop destination for quality products at unbeatable prices. Shop with confidence!</p>
+                            <div class="social-links">
+                                <a href="#"><i class="bi bi-facebook"></i></a>
+                                <a href="#"><i class="bi bi-twitter-x"></i></a>
+                                <a href="#"><i class="bi bi-instagram"></i></a>
+                                <a href="#"><i class="bi bi-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <h5>Quick Links</h5>
+                        <ul>
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Contact</a></li>
+                            <li><a href="#">FAQs</a></li>
+                            <li><a href="#">Blog</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <h5>Customer Service</h5>
+                        <ul>
+                            <li><a href="#">My Account</a></li>
+                            <li><a href="#">Orders</a></li>
+                            <li><a href="#">Wishlist</a></li>
+                            <li><a href="#">Returns</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <h5>Newsletter</h5>
+                        <p>Subscribe to get updates on new arrivals and special offers!</p>
+                        <form class="newsletter-form">
+                            <div class="input-group">
+                                <input type="email" class="form-control" placeholder="Your email address" />
+                                <button class="btn" type="button">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p>&copy; 2025 ShopMart. All rights reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="payment-methods">
+                            <i class="bi bi-credit-card-2-front"></i>
+                            <i class="bi bi-paypal"></i>
+                            <i class="bi bi-apple"></i>
+                            <i class="bi bi-google"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/shop.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    @await Component.InvokeAsync("NToastNotify")
+</body>
+</html>
+

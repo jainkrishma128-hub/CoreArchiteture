@@ -1,0 +1,37 @@
+﻿using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Roles.CreateRole;
+
+public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, RoleDto>
+{
+    private readonly IRoleRepository _roleRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateRoleCommandHandler(IRoleRepository roleRepository, IUnitOfWork unitOfWork)
+    {
+        _roleRepository = roleRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<RoleDto> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
+    {
+        var role = new Role
+        {
+            RoleName = request.RoleName,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var createdRole = await _roleRepository.AddAsync(role);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new RoleDto
+        {
+            Id = createdRole.Id,
+            RoleName = createdRole.RoleName
+        };
+    }
+}
+

@@ -1,0 +1,24 @@
+﻿using CommonArchitecture.Application.Commands;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using CommonArchitecture.Application.Behaviors;
+
+namespace CommonArchitecture.Application.Behaviors;
+
+public class CacheInvalidator
+{
+    private readonly CacheHelper _cacheHelper;
+
+    public CacheInvalidator(CacheHelper cacheHelper)
+    {
+        _cacheHelper = cacheHelper;
+    }
+
+    public void Invalidate(params string[] keys)
+    {
+        foreach (var key in keys)
+        {
+            _cacheHelper.Remove(key);
+        }
+    }
+}

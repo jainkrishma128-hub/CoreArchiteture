@@ -1,0 +1,148 @@
+using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using CommonArchitecture.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
+
+namespace CommonArchitecture.Infrastructure.Repositories;
+
+public class RoleMenuRepository : IRoleMenuRepository
+{
+ private readonly ApplicationDbContext _context;
+
+ private static readonly HashSet<string> AllowedSortFields = new(StringComparer.OrdinalIgnoreCase)
+ {
+ nameof(RoleMenu.Id),
+ nameof(RoleMenu.RoleId),
+ nameof(RoleMenu.MenuId),
+ nameof(RoleMenu.CreatedAt)
+ };
+
+ public RoleMenuRepository(ApplicationDbContext context)
+ {
+ _context = context;
+ }
+
+ public async Task<IEnumerable<RoleMenu>> GetAllAsync()
+ {
+ return await _context.RoleMenus
+ .Include(rm => rm.Role)
+ .Include(rm => rm.Menu)
+ .ToListAsync();
+ }
+
+ public async Task<RoleMenu?> GetByIdAsync(int id)
+ {
+ return await _context.RoleMenus
+ .Include(rm => rm.Role)
+ .Include(rm => rm.Menu)
+ .FirstOrDefaultAsync(rm => rm.Id == id);
+ }
+
+ public async Task<RoleMenu?> GetByRoleAndMenuAsync(int roleId, int menuId)
+ {
+ return await _context.RoleMenus
+ .Include(rm => rm.Role)
+ .Include(rm => rm.Menu)
+ .FirstOrDefaultAsync(rm => rm.RoleId == roleId && rm.MenuId == menuId);
+ }
+
+ public async Task<IEnumerable<RoleMenu>> GetByRoleIdAsync(int roleId)
+ {
+ return await _context.RoleMenus
+ .Include(rm => rm.Menu)
+ .Where(rm => rm.RoleId == roleId)
+ .OrderBy(rm => rm.Menu!.DisplayOrder)
+ .ToListAsync();
+ }
+
+ public async Task<IEnumerable<RoleMenu>> GetByMenuIdAsync(int menuId)
+ {
+ return await _context.RoleMenus
+ .Include(rm => rm.Role)
+ .Where(rm => rm.MenuId == menuId)
+ .ToListAsync();
+ }
+
+ public async Task<RoleMenu> AddAsync(RoleMenu roleMenu)
+ {
+ _context.RoleMenus.Add(roleMenu);
+ // SaveChanges removed - UnitOfWork is responsible for persisting
+ return roleMenu;
+ }
+
+ public async Task UpdateAsync(RoleMenu roleMenu)
+ {
+ _context.RoleMenus.Update(roleMenu);
+ // SaveChanges removed - UnitOfWork is responsible for persisting
+ }
+
+ public async Task DeleteAsync(int id)
+ {
+ var roleMenu = await _context.RoleMenus.FindAsync(id);
+ if (roleMenu != null)
+ {
+ _context.RoleMenus.Remove(roleMenu);
+ // SaveChanges removed - UnitOfWork is responsible for persisting
+ }
+ }
+
+ public async Task DeleteByRoleAndMenuAsync(int roleId, int menuId)
+ {
+ var roleMenu = await _context.RoleMenus
+ .FirstOrDefaultAsync(rm => rm.RoleId == roleId && rm.MenuId == menuId);
+ 
+ if (roleMenu != null)
+ {
+ _context.RoleMenus.Remove(roleMenu);
+ // SaveChanges removed - UnitOfWork is responsible for persisting
+ }
+ }
+
+ public async Task<IEnumerable<RoleMenu>> GetPagedAsync(int? roleId, string sortBy, string sortOrder, int pageNumber, int pageSize)
+ {
+ var query = _context.RoleMenus
+ .Include(rm => rm.Role)
+ .Include(rm => rm.Menu)
+ .AsQueryable();
+
+ if (roleId.HasValue)
+ {
+ query = query.Where(rm => rm.RoleId == roleId.Value);
+ }
+
+ query = ApplySorting(query, sortBy, sortOrder);
+
+ var roleMenus = await query
+ .Skip((pageNumber -1) * pageSize)
+ .Take(pageSize)
+ .ToListAsync();
+
+ return roleMenus;
+ }
+
+ public async Task<int> GetTotalCountAsync(int? roleId)
+ {
+ var query = _context.RoleMenus.AsQueryable();
+
+ if (roleId.HasValue)
+ {
+ query = query.Where(rm => rm.RoleId == roleId.Value);
+ }
+
+ return await query.CountAsync();
+ }
+
+ private static IQueryable<RoleMenu> ApplySorting(IQueryable<RoleMenu> query, string sortBy, string sortOrder)
+ {
+ if (string.IsNullOrWhiteSpace(sortBy) || !AllowedSortFields.Contains(sortBy))
+ {
+ sortBy = nameof(RoleMenu.Id);
+ }
+
+ var isDescending = sortOrder?.Equals("desc", StringComparison.OrdinalIgnoreCase) ?? false;
+ var orderByExpression = $"{sortBy} {(isDescending ? "descending" : "ascending")}";
+ 
+ return query.OrderBy(orderByExpression);
+ }
+}

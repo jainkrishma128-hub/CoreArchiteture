@@ -1,0 +1,60 @@
+﻿using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using Microsoft.AspNetCore.Http;
+
+namespace CommonArchitecture.Web.Middlewares;
+
+public class WebExceptionLoggingMiddleware
+{
+ private readonly RequestDelegate _next;
+ private readonly ILogger<WebExceptionLoggingMiddleware> _logger;
+
+ public WebExceptionLoggingMiddleware(RequestDelegate next, ILogger<WebExceptionLoggingMiddleware> logger)
+ {
+ _next = next;
+ _logger = logger;
+ }
+
+ public async Task InvokeAsync(HttpContext context)
+ {
+ try
+ {
+ await _next(context);
+ }
+ catch (Exception ex)
+ {
+ _logger.LogError(ex, "Unhandled exception in web app for {Method} {Path}", context.Request.Method, context.Request.Path);
+
+ var error = new ErrorLog
+ {
+ Message = ex.Message,
+ StackTrace = ex.StackTrace,
+ Path = context.Request.Path + context.Request.PathBase,
+ Method = context.Request.Method,
+ QueryString = context.Request.QueryString.HasValue ? context.Request.QueryString.Value : null,
+ UserId = context.Session?.GetString("UserId"),
+ CreatedAt = DateTime.UtcNow
+ };
+
+ try
+ {
+ var loggingService = context.RequestServices.GetService(typeof(ILoggingService)) as ILoggingService;
+ if (loggingService != null)
+ {
+ await loggingService.LogErrorAsync(error);
+ }
+ else
+ {
+ _logger.LogWarning("ILoggingService not available from request services");
+ }
+ }
+ catch (Exception logEx)
+ {
+ _logger.LogError(logEx, "Failed to persist web exception to DB");
+ }
+
+ // Re-throw to let existing exception handler render error page
+ throw;
+ }
+ }
+}

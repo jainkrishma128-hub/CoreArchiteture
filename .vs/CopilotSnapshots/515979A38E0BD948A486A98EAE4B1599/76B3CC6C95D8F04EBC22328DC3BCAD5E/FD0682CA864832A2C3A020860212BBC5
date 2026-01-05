@@ -1,0 +1,16 @@
+﻿using CommonArchitecture.Application.DTOs;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.RoleMenus.UpdateRoleMenuPermissions;
+
+public class UpdateRoleMenuPermissionsCommand : IRequest<bool>
+{
+ public int RoleId { get; set; }
+ public List<RoleMenuItemDto> MenuPermissions { get; set; } = new();
+
+ public UpdateRoleMenuPermissionsCommand(int roleId, List<RoleMenuItemDto> menuPermissions)
+ {
+ RoleId = roleId;
+ MenuPermissions = menuPermissions;
+ }
+}

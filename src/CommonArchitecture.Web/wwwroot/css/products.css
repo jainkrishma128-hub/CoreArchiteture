@@ -1,0 +1,24 @@
+/* Products Index Page - Styles */
+
+/* Sortable table headers */
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable:hover {
+    background-color: #f8f9fa;
+}
+
+.sortable.active {
+    background-color: #e9ecef;
+}
+
+.sortable .bi {
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
+.sortable.active .bi {
+    opacity: 1;
+}

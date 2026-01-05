@@ -1,0 +1,58 @@
+﻿using CommonArchitecture.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace CommonArchitecture.Infrastructure.Persistence;
+
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<User> Users { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+      
+        // Configure Product entity
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.Name).IsRequired().HasMaxLength(256);
+            entity.Property(p => p.Description).HasMaxLength(1000);
+            entity.Property(p => p.Price).HasPrecision(18, 2);
+            entity.Property(p => p.Stock).HasDefaultValue(0);
+            entity.Property(p => p.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        // Configure Role entity
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.RoleName).IsRequired().HasMaxLength(128);
+            entity.Property(r => r.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(r => r.RoleName).IsUnique();
+        });
+
+        // Configure User entity
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Name).IsRequired().HasMaxLength(256);
+            entity.Property(u => u.Email).IsRequired().HasMaxLength(256);
+            entity.Property(u => u.Mobile).HasMaxLength(20);
+            entity.Property(u => u.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(u => u.Email).IsUnique();
+            entity.HasIndex(u => u.Mobile);
+
+            // Configure relationship with Role
+            entity.HasOne(u => u.Role)
+                .WithMany()
+                .HasForeignKey(u => u.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+}

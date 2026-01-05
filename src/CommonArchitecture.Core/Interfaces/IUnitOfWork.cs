@@ -1,0 +1,37 @@
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace CommonArchitecture.Core.Interfaces;
+
+public interface IUnitOfWork : IDisposable
+{
+    IProductRepository Products { get; }
+    IUserRepository Users { get; }
+    IRoleRepository Roles { get; }
+    IAuthRepository Auth { get; }
+    IMenuRepository Menus { get; }
+    IRoleMenuRepository RoleMenus { get; }
+    IRefreshTokenRepository RefreshTokens { get; }
+    ICategoryRepository Categories { get; }
+
+    /// <summary>
+    /// Persist changes to the underlying store.
+    /// </summary>
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Begin a database transaction. Implementations may be a no-op if transactions are managed elsewhere.
+    /// </summary>
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Commit active transaction.
+    /// </summary>
+    Task CommitAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Rollback active transaction.
+    /// </summary>
+    Task RollbackAsync(CancellationToken cancellationToken = default);
+}
+

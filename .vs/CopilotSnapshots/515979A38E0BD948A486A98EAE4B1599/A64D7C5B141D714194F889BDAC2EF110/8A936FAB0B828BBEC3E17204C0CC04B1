@@ -1,0 +1,53 @@
+﻿using MediatR;
+using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Interfaces;
+using CommonArchitecture.Core.Entities;
+using CsvHelper;
+using System.Globalization;
+
+namespace CommonArchitecture.Application.Commands.Products.ImportProducts;
+
+public class ImportProductsCommandHandler : IRequestHandler<ImportProductsCommand, bool>
+{
+    private readonly IProductRepository _productRepository;
+
+    public ImportProductsCommandHandler(IProductRepository productRepository)
+    {
+        _productRepository = productRepository;
+    }
+
+    public async Task<bool> Handle(ImportProductsCommand request, CancellationToken cancellationToken)
+    {
+        if (request.FileStream == null || request.FileStream.Length == 0)
+            return false;
+
+        try
+        {
+            using var reader = new StreamReader(request.FileStream);
+            using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+            
+            var records = csv.GetRecords<ProductCsvDto>().ToList();
+            
+            var products = records.Select(r => new Product
+            {
+                Name = r.Name,
+                Description = r.Description,
+                Price = r.Price,
+                Stock = r.Stock,
+                CreatedAt = DateTime.UtcNow
+            }).ToList();
+
+            if (products.Any())
+            {
+                await _productRepository.BulkAddAsync(products);
+                return true;
+            }
+            
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}

@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "Hangfire Jobs";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clock-history"></i> Hangfire Jobs Dashboard
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info" role="alert">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Hangfire Dashboard</strong> - This page embeds the Hangfire dashboard for managing background jobs.
+                        <br />
+                        <small>Click the button below to open the full Hangfire dashboard interface.</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="/Admin/Hangfire" target="_blank" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-up-right"></i> Open Hangfire Dashboard
+                        </a>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h6>Active Jobs:</h6>
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>Daily Good Morning Messages</strong>
+                                            <br />
+                                            <small class="text-muted">Sends Good Morning messages to all users daily at 8:00 AM UTC</small>
+                                        </div>
+                                        <span class="badge bg-success">Active</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h6>About Hangfire:</h6>
+                            <p class="text-muted">
+                                Hangfire is a background job processing library for .NET applications. 
+                                It allows you to perform background tasks reliably and efficiently.
+                            </p>
+                            <ul class="text-muted">
+                                <li><strong>Recurring Jobs:</strong> Scheduled jobs that run on a schedule (e.g., daily, weekly)</li>
+                                <li><strong>Fire-and-forget Jobs:</strong> Jobs that are executed only once, almost immediately</li>
+                                <li><strong>Delayed Jobs:</strong> Jobs that are executed only once, after a specified time interval</li>
+                                <li><strong>Continuations:</strong> Jobs that are executed when their parent job has finished</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .list-group-item {
+        border-left: 4px solid #0d6efd;
+    }
+</style>
+

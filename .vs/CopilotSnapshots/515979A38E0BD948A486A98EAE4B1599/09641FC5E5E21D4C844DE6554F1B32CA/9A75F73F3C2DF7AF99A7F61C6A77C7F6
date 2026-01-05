@@ -1,0 +1,46 @@
+﻿using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Menus.CreateMenu;
+
+public class CreateMenuCommandHandler : IRequestHandler<CreateMenuCommand, MenuDto>
+{
+ private readonly IMenuRepository _menuRepository;
+ private readonly IUnitOfWork _unitOfWork;
+
+ public CreateMenuCommandHandler(IMenuRepository menuRepository, IUnitOfWork unitOfWork)
+ {
+ _menuRepository = menuRepository;
+ _unitOfWork = unitOfWork;
+ }
+
+ public async Task<MenuDto> Handle(CreateMenuCommand request, CancellationToken cancellationToken)
+ {
+ var menu = new Menu
+ {
+ Name = request.Name,
+ Icon = request.Icon,
+ Url = request.Url,
+ ParentMenuId = request.ParentMenuId,
+ DisplayOrder = request.DisplayOrder,
+ IsActive = true,
+ CreatedAt = DateTime.UtcNow
+ };
+
+ var createdMenu = await _menuRepository.AddAsync(menu);
+ await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+ return new MenuDto
+ {
+ Id = createdMenu.Id,
+ Name = createdMenu.Name,
+ Icon = createdMenu.Icon,
+ Url = createdMenu.Url,
+ ParentMenuId = createdMenu.ParentMenuId,
+ DisplayOrder = createdMenu.DisplayOrder,
+ IsActive = createdMenu.IsActive
+ };
+ }
+}

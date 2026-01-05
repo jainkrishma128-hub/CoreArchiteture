@@ -1,0 +1,110 @@
+﻿using Microsoft.AspNetCore.Http;
+using System.Text.Json;
+
+namespace CommonArchitecture.Web.Services;
+
+public class TokenStorageService : ITokenStorageService
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private const string ACCESS_TOKEN_COOKIE = "access_token";
+    private const string REFRESH_TOKEN_COOKIE = "refresh_token";
+    private const string TOKEN_EXPIRES_COOKIE = "token_expires";
+
+    public TokenStorageService(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
+
+    public Task<string?> GetAccessTokenAsync()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.Request == null)
+            return Task.FromResult<string?>(null);
+
+        return Task.FromResult(httpContext.Request.Cookies[ACCESS_TOKEN_COOKIE]);
+    }
+
+    public Task<string?> GetRefreshTokenAsync()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.Request == null)
+            return Task.FromResult<string?>(null);
+
+        return Task.FromResult(httpContext.Request.Cookies[REFRESH_TOKEN_COOKIE]);
+    }
+
+    public Task SaveTokensAsync(string accessToken, string refreshToken, DateTime expiresAt)
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.Response == null)
+            return Task.CompletedTask;
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true, // Prevent JavaScript access (XSS protection)
+            Secure = httpContext.Request.IsHttps, // Only send over HTTPS in production
+            SameSite = SameSiteMode.Strict, // CSRF protection
+            IsEssential = true, // Required for GDPR compliance
+            Expires = expiresAt
+        };
+
+        // Access token cookie (shorter expiration)
+        httpContext.Response.Cookies.Append(ACCESS_TOKEN_COOKIE, accessToken, cookieOptions);
+
+        // Refresh token cookie (longer expiration - 7 days)
+        var refreshCookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = httpContext.Request.IsHttps,
+            SameSite = SameSiteMode.Strict,
+            IsEssential = true,
+            Expires = DateTime.UtcNow.AddDays(7) // Match refresh token expiration
+        };
+        httpContext.Response.Cookies.Append(REFRESH_TOKEN_COOKIE, refreshToken, refreshCookieOptions);
+
+        // Expiration timestamp cookie
+        httpContext.Response.Cookies.Append(TOKEN_EXPIRES_COOKIE, expiresAt.ToString("O"), cookieOptions);
+
+        return Task.CompletedTask;
+    }
+
+    public Task ClearTokensAsync()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.Response == null)
+            return Task.CompletedTask;
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = httpContext.Request.IsHttps,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddDays(-1) // Expire immediately
+        };
+
+        httpContext.Response.Cookies.Append(ACCESS_TOKEN_COOKIE, string.Empty, cookieOptions);
+        httpContext.Response.Cookies.Append(REFRESH_TOKEN_COOKIE, string.Empty, cookieOptions);
+        httpContext.Response.Cookies.Append(TOKEN_EXPIRES_COOKIE, string.Empty, cookieOptions);
+
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> IsTokenExpiredAsync()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.Request == null)
+            return Task.FromResult(true);
+
+        var expiresAtString = httpContext.Request.Cookies[TOKEN_EXPIRES_COOKIE];
+        if (string.IsNullOrEmpty(expiresAtString))
+            return Task.FromResult(true);
+
+        if (DateTime.TryParse(expiresAtString, out var expiresAt))
+        {
+            return Task.FromResult(DateTime.UtcNow >= expiresAt);
+        }
+
+        return Task.FromResult(true);
+    }
+}
+

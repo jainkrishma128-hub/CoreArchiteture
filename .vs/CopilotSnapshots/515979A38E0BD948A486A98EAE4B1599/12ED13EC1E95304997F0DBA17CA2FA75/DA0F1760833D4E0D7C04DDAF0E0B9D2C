@@ -1,0 +1,9 @@
+﻿using System;
+
+namespace CommonArchitecture.Application.Queries;
+
+public interface ICacheableQuery
+{
+    string CacheKey { get; }
+    TimeSpan? SlidingExpiration { get; }
+}

@@ -1,0 +1,14 @@
+﻿using CommonArchitecture.Application.DTOs;
+using MediatR;
+
+namespace CommonArchitecture.Application.Queries.RoleMenus.GetRoleMenusByRole;
+
+public class GetRoleMenusByRoleQuery : IRequest<RoleMenuPermissionsDto?>
+{
+ public int RoleId { get; set; }
+
+ public GetRoleMenusByRoleQuery(int roleId)
+ {
+ RoleId = roleId;
+ }
+}

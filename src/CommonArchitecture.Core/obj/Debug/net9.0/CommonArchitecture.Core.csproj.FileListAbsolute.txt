@@ -1,0 +1,35 @@
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\bin\Debug\net9.0\CommonArchitecture.Core.deps.json
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\bin\Debug\net9.0\CommonArchitecture.Core.dll
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\bin\Debug\net9.0\CommonArchitecture.Core.pdb
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.AssemblyInfoInputs.cache
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.AssemblyInfo.cs
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.csproj.CoreCompileInputs.cache
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.sourcelink.json
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.dll
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\obj\Debug\net9.0\refint\CommonArchitecture.Core.dll
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.pdb
+D:\My Archi\Interface Repository\src\CommonArchitecture.Core\obj\Debug\net9.0\ref\CommonArchitecture.Core.dll
+D:\My Archi\ADO\src\CommonArchitecture.Core\bin\Debug\net9.0\CommonArchitecture.Core.deps.json
+D:\My Archi\ADO\src\CommonArchitecture.Core\bin\Debug\net9.0\CommonArchitecture.Core.dll
+D:\My Archi\ADO\src\CommonArchitecture.Core\bin\Debug\net9.0\CommonArchitecture.Core.pdb
+D:\My Archi\ADO\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\My Archi\ADO\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.AssemblyInfoInputs.cache
+D:\My Archi\ADO\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.AssemblyInfo.cs
+D:\My Archi\ADO\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.csproj.CoreCompileInputs.cache
+D:\My Archi\ADO\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.sourcelink.json
+D:\My Archi\ADO\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.dll
+D:\My Archi\ADO\src\CommonArchitecture.Core\obj\Debug\net9.0\refint\CommonArchitecture.Core.dll
+D:\My Archi\ADO\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.pdb
+D:\My Archi\ADO\src\CommonArchitecture.Core\obj\Debug\net9.0\ref\CommonArchitecture.Core.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\bin\Debug\net9.0\CommonArchitecture.Core.deps.json
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\bin\Debug\net9.0\CommonArchitecture.Core.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\bin\Debug\net9.0\CommonArchitecture.Core.pdb
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.AssemblyInfoInputs.cache
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.AssemblyInfo.cs
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.csproj.CoreCompileInputs.cache
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\refint\CommonArchitecture.Core.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.pdb
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\ref\CommonArchitecture.Core.dll

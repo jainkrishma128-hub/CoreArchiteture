@@ -1,0 +1,121 @@
+﻿using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Web.Services;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace CommonArchitecture.Web.Handlers
+{
+ public class RefreshTokenHandler : DelegatingHandler
+ {
+ private readonly ITokenStorageService _tokenStorageService;
+ private readonly IAuthApiService _authApiService;
+ private readonly SemaphoreSlim _refreshLock = new SemaphoreSlim(1,1);
+
+ public RefreshTokenHandler(ITokenStorageService tokenStorageService, IAuthApiService authApiService)
+ {
+ _tokenStorageService = tokenStorageService;
+ _authApiService = authApiService;
+ }
+
+ protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+ {
+ // Attach access token if present
+ var accessToken = await _tokenStorageService.GetAccessTokenAsync();
+ if (!string.IsNullOrEmpty(accessToken))
+ {
+ request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+ }
+
+ // Buffer request content so we can retry if needed
+ byte[]? contentBytes = null;
+ if (request.Content != null)
+ {
+ contentBytes = await request.Content.ReadAsByteArrayAsync(cancellationToken);
+ }
+
+ var response = await base.SendAsync(request, cancellationToken);
+
+ if (response.StatusCode != HttpStatusCode.Unauthorized)
+ {
+ return response;
+ }
+
+ //401 - try refresh once, ensure only one refresh runs at a time
+ await _refreshLock.WaitAsync(cancellationToken);
+ try
+ {
+ // Another thread might have refreshed the token while we waited
+ var currentAccess = await _tokenStorageService.GetAccessTokenAsync();
+ if (!string.IsNullOrEmpty(currentAccess))
+ {
+ var retryWithCurrent = CloneRequest(request, contentBytes);
+ retryWithCurrent.Headers.Authorization = new AuthenticationHeaderValue("Bearer", currentAccess);
+ var retryResp = await base.SendAsync(retryWithCurrent, cancellationToken);
+ if (retryResp.StatusCode != HttpStatusCode.Unauthorized)
+ {
+ return retryResp;
+ }
+ }
+
+ // Perform refresh
+ var refreshToken = await _tokenStorageService.GetRefreshTokenAsync();
+ if (string.IsNullOrEmpty(refreshToken))
+ {
+ return response; // can't refresh
+ }
+
+ var refreshResp = await _authApiService.RefreshTokenAsync(new RefreshTokenRequestDto { RefreshToken = refreshToken });
+ if (refreshResp == null || !refreshResp.Success || string.IsNullOrEmpty(refreshResp.AccessToken))
+ {
+ return response; // refresh failed
+ }
+
+ // Save new tokens
+ await _tokenStorageService.SaveTokensAsync(
+ refreshResp.AccessToken,
+ refreshResp.RefreshToken ?? refreshToken,
+ refreshResp.ExpiresAt ?? DateTime.UtcNow.AddMinutes(15));
+
+ // Retry original request with new token
+ var retry = CloneRequest(request, contentBytes);
+ retry.Headers.Authorization = new AuthenticationHeaderValue("Bearer", refreshResp.AccessToken);
+ return await base.SendAsync(retry, cancellationToken);
+ }
+ finally
+ {
+ _refreshLock.Release();
+ }
+ }
+
+ private static HttpRequestMessage CloneRequest(HttpRequestMessage request, byte[]? contentBytes)
+ {
+ var clone = new HttpRequestMessage(request.Method, request.RequestUri)
+ {
+ Version = request.Version
+ };
+
+ // Copy content if present
+ if (contentBytes != null)
+ {
+ clone.Content = new ByteArrayContent(contentBytes);
+ if (request.Content?.Headers != null)
+ {
+ foreach (var header in request.Content.Headers)
+ {
+ clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+ }
+ }
+ }
+
+ // Copy headers
+ foreach (var header in request.Headers)
+ {
+ clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+ }
+
+ return clone;
+ }
+ }
+}

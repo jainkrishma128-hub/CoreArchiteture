@@ -1,0 +1,33 @@
+﻿using CommonArchitecture.Core.DTOs;
+using CommonArchitecture.Core.Interfaces;
+
+namespace CommonArchitecture.Application.Services;
+
+public class DashboardService : IDashboardService
+{
+ private readonly IUserRepository _userRepository;
+ private readonly ILoggingService _loggingService;
+
+ public DashboardService(IUserRepository userRepository, ILoggingService loggingService)
+ {
+ _userRepository = userRepository;
+ _logging_service = loggingService; // fix: local
+ }
+
+ public async Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken cancellationToken = default)
+ {
+ var to = DateTime.UtcNow;
+ var from = to.AddDays(-30);
+
+ var registrations = await _userRepository.GetDailyRegistrationsAsync(from, to);
+ var (apiCalls, statusDist, avgDuration) = await _logging_service.GetDashboardStatsAsync(from, to);
+
+ return new DashboardStatsDto
+ {
+ UserRegistrations = registrations,
+ ApiCalls = apiCalls,
+ StatusCodes = statusDist,
+ AverageResponseTime = avgDuration
+ };
+ }
+}

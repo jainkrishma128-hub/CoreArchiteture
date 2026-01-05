@@ -1,0 +1,118 @@
+﻿using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+
+namespace CommonArchitecture.Web.Services;
+
+public class JwtTokenHandler : DelegatingHandler
+{
+    private readonly ITokenStorageService _tokenStorageService;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<JwtTokenHandler> _logger;
+
+    public JwtTokenHandler(
+        ITokenStorageService tokenStorageService,
+        IHttpClientFactory httpClientFactory,
+        IConfiguration configuration,
+        ILogger<JwtTokenHandler> logger)
+    {
+        _tokenStorageService = tokenStorageService;
+        _httpClientFactory = httpClientFactory;
+        _configuration = configuration;
+        _logger = logger;
+    }
+
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        // Skip token for auth endpoints
+        if (request.RequestUri?.AbsolutePath.Contains("/api/auth/") == true)
+        {
+            return await base.SendAsync(request, cancellationToken);
+        }
+
+        // Get access token
+        var accessToken = await _tokenStorageService.GetAccessTokenAsync();
+
+        // Check if token is expired and try to refresh
+        if (string.IsNullOrEmpty(accessToken) || await _tokenStorageService.IsTokenExpiredAsync())
+        {
+            accessToken = await RefreshTokenIfNeededAsync();
+        }
+
+        // Add token to request if available
+        if (!string.IsNullOrEmpty(accessToken))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        }
+
+        var response = await base.SendAsync(request, cancellationToken);
+
+        // If unauthorized, try to refresh token once and retry
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            var refreshedToken = await RefreshTokenIfNeededAsync();
+            if (!string.IsNullOrEmpty(refreshedToken))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", refreshedToken);
+                response = await base.SendAsync(request, cancellationToken);
+            }
+        }
+
+        return response;
+    }
+
+    private async Task<string?> RefreshTokenIfNeededAsync()
+    {
+        try
+        {
+            var refreshToken = await _tokenStorageService.GetRefreshTokenAsync();
+            if (string.IsNullOrEmpty(refreshToken))
+                return null;
+
+            // Create a new HttpClient for refresh token request (to avoid circular dependency)
+            var httpClient = _httpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(_configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5089");
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            var refreshRequest = new CommonArchitecture.Application.DTOs.RefreshTokenRequestDto
+            {
+                RefreshToken = refreshToken
+            };
+
+            var json = JsonSerializer.Serialize(refreshRequest);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            
+            var response = await httpClient.PostAsync("/api/auth/refresh-token", content);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var refreshResponse = JsonSerializer.Deserialize<CommonArchitecture.Application.DTOs.RefreshTokenResponseDto>(
+                    responseContent, 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                if (refreshResponse?.Success == true && 
+                    !string.IsNullOrEmpty(refreshResponse.AccessToken) && 
+                    !string.IsNullOrEmpty(refreshResponse.RefreshToken))
+                {
+                    await _tokenStorageService.SaveTokensAsync(
+                        refreshResponse.AccessToken,
+                        refreshResponse.RefreshToken,
+                        refreshResponse.ExpiresAt ?? DateTime.UtcNow.AddMinutes(15));
+
+                    return refreshResponse.AccessToken;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error refreshing token");
+        }
+
+        return null;
+    }
+}
+

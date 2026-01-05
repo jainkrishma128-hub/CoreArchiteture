@@ -1,0 +1,13 @@
+﻿using CommonArchitecture.Application.DTOs;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Users.CreateUser;
+
+public record CreateUserCommand(
+    string Name,
+    string Email,
+    string Mobile,
+    int RoleId,
+    string? ProfileImagePath
+) : IRequest<UserDto>;
+

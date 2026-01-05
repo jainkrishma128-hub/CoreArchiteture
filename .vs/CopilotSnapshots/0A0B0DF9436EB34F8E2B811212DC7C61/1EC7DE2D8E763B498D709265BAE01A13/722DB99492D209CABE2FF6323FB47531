@@ -1,0 +1,79 @@
+﻿using CommonArchitecture.Application.DTOs;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace CommonArchitecture.Web.Services
+{
+ public class TokenService : ITokenService
+ {
+ private readonly IHttpContextAccessor _httpContextAccessor;
+ private readonly IServiceProvider _serviceProvider;
+ private const string ACCESS_TOKEN_KEY = "AccessToken";
+ private const string REFRESH_TOKEN_KEY = "RefreshToken";
+ private const string ACCESS_EXPIRES_AT_KEY = "AccessTokenExpiresAt";
+
+ public TokenService(IHttpContextAccessor httpContextAccessor, IServiceProvider serviceProvider)
+ {
+ _httpContextAccessor = httpContextAccessor;
+ _serviceProvider = serviceProvider;
+ }
+
+ public Task<string?> GetAccessTokenAsync()
+ {
+ var ctx = _httpContextAccessor.HttpContext;
+ if (ctx == null) return Task.FromResult<string?>(null);
+ if (ctx.Session.TryGetValue(ACCESS_TOKEN_KEY, out var data))
+ {
+ var token = System.Text.Encoding.UTF8.GetString(data);
+ return Task.FromResult<string?>(token);
+ }
+ return Task.FromResult<string?>(null);
+ }
+
+ public Task<string?> GetRefreshTokenAsync()
+ {
+ var ctx = _httpContextAccessor.HttpContext;
+ if (ctx == null) return Task.FromResult<string?>(null);
+ if (ctx.Session.TryGetValue(REFRESH_TOKEN_KEY, out var data))
+ {
+ var token = System.Text.Encoding.UTF8.GetString(data);
+ return Task.FromResult<string?>(token);
+ }
+ return Task.FromResult<string?>(null);
+ }
+
+ public async Task<bool> RefreshTokensAsync()
+ {
+ var ctx = _httpContextAccessor.HttpContext;
+ if (ctx == null) return false;
+ var refreshToken = await GetRefreshTokenAsync();
+ if (string.IsNullOrEmpty(refreshToken)) return false;
+
+ using var scope = _serviceProvider.CreateScope();
+ var authApi = scope.ServiceProvider.GetRequiredService<CommonArchitecture.Web.Services.IAuthApiService>();
+ var resp = await authApi.RefreshTokenAsync(new RefreshTokenRequestDto { RefreshToken = refreshToken });
+ if (resp == null || !resp.Success)
+ {
+ return false;
+ }
+
+ await SetTokensAsync(resp.AccessToken!, resp.RefreshToken!, resp.ExpiresAt);
+ return true;
+ }
+
+ public Task SetTokensAsync(string accessToken, string refreshToken, DateTime? accessTokenExpiresAt = null)
+ {
+ var ctx = _httpContextAccessor.HttpContext;
+ if (ctx == null) return Task.CompletedTask;
+ ctx.Session.SetString(ACCESS_TOKEN_KEY, accessToken ?? string.Empty);
+ ctx.Session.SetString(REFRESH_TOKEN_KEY, refreshToken ?? string.Empty);
+ if (accessTokenExpiresAt.HasValue)
+ ctx.Session.SetString(ACCESS_EXPIRES_AT_KEY, accessTokenExpiresAt.Value.ToString("o"));
+ return Task.CompletedTask;
+ }
+ }
+}

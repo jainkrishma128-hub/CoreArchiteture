@@ -1,0 +1,77 @@
+﻿using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.RoleMenus.UpdateRoleMenuPermissions;
+
+public class UpdateRoleMenuPermissionsCommandHandler : IRequestHandler<UpdateRoleMenuPermissionsCommand, bool>
+{
+ private readonly IRoleMenuRepository _roleMenuRepository;
+ private readonly IRoleRepository _roleRepository;
+ private readonly IMenuRepository _menuRepository;
+
+ public UpdateRoleMenuPermissionsCommandHandler(
+ IRoleMenuRepository roleMenuRepository,
+ IRoleRepository roleRepository,
+ IMenuRepository menuRepository)
+ {
+ _roleMenuRepository = roleMenuRepository;
+ _roleRepository = roleRepository;
+ _menuRepository = menuRepository;
+ }
+
+ public async Task<bool> Handle(UpdateRoleMenuPermissionsCommand request, CancellationToken cancellationToken)
+ {
+ var role = await _roleRepository.GetByIdAsync(request.RoleId);
+ if (role == null) return false;
+
+ // Get existing role-menu mappings
+ var existingPermissions = await _roleMenuRepository.GetByRoleIdAsync(request.RoleId);
+ var existingMenuIds = existingPermissions.Select(x => x.MenuId).ToList();
+
+ // Handle deletions - remove permissions that are no longer in the request
+ foreach (var existingPerm in existingPermissions)
+ {
+ if (!request.MenuPermissions.Any(x => x.MenuId == existingPerm.MenuId))
+ {
+ await _roleMenuRepository.DeleteAsync(existingPerm.Id);
+ }
+ }
+
+ // Handle additions and updates
+ foreach (var permission in request.MenuPermissions)
+ {
+ var existing = await _roleMenuRepository.GetByRoleAndMenuAsync(request.RoleId, permission.MenuId);
+
+ if (existing == null)
+ {
+ // Create new permission
+ var roleMenu = new RoleMenu
+ {
+ RoleId = request.RoleId,
+ MenuId = permission.MenuId,
+ CanCreate = permission.CanCreate,
+ CanRead = permission.CanRead,
+ CanUpdate = permission.CanUpdate,
+ CanDelete = permission.CanDelete,
+ CanExecute = permission.CanExecute,
+ CreatedAt = DateTime.UtcNow
+ };
+ await _roleMenuRepository.AddAsync(roleMenu);
+ }
+ else
+ {
+ // Update existing permission
+ existing.CanCreate = permission.CanCreate;
+ existing.CanRead = permission.CanRead;
+ existing.CanUpdate = permission.CanUpdate;
+ existing.CanDelete = permission.CanDelete;
+ existing.CanExecute = permission.CanExecute;
+ existing.UpdatedAt = DateTime.UtcNow;
+ await _roleMenuRepository.UpdateAsync(existing);
+ }
+ }
+
+ return true;
+ }
+}

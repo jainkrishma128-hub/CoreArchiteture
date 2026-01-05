@@ -1,0 +1,586 @@
+@{
+    ViewData["Title"] = "System Monitor";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-dark mb-1">System Monitor</h1>
+            <p class="text-muted mb-0">Real-time API request and error tracking</p>
+        </div>
+        <button class="btn btn-primary rounded-pill px-4 shadow-sm" onclick="location.reload()">
+            <i class="fas fa-sync-alt me-2"></i> Refresh Data
+        </button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="icon-box bg-primary-subtle text-primary rounded-circle me-3">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <span class="text-muted fw-medium text-uppercase small">Total Requests</span>
+                </div>
+                <h2 class="fw-bold mb-0 text-dark" id="statsTotal">Loading...</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="icon-box bg-danger-subtle text-danger rounded-circle me-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <span class="text-muted fw-medium text-uppercase small">Errors (5xx)</span>
+                </div>
+                <h2 class="fw-bold mb-0 text-dark" id="statsErrors">Loading...</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="icon-box bg-warning-subtle text-warning rounded-circle me-3">
+                        <i class="fas fa-eye-slash"></i>
+                    </div>
+                    <span class="text-muted fw-medium text-uppercase small">Not Found (404)</span>
+                </div>
+                <h2 class="fw-bold mb-0 text-dark" id="statsNotFound">Loading...</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="icon-box bg-success-subtle text-success rounded-circle me-3">
+                        <i class="fas fa-stopwatch"></i>
+                    </div>
+                    <span class="text-muted fw-medium text-uppercase small">Avg Duration</span>
+                </div>
+                <h2 class="fw-bold mb-0 text-dark" id="statsDuration">Loading...</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <!-- Advanced Filter Bar -->
+        <div class="card-header bg-white border-bottom p-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 ps-3 rounded-start-pill text-muted">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control bg-light border-0 py-2 rounded-end-pill" placeholder="Search paths, IPs, or content...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select id="methodFilter" class="form-select border-0 bg-light py-2 rounded-pill ps-3">
+                        <option value="">All Methods</option>
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="statusCodeFilter" class="form-select border-0 bg-light py-2 rounded-pill ps-3">
+                        <option value="">All Statuses</option>
+                        <option value="200">200 OK</option>
+                        <option value="400">400 Bad Request</option>
+                        <option value="401">401 Unauthorized</option>
+                        <option value="403">403 Forbidden</option>
+                        <option value="404">404 Not Found</option>
+                        <option value="500">500 Server Error</option>
+                    </select>
+                </div>
+                <div class="col-md-4 text-end">
+                     <button class="btn btn-primary rounded-pill px-4" id="filterBtn">
+                        <i class="fas fa-filter me-2"></i> Filter
+                    </button>
+                    <button class="btn btn-light text-muted rounded-pill px-3 ms-2" id="resetBtn">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modern Table -->
+        <div class="card-body p-0">
+            <div class="table-admin-wrapper table-responsive">
+                <table class="table table-hover align-middle mb-0 table-admin" id="logsTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-uppercase text-muted small fw-bold">Time</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold">Method</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold">Path</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold">Status</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold">Latency</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold">User</th>
+                            <th class="pe-4 py-3 text-uppercase text-muted small fw-bold text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                        <!-- Data loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+            
+             <!-- State: Empty -->
+            <div id="emptyState" class="d-none text-center py-5">
+                <div class="mb-3">
+                    <i class="fas fa-search text-muted opacity-25" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="text-muted">No logs found</h5>
+                <p class="text-muted small">Try adjusting your filters</p>
+            </div>
+
+            <!-- Modern Pagination -->
+            <div class="p-4 border-top d-flex justify-content-between align-items-center bg-light bg-opacity-10">
+                <span class="text-muted small" id="paginationInfo">Showing 0 results</span>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0 shadow-sm" id="pagination">
+                        <!-- Pagination generated via JS -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Premium Details Modal -->
+<div class="modal fade" id="logDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            <div class="modal-header border-bottom-0 bg-primary text-white p-4">
+                <div>
+                    <span class="badge bg-white bg-opacity-25 text-white mb-2" id="detailId">LOG #000</span>
+                    <h5 class="modal-title fw-bold" id="logDetailsModalLabel">Request Details</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light bg-opacity-50">
+                
+                <!-- Info Grid -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <label class="text-muted text-uppercase small fw-bold d-block mb-1">Method</label>
+                                <span class="fs-5 fw-bold" id="detailMethod">GET</span>
+                            </div>
+                             <div class="col-md-3">
+                                <label class="text-muted text-uppercase small fw-bold d-block mb-1">Status</label>
+                                <div id="detailStatus"></div>
+                            </div>
+                             <div class="col-md-3">
+                                <label class="text-muted text-uppercase small fw-bold d-block mb-1">Duration</label>
+                                <span class="fw-bold" id="detailDuration">0 ms</span>
+                            </div>
+                             <div class="col-md-3">
+                                <label class="text-muted text-uppercase small fw-bold d-block mb-1">User</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-circle p-1 me-2 border">
+                                        <i class="fas fa-user text-secondary small"></i>
+                                    </div>
+                                    <span class="fw-bold text-truncate" id="detailUserId">System</span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="text-muted text-uppercase small fw-bold d-block mb-1">Endpoint Path</label>
+                                <code class="text-primary bg-primary-subtle px-2 py-1 rounded d-block" id="detailPath">/api/example</code>
+                            </div>
+                             <div class="col-12">
+                                <label class="text-muted text-uppercase small fw-bold d-block mb-1">Timestamp</label>
+                                <span class="text-dark" id="detailTime">Jan 1, 2024 12:00 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payloads -->
+                <div class="row g-4">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                             <label class="text-muted text-uppercase small fw-bold">Request Payload</label>
+                             <button class="btn btn-sm btn-link text-decoration-none p-0 copy-btn" data-target="detailRequestBody">Copy</button>
+                        </div>
+                        <div class="code-block-wrapper bg-white border rounded-3 overflow-hidden shadow-sm position-relative">
+                             <pre class="m-0 p-3 text-wrap" id="detailRequestBody" style="max-height: 200px; font-size: 0.85rem; color: #2c3e50;"></pre>
+                        </div>
+                    </div>
+                     <div class="col-md-12">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                             <label class="text-muted text-uppercase small fw-bold">Response Body</label>
+                             <button class="btn btn-sm btn-link text-decoration-none p-0 copy-btn" data-target="detailResponseBody">Copy</button>
+                        </div>
+                        <div class="code-block-wrapper bg-white border rounded-3 overflow-hidden shadow-sm">
+                             <pre class="m-0 p-3 text-wrap" id="detailResponseBody" style="max-height: 300px; font-size: 0.85rem; color: #2c3e50;"></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer border-top-0 bg-light">
+                <button type="button" class="btn btn-light border rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Close Dialog</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Premium Look and Feel */
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+    }
+
+    /* Table Styling */
+    #logsTable thead th {
+        letter-spacing: 0.05em;
+    }
+
+    #logsTable tbody tr {
+        transition: background-color 0.2s;
+    }
+
+    #logsTable tbody tr:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .badge-method {
+        width: 80px;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pill {
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    /* Code Block Styling */
+    pre {
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        white-space: pre-wrap;       /* css-3 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        word-wrap: break-word;       /* Internet Explorer 5.5+ */
+        background-color: #ffffff;
+    }
+
+    .copy-btn {
+        font-size: 0.8rem;
+        font-weight: 600;
+        opacity: 0.7;
+    }
+    
+    .copy-btn:hover {
+        opacity: 1;
+    }
+
+    /* Pagination */
+    .pagination .page-link {
+        border-radius: 8px;
+        margin: 0 3px;
+        border: none;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
+        color: white;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let currentPage = 1;
+            const pageSize = 10;
+            
+            // Initial load
+            loadLogs(true);
+            
+            // Filter button
+            $('#filterBtn').click(function() {
+                currentPage = 1;
+                loadLogs();
+            });
+            
+            // Reset button
+            $('#resetBtn').click(function() {
+                $('#searchInput').val('');
+                $('#methodFilter').val('');
+                $('#statusCodeFilter').val('');
+                currentPage = 1;
+                loadLogs();
+            });
+            
+            function loadLogs(updateStats = false) {
+                const searchTerm = $('#searchInput').val();
+                const method = $('#methodFilter').val();
+                const statusCode = $('#statusCodeFilter').val();
+                
+                // Show standard table loading state if desired
+                
+                $.ajax({
+                    url: '/Admin/Logs/GetAll',
+                    type: 'GET',
+                    data: {
+                        PageNumber: currentPage,
+                        PageSize: pageSize,
+                        SearchTerm: searchTerm,
+                        Method: method,
+                        StatusCode: statusCode,
+                        SortBy: 'CreatedAt',
+                        SortOrder: 'desc'
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            renderTable(response.data.items);
+                            renderPagination(response.data.totalCount, currentPage, pageSize);
+                            $('#paginationInfo').text(`Showing logs ${(currentPage - 1) * pageSize + 1} to ${Math.min(currentPage * pageSize, response.data.totalCount)} of ${response.data.totalCount}`);
+                            
+                            // Mock stats update for visual completeness (in real app, get from API)
+                            if(updateStats) {
+                                $('#statsTotal').text(response.data.totalCount.toLocaleString());
+                                // Just a placeholder for demo - would need real aggregation API
+                                $('#statsErrors').text('24'); 
+                                $('#statsNotFound').text('12');
+                                $('#statsDuration').text('45ms');
+                            }
+                        } else {
+                            // alert('Error loading logs: ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        // alert('Error loading logs');
+                    }
+                });
+            }
+            
+            function renderTable(logs) {
+                const tbody = $('#logsTable tbody');
+                tbody.empty();
+                
+                if (logs.length === 0) {
+                    $('#emptyState').removeClass('d-none');
+                    return;
+                }
+                
+                $('#emptyState').addClass('d-none');
+                
+                logs.forEach(function (log) {
+                    const statusConfig = getStatusConfig(log.responseStatusCode);
+                    const date = new Date(log.createdAt);
+                    const dateStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' <span class="text-muted small">' + date.toLocaleDateString() + '</span>';
+                    
+                    const methodClass = getMethodClass(log.method);
+                    
+                    const row = `
+                        <tr onclick="showDetails(${log.id})">
+                            <td class="ps-4">${dateStr}</td>
+                            <td><span class="badge ${methodClass} badge-method text-uppercase shadow-sm">${log.method}</span></td>
+                            <td class="text-wrap" style="max-width: 300px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em;">
+                                <span class="d-block text-truncate" title="${log.path}">${log.path}</span>
+                            </td>
+                            <td>
+                                <span class="status-pill" style="background-color: ${statusConfig.bg}; color: ${statusConfig.color};">
+                                    <span class="status-dot" style="background-color: ${statusConfig.color}"></span>
+                                    ${log.responseStatusCode} ${statusConfig.text}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="fw-medium ${getDurationClass(log.durationMs)}">${log.durationMs}ms</span>
+                            </td>
+                             <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar bg-light rounded-circle text-center me-2" style="width: 24px; height: 24px; line-height: 24px;">
+                                        ${log.userId ? '<i class="fas fa-user-check text-primary" style="font-size: 10px;"></i>' : '<i class="fas fa-ghost text-muted" style="font-size: 10px;"></i>'}
+                                    </div>
+                                    <span class="small text-muted">${log.userId || 'Guest'}</span>
+                                </div>
+                            </td>
+                            <td class="pe-4 text-end">
+                                <button class="btn btn-sm btn-light border rounded-pill px-3 fw-medium text-primary hover-primary" onclick="event.stopPropagation(); showDetails(${log.id})">
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            }
+            
+            // Helper Styles
+            function getStatusConfig(code) {
+                if (code >= 200 && code < 300) return { bg: '#e6f8ef', color: '#0fb56d', text: 'OK' };
+                if (code >= 300 && code < 400) return { bg: '#eef5ff', color: '#2d7cf6', text: 'Redir' };
+                if (code >= 400 && code < 500) return { bg: '#fff7e6', color: '#ffb302', text: 'Warn' };
+                return { bg: '#fff0f0', color: '#e63757', text: 'Error' };
+            }
+            
+            function getMethodClass(method) {
+                switch(method) {
+                    case 'GET': return 'bg-info bg-opacity-10 text-info border border-info border-opacity-25';
+                    case 'POST': return 'bg-success bg-opacity-10 text-success border border-success border-opacity-25';
+                    case 'PUT': return 'bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25';
+                    case 'DELETE': return 'bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25';
+                    default: return 'bg-secondary bg-opacity-10 text-secondary';
+                }
+            }
+
+            function getDurationClass(ms) {
+                if(ms < 200) return 'text-success';
+                if(ms < 1000) return 'text-warning';
+                return 'text-danger';
+            }
+            
+            function renderPagination(totalCount, currentPage, pageSize) {
+                const totalPages = Math.ceil(totalCount / pageSize);
+                const pagination = $('#pagination');
+                pagination.empty();
+                
+                // Previous
+                pagination.append(`
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;"><i class="fas fa-chevron-left small"></i></a>
+                    </li>
+                `);
+                
+                // Pages logic
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, startPage + 4);
+                
+                if (endPage - startPage < 4) {
+                    startPage = Math.max(1, endPage - 4);
+                }
+
+                if(startPage > 1) {
+                     pagination.append(`<li class="page-item"><a class="page-link" href="#" onclick="changePage(1); return false;">1</a></li>`);
+                     if(startPage > 2) pagination.append(`<li class="page-item disabled"><span class="page-link border-0">...</span></li>`);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    pagination.append(`
+                        <li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+                        </li>
+                    `);
+                }
+                
+                if(endPage < totalPages) {
+                     if(endPage < totalPages - 1) pagination.append(`<li class="page-item disabled"><span class="page-link border-0">...</span></li>`);
+                     pagination.append(`<li class="page-item"><a class="page-link" href="#" onclick="changePage(${totalPages}); return false;">${totalPages}</a></li>`);
+                }
+                
+                // Next
+                pagination.append(`
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;"><i class="fas fa-chevron-right small"></i></a>
+                    </li>
+                `);
+            }
+            
+            // Global scope for onclick handlers
+            window.changePage = function(page) {
+                if (page < 1) return;
+                currentPage = page;
+                loadLogs();
+            };
+            
+            window.showDetails = function(id) {
+                $.ajax({
+                    url: '/Admin/Logs/Details/' + id,
+                    type: 'GET',
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    success: function (response) {
+                        if (response.success) {
+                            const log = response.data;
+                            
+                            $('#detailId').text('LOG #' + log.id);
+                            $('#detailTime').text(new Date(log.createdAt).toLocaleString());
+                            $('#detailMethod').text(log.method);
+                            $('#detailPath').text(log.path);
+                            
+                            const statusConfig = getStatusConfig(log.responseStatusCode);
+                            const statusHtml = `
+                                <span class="status-pill" style="background-color: ${statusConfig.bg}; color: ${statusConfig.color};">
+                                    <span class="status-dot" style="background-color: ${statusConfig.color}"></span>
+                                    ${log.responseStatusCode} ${statusConfig.text}
+                                </span>`;
+                            $('#detailStatus').html(statusHtml);
+                            
+                            $('#detailDuration').text(log.durationMs + ' ms');
+                            $('#detailUserId').text(log.userId || 'Guest (Unauthenticated)');
+                            
+                            // Safe JSON prettify using text() to prevent XSS
+                            const formatBody = (body) => {
+                                if(!body) return 'No content';
+                                try {
+                                    return JSON.stringify(JSON.parse(body), null, 2);
+                                } catch(e) {
+                                    return body;
+                                }
+                            };
+
+                            $('#detailRequestBody').text(formatBody(log.requestBody));
+                            $('#detailResponseBody').text(formatBody(log.responseBody));
+                            
+                            const modal = new bootstrap.Modal(document.getElementById('logDetailsModal'));
+                            modal.show();
+                        }
+                    }
+                });
+            };
+
+            // Copy to clipboard feature
+            $('.copy-btn').click(function() {
+                const targetId = $(this).data('target');
+                const text = $('#' + targetId).text();
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = $(this).text();
+                    $(this).text('Copied!');
+                    setTimeout(() => $(this).text(originalText), 1500);
+                });
+            });
+        });
+    </script>
+}

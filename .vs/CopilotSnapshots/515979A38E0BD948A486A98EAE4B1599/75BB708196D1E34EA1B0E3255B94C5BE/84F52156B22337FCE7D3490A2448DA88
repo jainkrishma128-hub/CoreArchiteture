@@ -1,0 +1,87 @@
+﻿using CommonArchitecture.Application.Commands.Roles.CreateRole;
+using CommonArchitecture.Application.Commands.Roles.DeleteRole;
+using CommonArchitecture.Application.Commands.Roles.UpdateRole;
+using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Application.Queries.Roles.GetAllRoles;
+using CommonArchitecture.Application.Queries.Roles.GetRoleById;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CommonArchitecture.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class RolesController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    public RolesController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<ActionResult<PaginatedResult<RoleDto>>> GetAll([FromQuery] RoleQueryParameters parameters)
+    {
+        var query = new GetAllRolesQuery(parameters);
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("{id}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<RoleDto>> GetById(int id)
+    {
+        var query = new GetRoleByIdQuery(id);
+        var role = await _mediator.Send(query);
+        
+        if (role == null)
+            return NotFound();
+
+        return Ok(role);
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<ActionResult<RoleDto>> Create(CreateRoleDto createDto)
+    {
+        var command = new CreateRoleCommand(
+            createDto.RoleName
+        );
+        
+        var role = await _mediator.Send(command);
+        return CreatedAtAction(nameof(GetById), new { id = role.Id }, role);
+    }
+
+    [HttpPut("{id}")]
+    [Authorize]
+    public async Task<IActionResult> Update(int id, UpdateRoleDto updateDto)
+    {
+        var command = new UpdateRoleCommand(
+            id,
+            updateDto.RoleName
+        );
+        
+        var result = await _mediator.Send(command);
+        if (!result)
+            return NotFound();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var command = new DeleteRoleCommand(id);
+        var result = await _mediator.Send(command);
+        
+        if (!result)
+            return NotFound();
+
+        return NoContent();
+    }
+}
+

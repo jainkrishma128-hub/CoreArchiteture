@@ -1,0 +1,113 @@
+using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using CommonArchitecture.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
+
+namespace CommonArchitecture.Infrastructure.Repositories;
+
+public class MenuRepository : IMenuRepository
+{
+ private readonly ApplicationDbContext _context;
+
+ private static readonly HashSet<string> AllowedSortFields = new(StringComparer.OrdinalIgnoreCase)
+ {
+ nameof(Menu.Id),
+ nameof(Menu.Name),
+ nameof(Menu.DisplayOrder),
+ nameof(Menu.CreatedAt)
+ };
+
+ public MenuRepository(ApplicationDbContext context)
+ {
+ _context = context;
+ }
+
+ public async Task<IEnumerable<Menu>> GetAllAsync()
+ {
+ return await _context.Menus
+ .Include(m => m.SubMenus)
+ .OrderBy(m => m.DisplayOrder)
+ .ToListAsync();
+ }
+
+ public async Task<Menu?> GetByIdAsync(int id)
+ {
+ return await _context.Menus
+ .Include(m => m.SubMenus)
+ .FirstOrDefaultAsync(m => m.Id == id);
+ }
+
+ public async Task<Menu> AddAsync(Menu menu)
+ {
+ _context.Menus.Add(menu);
+ // SaveChanges removed - UnitOfWork is responsible for persisting
+ return menu;
+ }
+
+ public async Task UpdateAsync(Menu menu)
+ {
+ _context.Menus.Update(menu);
+ // SaveChanges removed - UnitOfWork is responsible for persisting
+ }
+
+ public async Task DeleteAsync(int id)
+ {
+ var menu = await _context.Menus.FindAsync(id);
+ if (menu != null)
+ {
+ _context.Menus.Remove(menu);
+ // SaveChanges removed - UnitOfWork is responsible for persisting
+ }
+ }
+
+ public async Task<IEnumerable<Menu>> GetPagedAsync(string? searchTerm, string sortBy, string sortOrder, int pageNumber, int pageSize)
+ {
+ var query = _context.Menus.AsQueryable();
+ query = ApplySearchFilter(query, searchTerm);
+ query = ApplySorting(query, sortBy, sortOrder);
+
+ var menus = await query
+ .Skip((pageNumber -1) * pageSize)
+ .Take(pageSize)
+ .ToListAsync();
+
+ return menus;
+ }
+
+ public async Task<int> GetTotalCountAsync(string? searchTerm)
+ {
+ var query = _context.Menus.AsQueryable();
+ query = ApplySearchFilter(query, searchTerm);
+ return await query.CountAsync();
+ }
+
+ public async Task<IEnumerable<Menu>> GetByParentIdAsync(int? parentMenuId)
+ {
+ return await _context.Menus
+ .Where(m => m.ParentMenuId == parentMenuId)
+ .OrderBy(m => m.DisplayOrder)
+ .ToListAsync();
+ }
+
+ private static IQueryable<Menu> ApplySearchFilter(IQueryable<Menu> query, string? searchTerm)
+ {
+ if (!string.IsNullOrWhiteSpace(searchTerm))
+ {
+ query = query.Where(m => m.Name.Contains(searchTerm) || m.Url.Contains(searchTerm));
+ }
+ return query;
+ }
+
+ private static IQueryable<Menu> ApplySorting(IQueryable<Menu> query, string sortBy, string sortOrder)
+ {
+ if (string.IsNullOrWhiteSpace(sortBy) || !AllowedSortFields.Contains(sortBy))
+ {
+ sortBy = nameof(Menu.DisplayOrder);
+ }
+
+ var isDescending = sortOrder?.Equals("desc", StringComparison.OrdinalIgnoreCase) ?? false;
+ var orderByExpression = $"{sortBy} {(isDescending ? "descending" : "ascending")}";
+ return query.OrderBy(orderByExpression);
+ }
+}

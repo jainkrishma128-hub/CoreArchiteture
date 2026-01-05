@@ -1,0 +1,141 @@
+﻿using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using CommonArchitecture.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
+
+namespace CommonArchitecture.Infrastructure.Repositories;
+
+public class RoleRepository : IRoleRepository
+{
+    private readonly ApplicationDbContext _context;
+
+    // Whitelist of allowed sort fields to prevent injection attacks
+    private static readonly HashSet<string> AllowedSortFields = new(StringComparer.OrdinalIgnoreCase)
+    {
+        nameof(Role.Id),
+        nameof(Role.RoleName),
+        nameof(Role.CreatedAt)
+    };
+
+    public RoleRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Role>> GetAllAsync()
+    {
+        return await _context.Roles.ToListAsync();
+    }
+
+    public async Task<Role?> GetByIdAsync(int id)
+    {
+        return await _context.Roles.FindAsync(id);
+    }
+
+    public async Task<Role> AddAsync(Role role)
+    {
+        _context.Roles.Add(role);
+        await _context.SaveChangesAsync();
+        return role;
+    }
+
+    public async Task UpdateAsync(Role role)
+    {
+        _context.Roles.Update(role);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var role = await _context.Roles.FindAsync(id);
+        if (role != null)
+        {
+            _context.Roles.Remove(role);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// Retrieves a paginated list of roles with optional search and sorting.
+    /// </summary>
+    /// <param name="searchTerm">Optional search term to filter by role name</param>
+    /// <param name="sortBy">Field name to sort by (Id, RoleName, CreatedAt)</param>
+    /// <param name="sortOrder">Sort order: "asc" or "desc"</param>
+    /// <param name="pageNumber">Page number (1-based)</param>
+    /// <param name="pageSize">Number of items per page</param>
+    /// <returns>Paginated list of roles</returns>
+    public async Task<IEnumerable<Role>> GetPagedAsync(string? searchTerm, string sortBy, string sortOrder, int pageNumber, int pageSize)
+    {
+        var query = _context.Roles.AsQueryable();
+
+        // Apply search filter
+        query = ApplySearchFilter(query, searchTerm);
+
+        // Apply dynamic sorting using System.Linq.Dynamic.Core
+        query = ApplySorting(query, sortBy, sortOrder);
+
+        // Apply pagination
+        var roles = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return roles;
+    }
+
+    public async Task<int> GetTotalCountAsync(string? searchTerm)
+    {
+        var query = _context.Roles.AsQueryable();
+
+        // Apply search filter
+        query = ApplySearchFilter(query, searchTerm);
+
+        return await query.CountAsync();
+    }
+
+    /// <summary>
+    /// Applies search filter to the query.
+    /// Uses database collation (CI_AS in SQL Server) for case-insensitive search.
+    /// This allows proper index usage instead of forcing LOWER() which prevents index usage.
+    /// </summary>
+    private static IQueryable<Role> ApplySearchFilter(IQueryable<Role> query, string? searchTerm)
+    {
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            // Rely on database collation (CI_AS in SQL Server) for case-insensitive search
+            // This allows proper index usage instead of forcing LOWER() which prevents index usage
+            query = query.Where(r => r.RoleName.Contains(searchTerm));
+        }
+
+        return query;
+    }
+
+    /// <summary>
+    /// Applies dynamic sorting to the query using System.Linq.Dynamic.Core.
+    /// Validates sort field against whitelist to prevent injection attacks.
+    /// </summary>
+    /// <param name="query">The query to sort</param>
+    /// <param name="sortBy">Field name to sort by</param>
+    /// <param name="sortOrder">Sort order: "asc" or "desc"</param>
+    /// <returns>Sorted query</returns>
+    private static IQueryable<Role> ApplySorting(IQueryable<Role> query, string sortBy, string sortOrder)
+    {
+        // Validate and sanitize sort field
+        if (string.IsNullOrWhiteSpace(sortBy) || !AllowedSortFields.Contains(sortBy))
+        {
+            // Default to Id if invalid field
+            sortBy = nameof(Role.Id);
+        }
+
+        // Validate sort order
+        var isDescending = sortOrder?.Equals("desc", StringComparison.OrdinalIgnoreCase) ?? false;
+
+        // Build dynamic OrderBy expression
+        // System.Linq.Dynamic.Core allows us to use string-based ordering
+        var orderByExpression = $"{sortBy} {(isDescending ? "descending" : "ascending")}";
+        
+        return query.OrderBy(orderByExpression);
+    }
+}
+

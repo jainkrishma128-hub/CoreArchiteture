@@ -1,0 +1,233 @@
+@{
+    ViewData["Title"] = "Shop";
+}
+
+<!-- Hero Banner -->
+<section class="shop-hero">
+    <div class="hero-content">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-text">
+                        <span class="hero-badge">New Collection 2025</span>
+                        <h1>Discover Amazing Products</h1>
+                        <p>Explore our curated selection of premium products at unbeatable prices. Quality meets affordability.</p>
+                        <div class="hero-cta">
+                            <a href="#products" class="btn btn-primary btn-lg">
+                                <i class="bi bi-grid"></i> Browse Products
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-lg">
+                                <i class="bi bi-stars"></i> View Deals
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <div class="floating-card card-1">
+                            <i class="bi bi-truck"></i>
+                            <span>Free Delivery</span>
+                        </div>
+                        <div class="floating-card card-2">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Secure Payment</span>
+                        </div>
+                        <div class="floating-card card-3">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <span>Easy Returns</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-wave">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120">
+            <path fill="#ffffff" d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section class="products-section" id="products">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="section-header">
+            <div class="section-title">
+                <h2><i class="bi bi-box-seam"></i> Our Products</h2>
+                <p>Discover our wide range of quality products</p>
+            </div>
+            <div class="section-actions">
+                <div class="view-toggle">
+                    <button class="btn btn-view active" data-view="grid" title="Grid View">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </button>
+                    <button class="btn btn-view" data-view="list" title="List View">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Bar -->
+        <div class="filters-bar">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-4 col-md-6">
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" id="productSearch" placeholder="Search products...">
+                        <button class="btn-clear" type="button" id="clearSearch" style="display: none;">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <select class="form-select" id="sortSelect">
+                        <option value="Name-asc">Name: A to Z</option>
+                        <option value="Name-desc">Name: Z to A</option>
+                        <option value="Price-asc">Price: Low to High</option>
+                        <option value="Price-desc">Price: High to Low</option>
+                        <option value="Id-desc">Newest First</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <select class="form-select" id="pageSizeSelect">
+                        <option value="8">8 products</option>
+                        <option value="12" selected>12 products</option>
+                        <option value="24">24 products</option>
+                        <option value="48">48 products</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="results-info" id="resultsInfo">
+                        <span>Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-container">
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded dynamically -->
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+                <div class="spinner-wrapper">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p>Loading products...</p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <h3>No Products Found</h3>
+                <p>Try adjusting your search or filters</p>
+                <button class="btn btn-primary" onclick="clearFilters()">
+                    <i class="bi bi-arrow-clockwise"></i> Clear Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-wrapper">
+            <nav aria-label="Product pagination">
+                <ul class="pagination" id="pagination">
+                    <!-- Pagination will be generated dynamically -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <h4>Free Shipping</h4>
+                    <p>On orders over $50</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>Secure Payment</h4>
+                    <p>100% secure transactions</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-headset"></i>
+                    </div>
+                    <h4>24/7 Support</h4>
+                    <p>Dedicated customer service</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <h4>Easy Returns</h4>
+                    <p>30-day return policy</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Product Quick View Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="quick-view-image">
+                            <img id="quickViewImage" src="" alt="Product Image" />
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="quick-view-details">
+                            <h2 id="quickViewName"></h2>
+                            <div class="quick-view-price">
+                                <span class="price" id="quickViewPrice"></span>
+                            </div>
+                            <p class="quick-view-description" id="quickViewDescription"></p>
+                            <div class="quick-view-stock">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span id="quickViewStock"></span>
+                            </div>
+                            <div class="quick-view-actions">
+                                <div class="quantity-selector">
+                                    <button class="btn btn-outline-secondary" onclick="decrementQty()">-</button>
+                                    <input type="number" id="quickViewQty" value="1" min="1" />
+                                    <button class="btn btn-outline-secondary" onclick="incrementQty()">+</button>
+                                </div>
+                                <button class="btn btn-primary btn-add-cart">
+                                    <i class="bi bi-cart-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

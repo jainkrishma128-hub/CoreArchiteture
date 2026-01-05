@@ -1,0 +1,89 @@
+﻿using CommonArchitecture.Core.Entities;
+using CommonArchitecture.Core.Interfaces;
+using CommonArchitecture.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace CommonArchitecture.Infrastructure.Repositories;
+
+public class RefreshTokenRepository : IRefreshTokenRepository
+{
+    private readonly ApplicationDbContext _context;
+
+    public RefreshTokenRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<RefreshToken?> GetByTokenAsync(string token)
+    {
+        return await _context.RefreshTokens
+            .Include(rt => rt.User)
+            .ThenInclude(u => u.Role)
+            .FirstOrDefaultAsync(rt => rt.Token == token && !rt.IsRevoked);
+    }
+
+    public async Task<RefreshToken> CreateAsync(RefreshToken refreshToken)
+    {
+        _context.RefreshTokens.Add(refreshToken);
+        await _context.SaveChangesAsync();
+        return refreshToken;
+    }
+
+    public async Task<bool> RevokeTokenAsync(string token)
+    {
+        var refreshToken = await _context.RefreshTokens
+            .FirstOrDefaultAsync(rt => rt.Token == token);
+
+        if (refreshToken == null || refreshToken.IsRevoked)
+            return false;
+
+        refreshToken.IsRevoked = true;
+        refreshToken.RevokedAt = DateTime.UtcNow.ToString("O");
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> RevokeAllUserTokensAsync(int userId)
+    {
+        var tokens = await _context.RefreshTokens
+            .Where(rt => rt.UserId == userId && !rt.IsRevoked)
+            .ToListAsync();
+
+        foreach (var token in tokens)
+        {
+            token.IsRevoked = true;
+            token.RevokedAt = DateTime.UtcNow.ToString("O");
+        }
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DeleteExpiredTokensAsync()
+    {
+        var expiredTokens = await _context.RefreshTokens
+            .Where(rt => rt.ExpiresAt < DateTime.UtcNow || (rt.IsRevoked && rt.ExpiresAt < DateTime.UtcNow.AddDays(-7)))
+            .ToListAsync();
+
+        if (expiredTokens.Any())
+        {
+            _context.RefreshTokens.RemoveRange(expiredTokens);
+            await _context.SaveChangesAsync();
+        }
+        return true;
+    }
+
+    public async Task<bool> IsTokenReusedAsync(string token, int userId)
+    {
+        // Check if this token was previously used (stored in PreviousToken field)
+        return await _context.RefreshTokens
+            .AnyAsync(rt => rt.PreviousToken == token && rt.UserId == userId);
+    }
+
+    public async Task<int> GetActiveTokenCountAsync(int userId)
+    {
+        return await _context.RefreshTokens
+            .CountAsync(rt => rt.UserId == userId && !rt.IsRevoked && rt.ExpiresAt > DateTime.UtcNow);
+    }
+}
+

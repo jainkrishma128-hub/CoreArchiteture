@@ -1,0 +1,15 @@
+﻿{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=CommonArchitectureDb;Trusted_Connection=True;MultipleActiveResultSets=true"
+  },
+  "ApiSettings": {
+    "BaseUrl": "http://localhost:5089"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

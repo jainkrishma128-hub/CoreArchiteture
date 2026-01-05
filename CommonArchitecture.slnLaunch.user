@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "src\\CommonArchitecture.API\\CommonArchitecture.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\CommonArchitecture.Web\\CommonArchitecture.Web.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

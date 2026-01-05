@@ -1,0 +1,79 @@
+@model List<CommonArchitecture.Web.ViewComponents.SidebarMenuViewModel>
+
+<div class="sidebar-header">
+    <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="sidebar-brand">
+        <i class="bi bi-shield-lock-fill"></i>
+        <span>Admin Panel</span>
+    </a>
+</div>
+
+<nav class="sidebar-nav">
+    <ul class="nav flex-column">
+        <!-- Dashboard/Home is usually first in DB, so it will loop naturally. 
+             But if we want to force 'Main Site' or others, we can do it here. -->
+
+        @foreach (var menu in Model)
+        {
+            if (menu.SubMenus != null && menu.SubMenus.Any())
+            {
+                // Parent Menu with Children
+                <li class="nav-item">
+                    <a class="nav-link @(menu.IsActive ? "active" : "collapsed")" 
+                       href="#submenu-@menu.Id" 
+                       data-bs-toggle="collapse" 
+                       role="button" 
+                       aria-expanded="@(menu.IsActive ? "true" : "false")" 
+                       aria-controls="submenu-@menu.Id">
+                        <i class="@menu.Icon"></i>
+                        <span>@menu.Name</span>
+                        <i class="bi bi-chevron-down ms-auto" style="font-size: 0.8em;"></i>
+                    </a>
+                    <div class="collapse @(menu.IsActive ? "show" : "")" id="submenu-@menu.Id">
+                        <ul class="nav flex-column ms-3">
+                            @foreach (var sub in menu.SubMenus)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(sub.IsActive ? "active" : "")" href="@sub.Url">
+                                        <i class="@sub.Icon"></i>
+                                        <span>@sub.Name</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </li>
+            }
+            else
+            {
+                // Single Menu Item
+                <li class="nav-item">
+                    <a class="nav-link @(menu.IsActive ? "active" : "")" href="@menu.Url">
+                        <i class="@menu.Icon"></i>
+                        <span>@menu.Name</span>
+                    </a>
+                </li>
+            }
+        }
+
+        <li class="nav-section-title mt-3">Quick Links</li>
+        <!-- Static Links that are not in DB -->
+        <li class="nav-item">
+            <a class="nav-link" href="/">
+                <i class="bi bi-house"></i>
+                <span>Main Site</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Ecommerce/Shop">
+                <i class="bi bi-shop"></i>
+                <span>View Store</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Admin/UiElements">
+                <i class="bi bi-palette"></i>
+                <span>UI Elements</span>
+            </a>
+        </li>
+    </ul>
+</nav>

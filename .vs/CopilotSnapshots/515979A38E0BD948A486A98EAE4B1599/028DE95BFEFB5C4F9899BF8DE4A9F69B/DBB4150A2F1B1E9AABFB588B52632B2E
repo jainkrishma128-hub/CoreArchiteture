@@ -1,0 +1,32 @@
+﻿using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Queries.Menus.GetMenuById;
+
+public class GetMenuByIdQueryHandler : IRequestHandler<GetMenuByIdQuery, MenuDto?>
+{
+ private readonly IMenuRepository _menuRepository;
+
+ public GetMenuByIdQueryHandler(IMenuRepository menuRepository)
+ {
+ _menuRepository = menuRepository;
+ }
+
+ public async Task<MenuDto?> Handle(GetMenuByIdQuery request, CancellationToken cancellationToken)
+ {
+ var menu = await _menuRepository.GetByIdAsync(request.Id);
+ if (menu == null) return null;
+
+ return new MenuDto
+ {
+ Id = menu.Id,
+ Name = menu.Name,
+ Icon = menu.Icon,
+ Url = menu.Url,
+ ParentMenuId = menu.ParentMenuId,
+ DisplayOrder = menu.DisplayOrder,
+ IsActive = menu.IsActive
+ };
+ }
+}

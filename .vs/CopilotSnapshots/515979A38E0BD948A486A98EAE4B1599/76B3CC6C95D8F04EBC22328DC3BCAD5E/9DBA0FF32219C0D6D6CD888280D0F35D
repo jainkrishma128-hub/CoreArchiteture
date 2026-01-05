@@ -1,0 +1,14 @@
+﻿using CommonArchitecture.Application.DTOs;
+using MediatR;
+
+namespace CommonArchitecture.Application.Queries.Menus.GetAllMenus;
+
+public class GetAllMenusQuery : IRequest<PaginatedResult<MenuDto>>
+{
+ public MenuQueryParameters Parameters { get; set; }
+
+ public GetAllMenusQuery(MenuQueryParameters parameters)
+ {
+ Parameters = parameters;
+ }
+}

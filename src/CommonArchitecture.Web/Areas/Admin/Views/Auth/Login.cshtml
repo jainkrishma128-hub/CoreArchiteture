@@ -1,0 +1,479 @@
+@{
+    ViewData["Title"] = "Admin Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .login-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1rem;
+            z-index: 10;
+        }
+
+        .input-group .form-control {
+            padding-left: 3rem;
+        }
+
+        .btn-send-otp {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-send-otp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-send-otp:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .otp-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .otp-section.show {
+            display: block;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .alert {
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15em;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-home a {
+            color: #334155;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-home a:hover {
+            color: #667eea;
+        }
+
+        .otp-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #667eea;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .otp-info strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <h1>Admin Login</h1>
+                <p>Enter your mobile number to receive OTP</p>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <form id="loginForm">
+                <!-- Mobile Number Section -->
+                <div class="form-group">
+                    <label class="form-label" for="mobile">Mobile Number</label>
+                    <div class="input-group">
+                        <i class="bi bi-phone input-group-icon"></i>
+                        <input type="tel" 
+                               class="form-control" 
+                               id="mobile" 
+                               placeholder="Enter 10-digit mobile number"
+                               maxlength="10"
+                               pattern="[0-9]{10}"
+                               required>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-send-otp" id="sendOtpBtn">
+                    <i class="bi bi-send-fill me-2"></i>
+                    <span id="sendOtpText">Send OTP</span>
+                    <span id="sendOtpSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                </button>
+
+                <!-- OTP Section (Hidden initially) -->
+                <div class="otp-section" id="otpSection">
+                    <div class="otp-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Development Mode:</strong> Use OTP <strong>1234</strong> to login
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="otp">Enter OTP</label>
+                        <div class="input-group">
+                            <i class="bi bi-key input-group-icon"></i>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="otp" 
+                                   placeholder="Enter 4-digit OTP"
+                                   maxlength="4"
+                                   pattern="[0-9]{4}">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="loginBtn">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        <span id="loginText">Login</span>
+                        <span id="loginSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="back-home">
+                <a href="@Url.Action("Index", "Home", new { area = "" })">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let mobileNumber = '';
+
+            // Send OTP
+            $('#sendOtpBtn').click(function() {
+                const mobile = $('#mobile').val().trim();
+                
+                if (mobile.length !== 10 || !/^\d{10}$/.test(mobile)) {
+                    showAlert('Please enter a valid 10-digit mobile number', 'danger');
+                    return;
+                }
+
+                mobileNumber = mobile;
+                const btn = $(this);
+                btn.prop('disabled', true);
+                $('#sendOtpText').text('Sending...');
+                $('#sendOtpSpinner').show();
+
+                $.ajax({
+                    url: '@Url.Action("SendOtp", "Auth", new { area = "Admin" })',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ mobile: mobile }),
+                    success: function(response) {
+                        if (response.success) {
+                            showAlert(response.message, 'success');
+                            $('#otpSection').addClass('show');
+                            $('#mobile').prop('readonly', true);
+                            $('#otp').focus();
+                        } else {
+                            showAlert(response.message, 'danger');
+                            btn.prop('disabled', false);
+                        }
+                    },
+                    error: function() {
+                        showAlert('Failed to send OTP. Please try again.', 'danger');
+                        btn.prop('disabled', false);
+                    },
+                    complete: function() {
+                        $('#sendOtpText').text('Resend OTP');
+                        $('#sendOtpSpinner').hide();
+                        setTimeout(() => btn.prop('disabled', false), 30000); // Enable after 30 seconds
+                    }
+                });
+            });
+
+            // Login with OTP
+            $('#loginForm').submit(function(e) {
+                e.preventDefault();
+                
+                const otp = $('#otp').val().trim();
+                
+                if (otp.length !== 4 || !/^\d{4}$/.test(otp)) {
+                    showAlert('Please enter a valid 4-digit OTP', 'danger');
+                    return;
+                }
+
+                const btn = $('#loginBtn');
+                btn.prop('disabled', true);
+                $('#loginText').text('Logging in...');
+                $('#loginSpinner').show();
+
+                $.ajax({
+                    url: '@Url.Action("Login", "Auth", new { area = "Admin" })',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ 
+                        mobile: mobileNumber,
+                        otp: otp 
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            showAlert('Login successful! Redirecting...', 'success');
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("Index", "Dashboard", new { area = "Admin" })';
+                            }, 1000);
+                        } else {
+                            showAlert(response.message, 'danger');
+                            btn.prop('disabled', false);
+                            $('#loginText').text('Login');
+                            $('#loginSpinner').hide();
+                        }
+                    },
+                    error: function() {
+                        showAlert('Login failed. Please try again.', 'danger');
+                        btn.prop('disabled', false);
+                        $('#loginText').text('Login');
+                        $('#loginSpinner').hide();
+                    }
+                });
+            });
+
+            // Helper function to show alerts
+            function showAlert(message, type) {
+                const alertHtml = `
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                `;
+                $('#alertContainer').html(alertHtml);
+                
+                setTimeout(function() {
+                    $('.alert').fadeOut(function() {
+                        $(this).remove();
+                    });
+                }, 5000);
+            }
+
+            // Only allow numbers in mobile and OTP fields
+            $('#mobile, #otp').on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        });
+    </script>
+</body>
+</html>

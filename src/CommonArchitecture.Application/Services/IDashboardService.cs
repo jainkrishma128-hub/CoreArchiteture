@@ -1,0 +1,8 @@
+using CommonArchitecture.Core.DTOs;
+
+namespace CommonArchitecture.Application.Services;
+
+public interface IDashboardService
+{
+ Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken cancellationToken = default);
+}

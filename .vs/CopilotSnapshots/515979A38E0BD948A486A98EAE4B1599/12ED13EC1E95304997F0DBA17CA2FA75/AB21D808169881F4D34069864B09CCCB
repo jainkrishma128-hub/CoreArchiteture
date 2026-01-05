@@ -1,0 +1,51 @@
+﻿using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Queries.Menus.GetAllMenus;
+
+public class GetAllMenusQueryHandler : IRequestHandler<GetAllMenusQuery, PaginatedResult<MenuDto>>
+{
+ private readonly IMenuRepository _menuRepository;
+
+ public GetAllMenusQueryHandler(IMenuRepository menuRepository)
+ {
+ _menuRepository = menuRepository;
+ }
+
+ public async Task<PaginatedResult<MenuDto>> Handle(GetAllMenusQuery request, CancellationToken cancellationToken)
+ {
+ var items = await _menuRepository.GetPagedAsync(
+ request.Parameters.SearchTerm,
+ request.Parameters.SortBy,
+ request.Parameters.SortOrder,
+ request.Parameters.PageNumber,
+ request.Parameters.PageSize
+ );
+
+ var totalCount = await _menuRepository.GetTotalCountAsync(request.Parameters.SearchTerm);
+
+ var menuDtos = items.Select(m => new MenuDto
+ {
+ Id = m.Id,
+ Name = m.Name,
+ Icon = m.Icon,
+ Url = m.Url,
+ ParentMenuId = m.ParentMenuId,
+ DisplayOrder = m.DisplayOrder,
+ IsActive = m.IsActive
+ }).ToList();
+
+ var totalPages = (int)Math.Ceiling((double)totalCount / request.Parameters.PageSize);
+ var hasPrevious = request.Parameters.PageNumber > 1;
+ var hasNext = request.Parameters.PageNumber < totalPages;
+
+ return new PaginatedResult<MenuDto>
+ {
+ Items = menuDtos,
+ PageNumber = request.Parameters.PageNumber,
+ PageSize = request.Parameters.PageSize,
+ TotalCount = totalCount
+ };
+ }
+}

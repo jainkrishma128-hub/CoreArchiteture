@@ -1,0 +1,32 @@
+﻿using CommonArchitecture.Application.Commands;
+using MediatR;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+
+namespace CommonArchitecture.Application.Behaviors;
+
+public class CacheInvalidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : ICacheInvalidator
+{
+    private readonly IMemoryCache _cache;
+    private readonly ILogger<CacheInvalidationBehavior<TRequest, TResponse>> _logger;
+
+    public CacheInvalidationBehavior(IMemoryCache cache, ILogger<CacheInvalidationBehavior<TRequest, TResponse>> logger)
+    {
+        _cache = cache;
+        _logger = logger;
+    }
+
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    {
+        var response = await next();
+
+        foreach (var key in request.CacheKeys)
+        {
+            _logger.LogInformation("Invalidating cache for key: {CacheKey}", key);
+            _cache.Remove(key);
+        }
+
+        return response;
+    }
+}

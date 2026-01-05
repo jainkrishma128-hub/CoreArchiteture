@@ -1,0 +1,40 @@
+﻿using MediatR;
+using CommonArchitecture.Application.DTOs;
+using CommonArchitecture.Core.Interfaces;
+using CsvHelper;
+using System.Globalization;
+using System.Text;
+
+namespace CommonArchitecture.Application.Queries.Products.ExportProducts;
+
+public class ExportProductsQueryHandler : IRequestHandler<ExportProductsQuery, byte[]>
+{
+    private readonly IProductRepository _productRepository;
+
+    public ExportProductsQueryHandler(IProductRepository productRepository)
+    {
+        _productRepository = productRepository;
+    }
+
+    public async Task<byte[]> Handle(ExportProductsQuery request, CancellationToken cancellationToken)
+    {
+        var products = await _productRepository.GetAllAsync();
+        
+        using var memoryStream = new MemoryStream();
+        using (var writer = new StreamWriter(memoryStream, Encoding.UTF8))
+        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+        {
+            var records = products.Select(p => new ProductCsvDto
+            {
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                Stock = p.Stock
+            });
+
+            csv.WriteRecords(records);
+        }
+
+        return memoryStream.ToArray();
+    }
+}

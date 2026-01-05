@@ -1,0 +1,33 @@
+﻿using CommonArchitecture.Core.Interfaces;
+using MediatR;
+
+namespace CommonArchitecture.Application.Commands.Products.UpdateProduct;
+
+public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, bool>
+{
+    private readonly IProductRepository _productRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UpdateProductCommandHandler(IProductRepository productRepository, IUnitOfWork unitOfWork)
+    {
+        _productRepository = productRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<bool> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+    {
+        var product = await _productRepository.GetByIdAsync(request.Id);
+        if (product == null)
+            return false;
+
+        product.Name = request.Name;
+        product.Description = request.Description;
+        product.Price = request.Price;
+        product.Stock = request.Stock;
+        product.UpdatedAt = DateTime.UtcNow;
+
+        await _productRepository.UpdateAsync(product);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+}

@@ -1,0 +1,61 @@
+﻿﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="hero-section" style="margin-left: -12px; margin-right: -12px; margin-top: -1rem;">
+    <div class="container text-center">
+        <h1><i class="bi bi-code-square"></i> Common Architecture</h1>
+        <p class="lead">A professional .NET Core application with Admin Panel and E-commerce functionality</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-5">
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="nav-card admin-card">
+                <i class="bi bi-shield-lock-fill"></i>
+                <h3>Admin Panel</h3>
+                <p>Manage products, users, and roles with a powerful dashboard</p>
+            </a>
+        </div>
+        <div class="col-md-5">
+            <a asp-area="Ecommerce" asp-controller="Shop" asp-action="Index" class="nav-card shop-card">
+                <i class="bi bi-bag-heart-fill"></i>
+                <h3>E-commerce Store</h3>
+                <p>Browse and shop products with a beautiful storefront</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Application Structure</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary"><i class="bi bi-shield-lock"></i> Admin Area</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li><i class="bi bi-check-circle text-success"></i> Dashboard with statistics</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Product management (CRUD)</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Role management (CRUD)</li>
+                                <li><i class="bi bi-check-circle text-success"></i> User management (CRUD)</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-danger"><i class="bi bi-shop"></i> Ecommerce Area</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li><i class="bi bi-check-circle text-success"></i> Product catalog with search</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Product detail pages</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Shopping cart</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Beautiful UI design</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
