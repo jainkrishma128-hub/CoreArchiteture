@@ -11,7 +11,8 @@ namespace CommonArchitecture.API.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 public class CategoriesController : ControllerBase
-{
+{ 
+
     private readonly ILogger<CategoriesController> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
