@@ -30,9 +30,15 @@ public class DashboardService : IDashboardService
         var to = DateTime.UtcNow;
         var from = to.AddDays(-30);
 
-        // Execute both queries sequentially to avoid concurrency issues
-        var registrations = await _unitOfWork.Users.GetDailyRegistrationsAsync(from, to).ConfigureAwait(false);
-        var (apiCalls, statusDist, avgDuration) = await _loggingService.GetDashboardStatsAsync(from, to).ConfigureAwait(false);
+        // Optimization: Execute queries in parallel
+        // LoggingService uses DbContextFactory (new context), so it's safe to run alongside UnitOfWork
+        var registrationsTask = _unitOfWork.Users.GetDailyRegistrationsAsync(from, to);
+        var logsTask = _loggingService.GetDashboardStatsAsync(from, to);
+
+        await Task.WhenAll(registrationsTask, logsTask).ConfigureAwait(false);
+
+        var registrations = await registrationsTask;
+        var (apiCalls, statusDist, avgDuration) = await logsTask;
 
         var result = new DashboardStatsDto
         {
@@ -52,5 +58,3 @@ public class DashboardService : IDashboardService
         return result;
     }
 }
-
-

@@ -46,28 +46,45 @@ public class RoleMenuService : IRoleMenuService
 
         var existingPermissions = await _unitOfWork.RoleMenus.GetByRoleIdAsync(roleId);
         
-        // Simple implementation: Delete existing and add new
-        // Better implementation: Update existing, add new, delete missing
+        // Optimization: Update existing, add new, delete missing instead of full wipe
         
-        foreach (var existing in existingPermissions)
+        // 1. Delete removed permissions
+        var toDelete = existingPermissions.Where(e => !menuPermissions.Any(m => m.MenuId == e.MenuId)).ToList();
+        foreach (var item in toDelete)
         {
-            await _unitOfWork.RoleMenus.DeleteAsync(existing.Id);
+            await _unitOfWork.RoleMenus.DeleteAsync(item.Id);
         }
 
+        // 2. Add or Update
         foreach (var permission in menuPermissions)
         {
-            var roleMenu = new RoleMenu
+            var existing = existingPermissions.FirstOrDefault(e => e.MenuId == permission.MenuId);
+            
+            if (existing != null)
             {
-                RoleId = roleId,
-                MenuId = permission.MenuId,
-                CanCreate = permission.CanCreate,
-                CanRead = permission.CanRead,
-                CanUpdate = permission.CanUpdate,
-                CanDelete = permission.CanDelete,
-                CanExecute = permission.CanExecute,
-                CreatedAt = DateTime.UtcNow
-            };
-            await _unitOfWork.RoleMenus.AddAsync(roleMenu);
+                // Update existing
+                existing.CanCreate = permission.CanCreate;
+                existing.CanRead = permission.CanRead;
+                existing.CanUpdate = permission.CanUpdate;
+                existing.CanDelete = permission.CanDelete;
+                existing.CanExecute = permission.CanExecute;
+            }
+            else
+            {
+                // Add new
+                var roleMenu = new RoleMenu
+                {
+                    RoleId = roleId,
+                    MenuId = permission.MenuId,
+                    CanCreate = permission.CanCreate,
+                    CanRead = permission.CanRead,
+                    CanUpdate = permission.CanUpdate,
+                    CanDelete = permission.CanDelete,
+                    CanExecute = permission.CanExecute,
+                    CreatedAt = DateTime.UtcNow
+                };
+                await _unitOfWork.RoleMenus.AddAsync(roleMenu);
+            }
         }
 
         await _unitOfWork.SaveChangesAsync();

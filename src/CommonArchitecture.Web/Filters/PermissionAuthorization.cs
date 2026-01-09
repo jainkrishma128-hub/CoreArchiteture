@@ -2,6 +2,8 @@ using CommonArchitecture.Core.Enums;
 using CommonArchitecture.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Text.Json;
+using CommonArchitecture.Application.DTOs;
 
 namespace CommonArchitecture.Web.Filters;
 
@@ -42,9 +44,24 @@ public class PermissionFilter : IAsyncAuthorizationFilter
         }
 
         // 2. Get Permissions for this Role
-        // We could cache this in session to avoid API calls on every request
-        // For now, we fetch fresh to ensure immediate effect of changes
-        var permissions = await _roleMenuService.GetRolePermissionsAsync(roleId);
+        // Optimization: Cache permissions in session to avoid DB calls on every request
+        var cacheKey = $"RolePermissions_{roleId}";
+        var cachedPermissions = context.HttpContext.Session.GetString(cacheKey);
+        RoleMenuPermissionsDto permissions = null;
+
+        if (!string.IsNullOrEmpty(cachedPermissions))
+        {
+            permissions = JsonSerializer.Deserialize<RoleMenuPermissionsDto>(cachedPermissions);
+        }
+
+        if (permissions == null)
+        {
+            permissions = await _roleMenuService.GetRolePermissionsAsync(roleId);
+            if (permissions != null)
+            {
+                context.HttpContext.Session.SetString(cacheKey, JsonSerializer.Serialize(permissions));
+            }
+        }
 
         if (permissions == null)
         {

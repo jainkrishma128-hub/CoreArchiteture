@@ -98,18 +98,12 @@ public class LoggingService : ILoggingService
     {
         using var context = await _contextFactory.CreateDbContextAsync();
         
-        var logs = await context.RequestResponseLogs
+        // Optimization: Perform aggregation in database instead of fetching all records into memory
+        
+        // 1. Daily Stats (Group by Date)
+        var dailyStats = await context.RequestResponseLogs
             .AsNoTracking()
             .Where(l => l.CreatedAt >= from && l.CreatedAt <= to)
-            .Select(l => new { l.CreatedAt, l.DurationMs, l.ResponseStatusCode })
-            .ToListAsync();
-
-        if (!logs.Any())
-        {
-            return (new List<DailyStatDto>(), new StatusDistributionDto(), 0);
-        }
-
-        var dailyStats = logs
             .GroupBy(l => l.CreatedAt.Date)
             .Select(g => new DailyStatDto
             {
@@ -118,16 +112,30 @@ public class LoggingService : ILoggingService
                 AverageDuration = g.Average(l => (double)l.DurationMs)
             })
             .OrderBy(s => s.Date)
-            .ToList();
+            .ToListAsync();
+
+        // 2. Status Distribution & Overall Average
+        var stats = await context.RequestResponseLogs
+            .AsNoTracking()
+            .Where(l => l.CreatedAt >= from && l.CreatedAt <= to)
+            .GroupBy(x => 1) // Group by constant to aggregate the whole filtered set
+            .Select(g => new
+            {
+                Success = g.Count(l => l.ResponseStatusCode >= 200 && l.ResponseStatusCode < 300),
+                ClientError = g.Count(l => l.ResponseStatusCode >= 400 && l.ResponseStatusCode < 500),
+                ServerError = g.Count(l => l.ResponseStatusCode >= 500),
+                AvgDuration = g.Average(l => (double)l.DurationMs)
+            })
+            .FirstOrDefaultAsync();
 
         var statusDist = new StatusDistributionDto
         {
-            Success = logs.Count(l => l.ResponseStatusCode >= 200 && l.ResponseStatusCode < 300),
-            ClientError = logs.Count(l => l.ResponseStatusCode >= 400 && l.ResponseStatusCode < 500),
-            ServerError = logs.Count(l => l.ResponseStatusCode >= 500)
+            Success = stats?.Success ?? 0,
+            ClientError = stats?.ClientError ?? 0,
+            ServerError = stats?.ServerError ?? 0
         };
 
-        var avgDuration = logs.Average(l => (double)l.DurationMs);
+        var avgDuration = stats?.AvgDuration ?? 0;
 
         return (dailyStats, statusDist, avgDuration);
     }
