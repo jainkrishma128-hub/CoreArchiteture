@@ -22,6 +22,36 @@ public class CategoriesController : ControllerBase
         _unitOfWork = unitOfWork;
     }
 
+    /// <summary>
+    /// Get all active categories (public endpoint for shop)
+    /// </summary>
+    [HttpGet("active")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetActiveCategories()
+    {
+        try
+        {
+            var categories = _unitOfWork.Categories.GetQuery()
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.Name)
+                .Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Description = c.Description,
+                    IsActive = c.IsActive
+                })
+                .ToList();
+
+            return Ok(categories);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching active categories");
+            return StatusCode(500, new { message = "Error fetching active categories" });
+        }
+    }
+
     [HttpGet]
     public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetAll([FromQuery] CategoryQueryParameters parameters)
     {

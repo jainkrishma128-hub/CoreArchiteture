@@ -1,12 +1,12 @@
+using CommonArchitecture.Core.Interfaces;
+using CommonArchitecture.Infrastructure.Extensions;
+using CommonArchitecture.Infrastructure.Modules;
 using CommonArchitecture.Infrastructure.Persistence;
 using FluentValidation;
 using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using CommonArchitecture.Web.Services;
 using CommonArchitecture.Web.Handlers;
-using CommonArchitecture.Core.Interfaces;
-using CommonArchitecture.Infrastructure.Services;
 using CommonArchitecture.Web.Middlewares;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -14,9 +14,15 @@ using Hangfire.Dashboard;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
- options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Register modules (modular service registration)
+var modules = new IModule[]
+{
+    new PersistenceModule(),
+    new ApplicationServicesModule(),
+    new CachingModule()
+};
+
+builder.Services.AddModules(builder.Configuration, modules);
 
 // Cookie policy configuration for secure token storage
 builder.Services.Configure<CookiePolicyOptions>(options =>
@@ -25,9 +31,6 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
  options.Secure = CookieSecurePolicy.SameAsRequest; // Use SameAsRequest for development, Always for production
  options.MinimumSameSitePolicy = SameSiteMode.Strict;
 });
-
-// Add Memory Cache for token storage
-builder.Services.AddMemoryCache();
 
 // Add Session support (for user display info in Admin area)
 builder.Services.AddDistributedMemoryCache();
@@ -115,12 +118,6 @@ builder.Services.AddHttpClient<IDashboardApiService, DashboardApiService>(client
 
 // Register JwtTokenHandler (kept for compatibility if used elsewhere)
 builder.Services.AddTransient<CommonArchitecture.Web.Services.JwtTokenHandler>();
-
-// Register Logging service
-builder.Services.AddScoped<ILoggingService, LoggingService>();
-
-// Register UnitOfWork
-builder.Services.AddScoped<CommonArchitecture.Core.Interfaces.IUnitOfWork, CommonArchitecture.Infrastructure.UnitOfWork.UnitOfWork>();
 
 // Register application services used directly by Web (if any)
 builder.Services.AddScoped<CommonArchitecture.Application.Services.IMenuService, CommonArchitecture.Application.Services.MenuService>();

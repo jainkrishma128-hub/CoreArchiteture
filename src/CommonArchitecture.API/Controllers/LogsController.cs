@@ -20,6 +20,12 @@ public class LogsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<PaginatedResult<LogDto>>> GetAll([FromQuery] LogQueryParameters parameters)
     {
+        // Enforce max page size
+        if (parameters.PageSize > 100) 
+            parameters.PageSize = 100;
+        if (parameters.PageSize < 1) 
+            parameters.PageSize = 10;
+
         var (logs, totalCount) = await _loggingService.GetLogsAsync(
             parameters.PageNumber,
             parameters.PageSize,
@@ -31,27 +37,23 @@ public class LogsController : ControllerBase
             parameters.StatusCode,
             parameters.Method);
 
-        var logDtos = logs.Select(l => new LogDto
-        {
-            Id = l.Id,
-            Method = l.Method,
-            Path = l.Path,
-            QueryString = l.QueryString,
-            // Optimization: Exclude large JSON payloads from the list view to reduce latency/bandwidth.
-            // These are still available via the GetById endpoint for the details modal.
-            RequestBody = null, 
-            ResponseStatusCode = l.ResponseStatusCode,
-            ResponseBody = null,
-            DurationMs = l.DurationMs,
-            IpAddress = l.IpAddress,
-            UserAgent = l.UserAgent,
-            UserId = l.UserId,
-            CreatedAt = l.CreatedAt
-        }).ToList();
-
         return Ok(new PaginatedResult<LogDto>
         {
-            Items = logDtos,
+            Items = logs.Select(log => new LogDto
+            {
+                Id = log.Id,
+                Method = log.Method,
+                Path = log.Path,
+                QueryString = log.QueryString,
+                RequestBody = log.RequestBody,
+                ResponseStatusCode = log.ResponseStatusCode,
+                ResponseBody = log.ResponseBody,
+                DurationMs = log.DurationMs,
+                IpAddress = log.IpAddress,
+                UserAgent = log.UserAgent,
+                UserId = log.UserId,
+                CreatedAt = log.CreatedAt
+            }).ToList(),
             TotalCount = totalCount,
             PageNumber = parameters.PageNumber,
             PageSize = parameters.PageSize

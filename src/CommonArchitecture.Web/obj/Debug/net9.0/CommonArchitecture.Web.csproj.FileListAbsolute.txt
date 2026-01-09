@@ -1631,6 +1631,7 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonArchitecture.Web.MvcApplicationPartsAssemblyInfo.cache
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonArchitecture.Web.RazorAssemblyInfo.cache
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonArchitecture.Web.RazorAssemblyInfo.cs
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonArchitecture.Web.sourcelink.json
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\rjimswa.dswa.cache.json
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json
@@ -1654,7 +1655,7 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\6ukbbljkov-ewk2yhlry4.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\55wuccu9vp-yg1xjnuqxz.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\2t2pchv7pc-ip67g6ck9e.gz
-D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\xvlfk6dec9-0gfwsojj98.gz
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\xvlfk6dec9-beighx327n.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\ucydj1yg01-fr7q2aak1r.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\gdbfsfjjur-wlh8hbxdga.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\5p2h3008ne-bqjiyaj88i.gz
@@ -1722,10 +1723,10 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\staticwebassets.build.json.cache
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\staticwebassets.development.json
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\staticwebassets.build.endpoints.json
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonAr.DF18FA81.Up2Date
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonArchitecture.Web.dll
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\refint\CommonArchitecture.Web.dll
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonArchitecture.Web.pdb
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonArchitecture.Web.genruntimeconfig.cache
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\ref\CommonArchitecture.Web.dll
-D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

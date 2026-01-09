@@ -8,23 +8,25 @@ namespace CommonArchitecture.Infrastructure.Services;
 
 public class LoggingService : ILoggingService
 {
- private readonly ApplicationDbContext _db;
+    private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
- public LoggingService(ApplicationDbContext db)
- {
- _db = db;
- }
+    public LoggingService(IDbContextFactory<ApplicationDbContext> contextFactory)
+    {
+        _contextFactory = contextFactory;
+    }
 
- public async Task LogErrorAsync(ErrorLog error)
- {
- _db.ErrorLogs.Add(error);
- await _db.SaveChangesAsync();
- }
+    public async Task LogErrorAsync(ErrorLog error)
+    {
+        using var context = await _contextFactory.CreateDbContextAsync();
+        context.ErrorLogs.Add(error);
+        await context.SaveChangesAsync();
+    }
 
     public async Task LogRequestResponseAsync(RequestResponseLog log)
     {
-        _db.RequestResponseLogs.Add(log);
-        await _db.SaveChangesAsync();
+        using var context = await _contextFactory.CreateDbContextAsync();
+        context.RequestResponseLogs.Add(log);
+        await context.SaveChangesAsync();
     }
 
     public async Task<(IEnumerable<RequestResponseLog> Logs, int TotalCount)> GetLogsAsync(
@@ -38,9 +40,9 @@ public class LoggingService : ILoggingService
         int? statusCode = null,
         string? method = null)
     {
-        var query = _db.RequestResponseLogs.AsNoTracking().AsQueryable();
+        using var context = await _contextFactory.CreateDbContextAsync();
+        var query = context.RequestResponseLogs.AsNoTracking().AsQueryable();
 
-        // Filtering
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             query = query.Where(l => 
@@ -62,7 +64,6 @@ public class LoggingService : ILoggingService
         if (!string.IsNullOrWhiteSpace(method))
             query = query.Where(l => l.Method == method);
 
-        // Sorting
         if (!string.IsNullOrWhiteSpace(sortBy))
         {
             var isDesc = sortOrder?.ToLower() == "desc";
@@ -81,49 +82,52 @@ public class LoggingService : ILoggingService
             query = query.OrderByDescending(l => l.CreatedAt);
         }
 
-        var totalCount = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.CountAsync(query);
-        
-        var logs = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync(
-            query.Skip((pageNumber - 1) * pageSize).Take(pageSize));
+        var totalCount = await query.CountAsync();
+        var logs = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
         return (logs, totalCount);
     }
 
     public async Task<RequestResponseLog?> GetLogByIdAsync(int id)
     {
-        return await _db.RequestResponseLogs.FindAsync(id);
+        using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.RequestResponseLogs.FindAsync(id);
     }
 
     public async Task<(List<DailyStatDto> DailyStats, StatusDistributionDto StatusDistribution, double AvgDuration)> GetDashboardStatsAsync(DateTime from, DateTime to)
     {
-        var logs = _db.RequestResponseLogs
-            .Where(l => l.CreatedAt >= from && l.CreatedAt <= to);
+        using var context = await _contextFactory.CreateDbContextAsync();
+        
+        var logs = await context.RequestResponseLogs
+            .AsNoTracking()
+            .Where(l => l.CreatedAt >= from && l.CreatedAt <= to)
+            .Select(l => new { l.CreatedAt, l.DurationMs, l.ResponseStatusCode })
+            .ToListAsync();
 
-        // Group by Date for API Calls
-        var dailyStats = await logs
+        if (!logs.Any())
+        {
+            return (new List<DailyStatDto>(), new StatusDistributionDto(), 0);
+        }
+
+        var dailyStats = logs
             .GroupBy(l => l.CreatedAt.Date)
             .Select(g => new DailyStatDto
             {
                 Date = g.Key,
                 Count = g.Count(),
-                AverageDuration = g.Average(l => l.DurationMs)
+                AverageDuration = g.Average(l => (double)l.DurationMs)
             })
             .OrderBy(s => s.Date)
-            .ToListAsync();
+            .ToList();
 
-        var statusDist = await logs
-            .GroupBy(l => 1)
-            .Select(g => new StatusDistributionDto
-            {
-                Success = g.Count(l => l.ResponseStatusCode >= 200 && l.ResponseStatusCode < 300),
-                ClientError = g.Count(l => l.ResponseStatusCode >= 400 && l.ResponseStatusCode < 500),
-                ServerError = g.Count(l => l.ResponseStatusCode >= 500)
-            })
-            .FirstOrDefaultAsync() ?? new StatusDistributionDto();
+        var statusDist = new StatusDistributionDto
+        {
+            Success = logs.Count(l => l.ResponseStatusCode >= 200 && l.ResponseStatusCode < 300),
+            ClientError = logs.Count(l => l.ResponseStatusCode >= 400 && l.ResponseStatusCode < 500),
+            ServerError = logs.Count(l => l.ResponseStatusCode >= 500)
+        };
 
-        var avgDuration = await logs.AnyAsync() 
-            ? await logs.AverageAsync(l => l.DurationMs) 
-            : 0;
+        var avgDuration = logs.Average(l => (double)l.DurationMs);
 
         return (dailyStats, statusDist, avgDuration);
     }

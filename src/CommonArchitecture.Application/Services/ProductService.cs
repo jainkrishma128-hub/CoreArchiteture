@@ -28,7 +28,9 @@ public class ProductService : IProductService
             Name = p.Name,
             Description = p.Description,
             Price = p.Price,
-            Stock = p.Stock
+            Stock = p.Stock,
+            CategoryId = p.CategoryId,
+            CategoryName = p.Category?.Name ?? "Uncategorized"
         });
 
         return new PaginatedResult<ProductDto>
@@ -51,7 +53,9 @@ public class ProductService : IProductService
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
-            Stock = product.Stock
+            Stock = product.Stock,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category?.Name ?? "Uncategorized"
         };
     }
 
@@ -63,6 +67,7 @@ public class ProductService : IProductService
             Description = createDto.Description,
             Price = createDto.Price,
             Stock = createDto.Stock,
+            CategoryId = createDto.CategoryId,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -75,7 +80,9 @@ public class ProductService : IProductService
             Name = createdProduct.Name,
             Description = createdProduct.Description,
             Price = createdProduct.Price,
-            Stock = createdProduct.Stock
+            Stock = createdProduct.Stock,
+            CategoryId = createdProduct.CategoryId,
+            CategoryName = createdProduct.Category?.Name ?? "Uncategorized"
         };
     }
 
@@ -88,6 +95,7 @@ public class ProductService : IProductService
         product.Description = updateDto.Description;
         product.Price = updateDto.Price;
         product.Stock = updateDto.Stock;
+        product.CategoryId = updateDto.CategoryId;
         product.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.Products.UpdateAsync(product);
@@ -108,12 +116,14 @@ public class ProductService : IProductService
     public async Task<byte[]> ExportAsync()
     {
         var products = await _unitOfWork.Products.GetAllAsync();
-        var dtos = products.Select(p => new ProductCsvDto
+        var dtos = products.Select(p => new
         {
             Name = p.Name,
             Description = p.Description,
             Price = p.Price,
-            Stock = p.Stock
+            Stock = p.Stock,
+            CategoryId = p.CategoryId,
+            Category = p.Category?.Name ?? "Uncategorized"
         });
 
         using var memoryStream = new MemoryStream();
@@ -133,26 +143,38 @@ public class ProductService : IProductService
             using var reader = new StreamReader(fileStream);
             using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
             
-            var records = csv.GetRecords<ProductCsvDto>().ToList();
+            var records = csv.GetRecords<dynamic>().ToList();
             if (!records.Any()) return false;
 
-            var products = records.Select(r => new Product
+            var products = new List<Product>();
+            foreach (var record in records)
             {
-                Name = r.Name,
-                Description = r.Description,
-                Price = r.Price,
-                Stock = r.Stock,
-                CreatedAt = DateTime.UtcNow
-            });
+                int categoryId = 1;
+                if (int.TryParse(record.CategoryId?.ToString(), out int catId))
+                {
+                    categoryId = catId;
+                }
+
+                var product = new Product
+                {
+                    Name = record.Name,
+                    Description = record.Description,
+                    Price = decimal.Parse(record.Price),
+                    Stock = int.Parse(record.Stock),
+                    CategoryId = categoryId,
+                    CreatedAt = DateTime.UtcNow
+                };
+                products.Add(product);
+            }
 
             await _unitOfWork.Products.BulkAddAsync(products);
             await _unitOfWork.SaveChangesAsync();
-            
+     
             return true;
         }
         catch
         {
-            return false;
+          return false;
         }
     }
 }

@@ -9,8 +9,10 @@ $(document).ready(function () {
     let searchTerm = '';
     let searchTimeout = null;
     let currentView = 'grid';
+    let selectedCategoryId = '';
 
     // Initialize
+    loadCategories();
     loadProducts();
     attachEventHandlers();
 
@@ -68,7 +70,12 @@ $(document).ready(function () {
             loadProducts();
         });
 
-        // View toggle
+        // Category change
+        $('#categorySelect').change(function () {
+            selectedCategoryId = $(this).val();
+            currentPage = 1;
+            loadProducts();
+        });
         $('.btn-view').click(function () {
             $('.btn-view').removeClass('active');
             $(this).addClass('active');
@@ -105,6 +112,21 @@ $(document).ready(function () {
     // ========================================
     // Data Loading Functions
     // ========================================
+    function loadCategories() {
+        $.ajax({
+            url: '/api/categories/active',
+            type: 'GET',
+            success: function (response) {
+                if (response && Array.isArray(response)) {
+                    const select = $('#categorySelect');
+                    response.forEach(function (category) {
+                        select.append(`<option value="${category.id}">${category.name}</option>`);
+                    });
+                }
+            }
+        });
+    }
+
     function loadProducts() {
         $('#loadingState').show();
         $('#productsGrid').hide();
@@ -118,6 +140,7 @@ $(document).ready(function () {
         };
 
         if (searchTerm) params.SearchTerm = searchTerm;
+        if (selectedCategoryId) params.CategoryId = selectedCategoryId;
 
         $.ajax({
             url: '/Ecommerce/Shop/Products',
@@ -181,7 +204,7 @@ $(document).ready(function () {
                         </div>
                     </div>
                     <div class="product-info">
-                        <span class="product-category">General</span>
+                        <span class="product-category">${product.categoryName || 'General'}</span>
                         <h3 class="product-name">
                             <a href="/Ecommerce/Shop/ProductDetail/${product.id}">${escapeHtml(product.name)}</a>
                         </h3>

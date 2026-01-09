@@ -1,0 +1,16 @@
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\bin\Release\net9.0\CommonArchitecture.Application.deps.json
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\bin\Release\net9.0\CommonArchitecture.Application.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\bin\Release\net9.0\CommonArchitecture.Application.pdb
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\bin\Release\net9.0\CommonArchitecture.Core.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\bin\Release\net9.0\CommonArchitecture.Core.pdb
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\CommonArchitecture.Application.csproj.AssemblyReference.cache
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\CommonArchitecture.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\CommonArchitecture.Application.AssemblyInfoInputs.cache
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\CommonArchitecture.Application.AssemblyInfo.cs
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\CommonArchitecture.Application.csproj.CoreCompileInputs.cache
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\CommonArchitecture.Application.sourcelink.json
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\CommonAr.65A33C85.Up2Date
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\CommonArchitecture.Application.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\refint\CommonArchitecture.Application.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\CommonArchitecture.Application.pdb
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Application\obj\Release\net9.0\ref\CommonArchitecture.Application.dll

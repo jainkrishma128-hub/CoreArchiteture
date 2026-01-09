@@ -1,16 +1,14 @@
 using CommonArchitecture.Application.Services;
 using CommonArchitecture.Core.Interfaces;
-using CommonArchitecture.Infrastructure.Persistence;
-using CommonArchitecture.Infrastructure.Repositories;
+using CommonArchitecture.Infrastructure.Extensions;
+using CommonArchitecture.Infrastructure.Modules;
 using CommonArchitecture.API.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Threading.RateLimiting;
 using System.Text;
-using CommonArchitecture.Infrastructure.Services;
 using Hangfire;
 using Hangfire.SqlServer;
 using Hangfire.Dashboard;
@@ -26,57 +24,45 @@ if (builder.Environment.IsDevelopment())
 // Add Environment Variables (takes precedence)
 builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
-builder.Services.AddMemoryCache();
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
- options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Register modules (modular service registration)
+var modules = new IModule[]
+{
+    new PersistenceModule(),
+    new ApplicationServicesModule(),
+    new CachingModule()
+};
 
-// Register repositories
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-builder.Services.AddScoped<IMenuRepository, MenuRepository>();
-builder.Services.AddScoped<IRoleMenuRepository, RoleMenuRepository>();
+builder.Services.AddModules(builder.Configuration, modules);
 
-// Register UnitOfWork
-builder.Services.AddScoped<CommonArchitecture.Core.Interfaces.IUnitOfWork, CommonArchitecture.Infrastructure.UnitOfWork.UnitOfWork>();
-
-// Register JWT Service
+// Register application-specific services
 builder.Services.AddScoped<IJwtService, JwtService>();
 
-// Register Background Services
-builder.Services.AddHostedService<CommonArchitecture.API.Services.RefreshTokenCleanupService>();
-
-// Register logging service
-builder.Services.AddScoped<ILoggingService, LoggingService>();
-
-// Register Notification Service
-builder.Services.AddScoped<INotificationService, NotificationService>();
-
-// Register Daily Good Morning Job
-builder.Services.AddScoped<CommonArchitecture.API.Services.DailyGoodMorningJob>();
-
-// Register Application Services (repository + unit of work based services)
+// Register application services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<CommonArchitecture.Application.Services.IMenuService, CommonArchitecture.Application.Services.MenuService>();
+builder.Services.AddScoped<CommonArchitecture.Application.Services.IRoleMenuService, CommonArchitecture.Application.Services.RoleMenuService>();
+
+// Register background services
+builder.Services.AddHostedService<CommonArchitecture.API.Services.RefreshTokenCleanupService>();
+builder.Services.AddScoped<CommonArchitecture.API.Services.DailyGoodMorningJob>();
 
 // Configure Hangfire
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddHangfire(configuration => configuration
- .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
- .UseSimpleAssemblyNameTypeSerializer()
- .UseRecommendedSerializerSettings()
- .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
- {
- CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
- SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
- QueuePollInterval = TimeSpan.Zero,
- UseRecommendedIsolationLevel = true,
- DisableGlobalLocks = true
- }));
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(connectionString, new SqlServerStorageOptions
+    {
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+        DisableGlobalLocks = true
+    }));
 
 builder.Services.AddHangfireServer();
 

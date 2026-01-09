@@ -29,6 +29,7 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.AssemblyInfoInputs.cache
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.AssemblyInfo.cs
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.csproj.CoreCompileInputs.cache
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.sourcelink.json
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.dll
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\refint\CommonArchitecture.Core.dll
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Core\obj\Debug\net9.0\CommonArchitecture.Core.pdb

@@ -540,6 +540,7 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\CommonArchitecture.API.csproj.CoreCompileInputs.cache
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\CommonArchitecture.API.MvcApplicationPartsAssemblyInfo.cs
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\CommonArchitecture.API.MvcApplicationPartsAssemblyInfo.cache
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\CommonArchitecture.API.sourcelink.json
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\rjimswa.dswa.cache.json
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json

@@ -34,6 +34,12 @@ public class ApplicationDbContext : DbContext
             entity.Property(p => p.Price).HasPrecision(18, 2);
             entity.Property(p => p.Stock).HasDefaultValue(0);
             entity.Property(p => p.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+            // Configure relationship with Category
+            entity.HasOne(p => p.Category)
+                .WithMany()
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Configure Category entity
@@ -158,10 +164,17 @@ public class ApplicationDbContext : DbContext
             entity.Property(r => r.UserId).HasMaxLength(128);
             entity.Property(r => r.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             
-            // Optimization: Add index for sorting/filtering
-            entity.HasIndex(r => r.CreatedAt);
-            entity.HasIndex(r => r.ResponseStatusCode);
-            entity.HasIndex(r => r.Method);
+            // Optimization: Add indexes for sorting/filtering and dashboard stats queries
+            entity.HasIndex(r => r.CreatedAt)
+                .HasDatabaseName("IX_RequestResponseLogs_CreatedAt");
+            entity.HasIndex(r => r.ResponseStatusCode)
+                .HasDatabaseName("IX_RequestResponseLogs_ResponseStatusCode");
+            entity.HasIndex(r => r.Method)
+                .HasDatabaseName("IX_RequestResponseLogs_Method");
+            
+            // Composite index for dashboard stats filtering by date and status
+            entity.HasIndex(r => new { r.CreatedAt, r.ResponseStatusCode })
+                .HasDatabaseName("IX_RequestResponseLogs_CreatedAt_ResponseStatusCode");
         });
     }
 }

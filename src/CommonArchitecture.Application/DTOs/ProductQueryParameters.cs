@@ -9,6 +9,7 @@ public class ProductQueryParameters
     public string SortBy { get; set; } = "Id";
     public string SortOrder { get; set; } = "asc"; // asc or desc
     public int PageNumber { get; set; } = 1;
+    public int? CategoryId { get; set; }
     
     public int PageSize
     {
