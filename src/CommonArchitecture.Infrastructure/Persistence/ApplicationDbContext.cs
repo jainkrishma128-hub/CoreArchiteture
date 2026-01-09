@@ -40,6 +40,14 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Performance optimization: Add indexes for common queries
+            entity.HasIndex(p => p.CategoryId).HasDatabaseName("IX_Product_CategoryId");
+            entity.HasIndex(p => p.Price).HasDatabaseName("IX_Product_Price");
+            // Composite index for common filtered queries (category + price searches)
+            entity.HasIndex(p => new { p.CategoryId, p.Price }).HasDatabaseName("IX_Product_CategoryId_Price");
+            // Index for search queries on Name
+            entity.HasIndex(p => p.Name).HasDatabaseName("IX_Product_Name");
         });
 
         // Configure Category entity
@@ -50,6 +58,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(c => c.Description).HasMaxLength(1000);
             entity.Property(c => c.IsActive).HasDefaultValue(true);
             entity.Property(c => c.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+            // Performance optimization: Add indexes for common queries
+            entity.HasIndex(c => c.IsActive).HasDatabaseName("IX_Category_IsActive");
+            entity.HasIndex(c => new { c.IsActive, c.Name }).HasDatabaseName("IX_Category_IsActive_Name");
         });
 
         // Configure Role entity

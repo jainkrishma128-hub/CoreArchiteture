@@ -27,12 +27,16 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        return await _context.Products.ToListAsync();
+        return await _context.Products
+            .Include(p => p.Category)
+            .ToListAsync();
     }
 
     public async Task<Product?> GetByIdAsync(int id)
     {
-        return await _context.Products.FindAsync(id);
+        return await _context.Products
+            .Include(p => p.Category)
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<Product> AddAsync(Product product)
@@ -69,7 +73,9 @@ public class ProductRepository : IProductRepository
     /// <returns>Paginated list of products</returns>
     public async Task<IEnumerable<Product>> GetPagedAsync(string? searchTerm, string sortBy, string sortOrder, int pageNumber, int pageSize)
     {
-        var query = _context.Products.AsQueryable();
+        var query = _context.Products
+            .Include(p => p.Category)
+            .AsQueryable();
 
         // Apply search filter
         query = ApplySearchFilter(query, searchTerm);

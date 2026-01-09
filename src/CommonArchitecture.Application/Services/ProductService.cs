@@ -22,6 +22,7 @@ public class ProductService : IProductService
         var total = await _unitOfWork.Products.GetTotalCountAsync(parameters.SearchTerm);
 
 
+        // Category is already loaded via Include in repository - no N+1 query issue
         var dtos = items.Select(p => new ProductDto
         {
             Id = p.Id,
@@ -74,15 +75,18 @@ public class ProductService : IProductService
         var createdProduct = await _unitOfWork.Products.AddAsync(product);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        // Reload with Category to avoid N+1 query
+        var productWithCategory = await _unitOfWork.Products.GetByIdAsync(createdProduct.Id);
+
         return new ProductDto
         {
-            Id = createdProduct.Id,
-            Name = createdProduct.Name,
-            Description = createdProduct.Description,
-            Price = createdProduct.Price,
-            Stock = createdProduct.Stock,
-            CategoryId = createdProduct.CategoryId,
-            CategoryName = createdProduct.Category?.Name ?? "Uncategorized"
+            Id = productWithCategory!.Id,
+            Name = productWithCategory.Name,
+            Description = productWithCategory.Description,
+            Price = productWithCategory.Price,
+            Stock = productWithCategory.Stock,
+            CategoryId = productWithCategory.CategoryId,
+            CategoryName = productWithCategory.Category?.Name ?? "Uncategorized"
         };
     }
 

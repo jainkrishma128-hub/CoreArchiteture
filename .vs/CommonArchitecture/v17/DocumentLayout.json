@@ -1,12 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\My Archi\\Git\\CoreArchiteture-main\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{3759EC62-E0D2-43C0-A07D-D076F365F1FC}|src\\CommonArchitecture.Web\\CommonArchitecture.Web.csproj|d:\\my archi\\git\\corearchiteture-main\\src\\commonarchitecture.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3759EC62-E0D2-43C0-A07D-D076F365F1FC}|src\\CommonArchitecture.Web\\CommonArchitecture.Web.csproj|solutionrelative:src\\commonarchitecture.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -14,7 +9,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -23,19 +18,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\My Archi\\Git\\CoreArchiteture-main\\src\\CommonArchitecture.Web\\Program.cs",
-              "RelativeDocumentMoniker": "src\\CommonArchitecture.Web\\Program.cs",
-              "ToolTip": "D:\\My Archi\\Git\\CoreArchiteture-main\\src\\CommonArchitecture.Web\\Program.cs",
-              "RelativeToolTip": "src\\CommonArchitecture.Web\\Program.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-08T23:45:47.551Z",
-              "EditorCaption": ""
             }
           ]
         }

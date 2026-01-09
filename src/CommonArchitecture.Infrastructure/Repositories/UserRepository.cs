@@ -96,6 +96,7 @@ public class UserRepository : IUserRepository
         // Apply search filter
         query = ApplySearchFilter(query, searchTerm);
 
+        // No need to include Role for count query - optimization
         return await query.CountAsync();
     }
 

@@ -3,6 +3,7 @@ using CommonArchitecture.Core.Entities;
 using CommonArchitecture.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace CommonArchitecture.API.Controllers;
@@ -31,7 +32,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var categories = _unitOfWork.Categories.GetQuery()
+            var categories = await _unitOfWork.Categories.GetQuery()
                 .Where(c => c.IsActive)
                 .OrderBy(c => c.Name)
                 .Select(c => new CategoryDto
@@ -41,7 +42,7 @@ public class CategoriesController : ControllerBase
                     Description = c.Description,
                     IsActive = c.IsActive
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(categories);
         }
@@ -83,9 +84,9 @@ public class CategoriesController : ControllerBase
           : query.OrderBy(c => c.Id);
             }
 
-          // Paginate
-    var totalCount = query.Count();
-           var items = query
+          // Paginate - CountAsync and ToListAsync for async execution
+    var totalCount = await query.CountAsync();
+           var items = await query
  .Skip((parameters.PageNumber - 1) * parameters.PageSize)
               .Take(parameters.PageSize)
       .Select(c => new CategoryDto
@@ -95,7 +96,7 @@ public class CategoriesController : ControllerBase
      Description = c.Description,
         IsActive = c.IsActive
          })
-   .ToList();
+   .ToListAsync();
 
       return Ok(new PaginatedResult<CategoryDto>
           {
