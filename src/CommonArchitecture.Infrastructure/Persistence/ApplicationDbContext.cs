@@ -16,6 +16,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Menu> Menus { get; set; }
     public DbSet<RoleMenu> RoleMenus { get; set; }
+    public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
 
     // Logging tables
     public DbSet<ErrorLog> ErrorLogs { get; set; }
@@ -32,7 +33,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(p => p.Name).IsRequired().HasMaxLength(256);
             entity.Property(p => p.Description).HasMaxLength(1000);
             entity.Property(p => p.Price).HasPrecision(18, 2);
-            entity.Property(p => p.Stock).HasDefaultValue(0);
             entity.Property(p => p.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
 
             // Configure relationship with Category
@@ -187,6 +187,27 @@ public class ApplicationDbContext : DbContext
             // Composite index for dashboard stats filtering by date and status
             entity.HasIndex(r => new { r.CreatedAt, r.ResponseStatusCode })
                 .HasDatabaseName("IX_RequestResponseLogs_CreatedAt_ResponseStatusCode");
+        });
+
+        // Configure InventoryTransaction entity
+        modelBuilder.Entity<InventoryTransaction>(entity =>
+        {
+            entity.ToTable("InventoryTransactions");
+            entity.HasKey(it => it.Id);
+            entity.Property(it => it.Quantity).IsRequired();
+            entity.Property(it => it.TransactionType).IsRequired();
+            entity.Property(it => it.Reason).HasMaxLength(500);
+            entity.Property(it => it.ReferenceNumber).HasMaxLength(100);
+            entity.Property(it => it.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+            entity.HasOne(it => it.Product)
+                .WithMany()
+                .HasForeignKey(it => it.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(it => it.ProductId);
+            entity.HasIndex(it => it.TransactionType);
+            entity.HasIndex(it => it.CreatedAt);
         });
     }
 }

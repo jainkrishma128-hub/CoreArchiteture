@@ -12,6 +12,7 @@ namespace CommonArchitecture.Web.Areas.Admin.Controllers;
 public class ProductsController : Controller
 {
     private readonly IProductApiService _productApiService;
+    private readonly ICategoryApiService _categoryApiService;
     private readonly ILogger<ProductsController> _logger;
     private readonly IValidator<CreateProductDto> _createValidator;
     private readonly IValidator<UpdateProductDto> _updateValidator;
@@ -19,12 +20,14 @@ public class ProductsController : Controller
 
     public ProductsController(
         IProductApiService productApiService, 
+        ICategoryApiService categoryApiService,
         ILogger<ProductsController> logger,
         IValidator<CreateProductDto> createValidator,
         IValidator<UpdateProductDto> updateValidator,
         IToastNotification toastNotification)
     {
         _productApiService = productApiService;
+        _categoryApiService = categoryApiService;
         _logger = logger;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
@@ -35,6 +38,22 @@ public class ProductsController : Controller
     public IActionResult Index()
     {
         return View();
+    }
+
+    // GET: Admin/Products/GetCategories
+    [HttpGet]
+    public async Task<IActionResult> GetCategories()
+    {
+        try 
+        {
+            var result = await _categoryApiService.GetAllAsync(new CategoryQueryParameters { PageSize = 1000 });
+            return Json(new { success = true, data = result.Items });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading categories");
+            return Json(new { success = false, message = "Error loading categories" });
+        }
     }
 
     // GET: Admin/Products/GetAll - AJAX endpoint
@@ -79,6 +98,12 @@ public class ProductsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([FromBody] CreateProductDto createDto)
     {
+        if (createDto == null)
+        {
+            _toastNotification.AddErrorToastMessage("Invalid request data.");
+            return Json(new { success = false, message = "Invalid request data." });
+        }
+
         // Server-side validation with FluentValidation
         var validationResult = await _createValidator.ValidateAsync(createDto);
         if (!validationResult.IsValid)
@@ -112,6 +137,12 @@ public class ProductsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, [FromBody] UpdateProductDto updateDto)
     {
+        if (updateDto == null)
+        {
+            _toastNotification.AddErrorToastMessage("Invalid request data.");
+            return Json(new { success = false, message = "Invalid request data." });
+        }
+
         // Server-side validation with FluentValidation
         var validationResult = await _updateValidator.ValidateAsync(updateDto);
         if (!validationResult.IsValid)
@@ -216,9 +247,8 @@ public class ProductsController : Controller
     [HttpGet]
     public IActionResult DownloadTemplate()
     {
-        var csvHeader = "Name,Description,Price,Stock\n";
+        var csvHeader = "Name,Description,Price\n";
         var fileContent = System.Text.Encoding.UTF8.GetBytes(csvHeader);
         return File(fileContent, "text/csv", "product_import_template.csv");
     }
 }
-

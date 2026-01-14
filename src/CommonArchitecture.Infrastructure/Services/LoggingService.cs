@@ -98,6 +98,9 @@ public class LoggingService : ILoggingService
     {
         using var context = await _contextFactory.CreateDbContextAsync();
         
+        // Set command timeout for long-running queries
+        context.Database.SetCommandTimeout(120);
+        
         // Optimization: Perform aggregation in database instead of fetching all records into memory
         
         // 1. Daily Stats (Group by Date)
@@ -139,4 +142,75 @@ public class LoggingService : ILoggingService
 
         return (dailyStats, statusDist, avgDuration);
     }
+
+public async Task<(List<DailyStatDto> DailyStats, StatusDistributionDto StatusDistribution, double AvgDuration)> GetDashboardStatsSpAsync(DateTime from, DateTime to)
+{
+    var dailyStats = new List<DailyStatDto>();
+    var statusDistribution = new StatusDistributionDto();
+    double avgDuration = 0;
+
+    using var context = await _contextFactory.CreateDbContextAsync();
+    var connection = context.Database.GetDbConnection();
+    bool wasOpen = connection.State == System.Data.ConnectionState.Open;
+    if (!wasOpen) await connection.OpenAsync();
+
+    try
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = "sp_GetDashboardStats";
+        command.CommandType = System.Data.CommandType.StoredProcedure;
+        command.CommandTimeout = 120; // 2 minutes timeout
+
+        var pFrom = command.CreateParameter();
+        pFrom.ParameterName = "@FromDate";
+        pFrom.Value = from;
+        command.Parameters.Add(pFrom);
+
+        var pTo = command.CreateParameter();
+        pTo.ParameterName = "@ToDate";
+        pTo.Value = to;
+        command.Parameters.Add(pTo);
+
+        using var reader = await command.ExecuteReaderAsync();
+
+        // 1. Daily Stats
+        while (await reader.ReadAsync())
+        {
+            dailyStats.Add(new DailyStatDto
+            {
+                Date = reader.GetDateTime(0),
+                Count = reader.GetInt32(1),
+                AverageDuration = reader.GetDouble(2)
+            });
+        }
+
+        // 2. Status Distribution
+        if (await reader.NextResultAsync())
+        {
+            if (await reader.ReadAsync())
+            {
+                statusDistribution = new StatusDistributionDto
+                {
+                    Success = reader.GetInt32(reader.GetOrdinal("Success")),
+                    ClientError = reader.GetInt32(reader.GetOrdinal("ClientError")),
+                    ServerError = reader.GetInt32(reader.GetOrdinal("ServerError"))
+                };
+            }
+        }
+
+        // 3. Overall Average
+        if (await reader.NextResultAsync() && await reader.ReadAsync())
+        {
+            if (!reader.IsDBNull(0))
+                avgDuration = reader.GetDouble(0);
+        }
+    }
+    finally
+    {
+        if (!wasOpen) await connection.CloseAsync();
+    }
+
+    return (dailyStats, statusDistribution, avgDuration);
+}
+
 }

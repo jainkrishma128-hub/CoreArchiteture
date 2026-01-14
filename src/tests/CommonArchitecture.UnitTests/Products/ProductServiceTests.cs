@@ -39,8 +39,8 @@ public class ProductServiceTests
 
         var products = new List<Product>
         {
-            new Product { Id = 1, Name = "Product 1", Price = 100, Stock = 10 },
-            new Product { Id = 2, Name = "Product 2", Price = 200, Stock = 20 }
+            new Product { Id = 1, Name = "Product 1", Price = 100 },
+            new Product { Id = 2, Name = "Product 2", Price = 200 }
         };
 
         _productRepositoryMock.Setup(x => x.GetPagedAsync(
@@ -75,8 +75,7 @@ public class ProductServiceTests
         {
             Name = "New Product",
             Description = "New Description",
-            Price = 99.99m,
-            Stock = 50
+            Price = 99.99m
         };
 
         _productRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Product>()))

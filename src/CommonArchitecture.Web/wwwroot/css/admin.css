@@ -62,20 +62,33 @@
 .admin-sidebar {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
-    padding-right: 8px; /* prevent nav links from colliding with the scrollbar */
-    scrollbar-width: thin; /* Firefox */
-    scrollbar-color: rgba(79,70,229,0.28) transparent; /* Firefox */
+    padding-right: 8px;
+    /* prevent nav links from colliding with the scrollbar */
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: rgba(79, 70, 229, 0.28) transparent;
+    /* Firefox */
 }
 
-.admin-sidebar::-webkit-scrollbar { width: 10px; }
-.admin-sidebar::-webkit-scrollbar-track { background: transparent; }
+.admin-sidebar::-webkit-scrollbar {
+    width: 10px;
+}
+
+.admin-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .admin-sidebar::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(79,70,229,0.20), rgba(79,70,229,0.36));
+    background: linear-gradient(180deg, rgba(79, 70, 229, 0.20), rgba(79, 70, 229, 0.36));
     border-radius: 999px;
-    border: 2px solid transparent; /* gives padding between thumb and track */
+    border: 2px solid transparent;
+    /* gives padding between thumb and track */
     background-clip: padding-box;
 }
-.admin-sidebar::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, rgba(79,70,229,0.34), rgba(79,70,229,0.5)); }
+
+.admin-sidebar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(79, 70, 229, 0.34), rgba(79, 70, 229, 0.5));
+}
 
 /* Subtle top/bottom fade to indicate scrollable content */
 .admin-sidebar::before,
@@ -88,44 +101,70 @@
     pointer-events: none;
     z-index: 1100;
 }
+
 .admin-sidebar::before {
     top: 0;
-    background: linear-gradient(180deg, rgba(15,23,42,0.95), rgba(15,23,42,0));
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0));
 }
+
 .admin-sidebar::after {
     bottom: 0;
-    background: linear-gradient(0deg, rgba(15,23,42,0.95), rgba(15,23,42,0));
+    background: linear-gradient(0deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0));
 }
 
 /* Sidebar inner nav spacing and polished link styles */
-.sidebar-nav { padding: 1rem 0 2.5rem 0; position: relative; }
+.sidebar-nav {
+    padding: 1rem 0 2.5rem 0;
+    position: relative;
+}
+
 .sidebar-nav .nav-link {
     padding: 0.9rem 1.25rem;
     border-left: 3px solid transparent;
     transition: background 0.18s ease, color 0.18s ease, transform 0.08s ease;
 }
+
 .sidebar-nav .nav-link:hover {
     color: #fff;
     background: rgba(255, 255, 255, 0.03);
     transform: translateX(3px);
 }
-.sidebar-nav .nav-link i { transition: transform 0.18s ease; }
-.sidebar-nav .nav-link:hover i { transform: translateX(-2px); }
+
+.sidebar-nav .nav-link i {
+    transition: transform 0.18s ease;
+}
+
+.sidebar-nav .nav-link:hover i {
+    transform: translateX(-2px);
+}
+
 .sidebar-nav .nav-link.active {
     color: #fff;
-    background: linear-gradient(90deg, rgba(79,70,229,0.12), rgba(79,70,229,0.04));
+    background: linear-gradient(90deg, rgba(79, 70, 229, 0.12), rgba(79, 70, 229, 0.04));
     border-left-color: var(--admin-primary);
-    box-shadow: inset 6px 0 18px -8px rgba(79,70,229,0.35);
+    box-shadow: inset 6px 0 18px -8px rgba(79, 70, 229, 0.35);
 }
 
 /* Make quick-links and small items look consistent when scrolling */
-.admin-sidebar .nav-section-title { padding-top: 0.8rem; padding-bottom: 0.4rem; }
-.admin-sidebar .nav-link .badge { margin-left: auto; }
+.admin-sidebar .nav-section-title {
+    padding-top: 0.8rem;
+    padding-bottom: 0.4rem;
+}
+
+.admin-sidebar .nav-link .badge {
+    margin-left: auto;
+}
 
 /* Small screens: slightly narrower scrollbar thumb for better layout */
 @media (max-width: 767.98px) {
-  .admin-sidebar::-webkit-scrollbar { width: 8px; }
-  .admin-sidebar::before, .admin-sidebar::after { height: 28px; }
+    .admin-sidebar::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .admin-sidebar::before,
+    .admin-sidebar::after {
+        height: 28px;
+    }
 }
 
 .sidebar-header {
@@ -562,31 +601,65 @@ th {
     border: 1px solid rgba(255, 255, 255, 0.18) !important;
     color: #fff !important;
     border-radius: 4px;
+}
+
+.form-control {
     accent-color: #fff;
     filter: grayscale(100%);
-    /* KILL BLUE */
 }
 
 .form-control:focus,
 .form-select:focus {
     background: rgba(0, 0, 0, 0.5) !important;
-    border-color: rgba(255,255,255,0.85) !important;
+    border-color: rgba(255, 255, 255, 0.85) !important;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.12) !important;
     color: #fff !important;
+}
+
+.form-control:focus {
     filter: grayscale(100%);
 }
 
 /* Fix Dropdown Options (Browser dependent) */
+.form-select option,
 select option {
-    background-color: #0f172a !important;
-    color: #fff !important;
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    padding: 8px !important;
 }
 
+.form-select option:hover,
+.form-select option:focus,
+.form-select option:checked,
 select option:checked,
 select option:hover {
-    box-shadow: 0 0 10px 100px #fff inset !important;
-    color: #000 !important;
-    filter: grayscale(100%);
+    background-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+/* Additional dropdown text visibility fixes */
+#CategoryId option,
+#CategoryId {
+    color: #ffffff !important;
+    background-color: rgba(0, 0, 0, 0.36) !important;
+}
+
+#CategoryId option {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+/* Force dropdown text to be visible in all browsers */
+select,
+.form-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    color: #ffffff !important;
+}
+
+select::-ms-expand {
+    display: none;
 }
 
 /* Checkboxes & Radios - Monochrome */
@@ -752,38 +825,79 @@ select option:hover {
 
 /* --- Admin Table Responsive Utilities (CSS-only) --- */
 
-.table-admin-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.table-admin { width: 100%; border-collapse: collapse; }
-.table-admin th, .table-admin td { white-space: nowrap; vertical-align: middle; }
+.table-admin-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-admin {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-admin th,
+.table-admin td {
+    white-space: nowrap;
+    vertical-align: middle;
+}
 
 /* Priority helper classes: apply to TH / TD to control visibility */
-.col-priority-1 { display: table-cell; } /* always visible */
-.col-priority-2 { display: table-cell; } /* hide on small */
-.col-priority-3 { display: table-cell; } /* hide on medium-small */
-.col-priority-4 { display: table-cell; } /* hide on large-small */
+.col-priority-1 {
+    display: table-cell;
+}
+
+/* always visible */
+.col-priority-2 {
+    display: table-cell;
+}
+
+/* hide on small */
+.col-priority-3 {
+    display: table-cell;
+}
+
+/* hide on medium-small */
+.col-priority-4 {
+    display: table-cell;
+}
+
+/* hide on large-small */
 
 /* <= 1200px: hide lowest priority */
 @media (max-width: 1200px) {
-    .table-admin .col-priority-4 { display: none; }
+    .table-admin .col-priority-4 {
+        display: none;
+    }
 }
 
 /* <= 992px: hide medium & low priorities */
 @media (max-width: 992px) {
+
     .table-admin .col-priority-3,
-    .table-admin .col-priority-4 { display: none; }
+    .table-admin .col-priority-4 {
+        display: none;
+    }
 }
 
 /* <= 768px: hide most secondary columns, allow horizontal scroll */
 @media (max-width: 768px) {
+
     .table-admin .col-priority-2,
     .table-admin .col-priority-3,
-    .table-admin .col-priority-4 { display: none; }
-    .table-admin-wrapper { overflow-x: auto; }
+    .table-admin .col-priority-4 {
+        display: none;
+    }
+
+    .table-admin-wrapper {
+        overflow-x: auto;
+    }
 }
 
 /* Fallback: if no priority classes are provided, collapse later columns on small screens
      Keep first and last columns visible (common pattern: item + actions) */
 @media (max-width: 768px) {
+
     .table-admin thead th:nth-child(n+3):not(:last-child),
     .table-admin tbody td:nth-child(n+3):not(:last-child) {
         display: none;
@@ -791,4 +905,297 @@ select option:hover {
 }
 
 /* Ensure actions column stays visible and right-aligned */
-.table-admin td.text-end, .table-admin th.text-end { white-space: nowrap; }
+.table-admin td.text-end,
+.table-admin th.text-end {
+    white-space: nowrap;
+}
+
+/* ========================================
+   THEME CONSISTENCY FIXES
+   ======================================== */
+
+/* 1. Input Placeholder Text - Make visible in dark theme */
+.form-control::placeholder,
+.form-select::placeholder,
+input::placeholder,
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+    opacity: 1 !important;
+}
+
+/* 2. Autofill Override - Kill yellow/blue browser autofill backgrounds */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-text-fill-color: #fff !important;
+    -webkit-box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5) inset !important;
+    box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5) inset !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* 3. Modal Body Background Override - Force transparent on .bg-light */
+.modal-body.bg-light,
+.modal-body.bg-light.bg-opacity-50,
+.modal-footer.bg-light {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+/* 4. Modal Header - Override .bg-primary to match theme */
+.modal-header.bg-primary {
+    background: rgba(79, 70, 229, 0.15) !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 5. Text Selection - Monochrome highlight */
+::selection {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+::-moz-selection {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+/* 6. Dropdown Menu Items - Ensure all dropdown contexts are themed */
+.dropdown-menu {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid var(--admin-border-strong) !important;
+    backdrop-filter: blur(10px);
+}
+
+.dropdown-item {
+    color: var(--admin-text-main) !important;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.dropdown-item:active {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+}
+
+.dropdown-divider {
+    border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 7. Modal Backdrop - Darker for better contrast */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.modal-backdrop.show {
+    opacity: 1 !important;
+}
+
+/* 8. Global Scrollbar Theme */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(79, 70, 229, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(79, 70, 229, 0.2), rgba(79, 70, 229, 0.4));
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(79, 70, 229, 0.4), rgba(79, 70, 229, 0.6));
+}
+
+/* 9. Focus Visible - Remove blue outline, use white glow */
+*:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+button:focus-visible,
+.btn:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 0 10px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 10. Additional Input States */
+.form-control:disabled,
+.form-select:disabled {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    cursor: not-allowed;
+}
+
+.form-control[readonly] {
+    background-color: rgba(0, 0, 0, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 11. Invalid/Valid State Override */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: rgba(239, 68, 68, 0.6) !important;
+    background-image: none !important;
+}
+
+.form-control.is-valid,
+.form-select.is-valid {
+    border-color: rgba(16, 185, 129, 0.6) !important;
+    background-image: none !important;
+}
+
+.invalid-feedback,
+.valid-feedback {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 12. Label Text */
+label,
+.form-label {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* 13. Small/Help Text */
+.form-text,
+small {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 14. Ensure all Bootstrap utility backgrounds are transparent */
+.bg-body,
+.bg-body-secondary,
+.bg-body-tertiary {
+    background-color: transparent !important;
+}
+
+/* 15. Alert Components */
+.alert {
+    background-color: rgba(15, 23, 42, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+.alert-primary {
+    border-left: 3px solid #818cf8 !important;
+}
+
+.alert-success {
+    border-left: 3px solid #34d399 !important;
+}
+
+.alert-warning {
+    border-left: 3px solid #fbbf24 !important;
+}
+
+.alert-danger {
+    border-left: 3px solid #ef4444 !important;
+}
+
+.alert-info {
+    border-left: 3px solid #22d3ee !important;
+}
+
+/* 16. Toast Notifications */
+.toast {
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid var(--admin-border-strong) !important;
+    color: #fff !important;
+    backdrop-filter: blur(10px);
+}
+
+.toast-header {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.toast-body {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* 17. Progress Bars */
+.progress {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.progress-bar {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 18. Breadcrumb */
+.breadcrumb {
+    background-color: transparent !important;
+}
+
+.breadcrumb-item,
+.breadcrumb-item a {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.breadcrumb-item.active {
+    color: #fff !important;
+}
+
+/* 19. Nav Tabs/Pills */
+.nav-tabs,
+.nav-pills {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.nav-tabs .nav-link,
+.nav-pills .nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+    border-color: transparent !important;
+}
+
+.nav-tabs .nav-link:hover,
+.nav-pills .nav-link:hover {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.nav-tabs .nav-link.active,
+.nav-pills .nav-link.active {
+    color: #fff !important;
+    background-color: rgba(79, 70, 229, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 20. List Group */
+.list-group-item {
+    background-color: rgba(15, 23, 42, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.list-group-item.active {
+    background-color: rgba(79, 70, 229, 0.2) !important;
+    border-color: var(--admin-primary) !important;
+}

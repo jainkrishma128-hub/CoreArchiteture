@@ -29,7 +29,6 @@ public class ProductService : IProductService
             Name = p.Name,
             Description = p.Description,
             Price = p.Price,
-            Stock = p.Stock,
             CategoryId = p.CategoryId,
             CategoryName = p.Category?.Name ?? "Uncategorized"
         });
@@ -54,7 +53,6 @@ public class ProductService : IProductService
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
-            Stock = product.Stock,
             CategoryId = product.CategoryId,
             CategoryName = product.Category?.Name ?? "Uncategorized"
         };
@@ -67,7 +65,6 @@ public class ProductService : IProductService
             Name = createDto.Name,
             Description = createDto.Description,
             Price = createDto.Price,
-            Stock = createDto.Stock,
             CategoryId = createDto.CategoryId,
             CreatedAt = DateTime.UtcNow
         };
@@ -84,7 +81,6 @@ public class ProductService : IProductService
             Name = productWithCategory.Name,
             Description = productWithCategory.Description,
             Price = productWithCategory.Price,
-            Stock = productWithCategory.Stock,
             CategoryId = productWithCategory.CategoryId,
             CategoryName = productWithCategory.Category?.Name ?? "Uncategorized"
         };
@@ -98,7 +94,6 @@ public class ProductService : IProductService
         product.Name = updateDto.Name;
         product.Description = updateDto.Description;
         product.Price = updateDto.Price;
-        product.Stock = updateDto.Stock;
         product.CategoryId = updateDto.CategoryId;
         product.UpdatedAt = DateTime.UtcNow;
 
@@ -125,7 +120,6 @@ public class ProductService : IProductService
             Name = p.Name,
             Description = p.Description,
             Price = p.Price,
-            Stock = p.Stock,
             CategoryId = p.CategoryId,
             Category = p.Category?.Name ?? "Uncategorized"
         });
@@ -164,7 +158,6 @@ public class ProductService : IProductService
                     Name = record.Name,
                     Description = record.Description,
                     Price = decimal.Parse(record.Price),
-                    Stock = int.Parse(record.Stock),
                     CategoryId = categoryId,
                     CreatedAt = DateTime.UtcNow
                 };

@@ -18,8 +18,7 @@ public class CreateProductDtoValidator : AbstractValidator<CreateProductDto>
         RuleFor(x => x.Price)
             .GreaterThan(0).WithMessage("Price must be greater than 0.");
 
-        RuleFor(x => x.Stock)
-            .GreaterThanOrEqualTo(0).WithMessage("Stock cannot be negative.");
+
     }
 }
 
@@ -38,7 +37,6 @@ public class UpdateProductDtoValidator : AbstractValidator<UpdateProductDto>
         RuleFor(x => x.Price)
             .GreaterThan(0).WithMessage("Price must be greater than 0.");
 
-        RuleFor(x => x.Stock)
-            .GreaterThanOrEqualTo(0).WithMessage("Stock cannot be negative.");
+
     }
 }

@@ -23,4 +23,5 @@ public interface ILoggingService
     Task<RequestResponseLog?> GetLogByIdAsync(int id);
     
     Task<(List<DailyStatDto> DailyStats, StatusDistributionDto StatusDistribution, double AvgDuration)> GetDashboardStatsAsync(DateTime from, DateTime to);
+    Task<(List<DailyStatDto> DailyStats, StatusDistributionDto StatusDistribution, double AvgDuration)> GetDashboardStatsSpAsync(DateTime from, DateTime to);
 }

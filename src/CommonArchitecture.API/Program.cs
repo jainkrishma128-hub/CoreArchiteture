@@ -42,6 +42,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<CommonArchitecture.Application.Services.IMenuService, CommonArchitecture.Application.Services.MenuService>();
 builder.Services.AddScoped<CommonArchitecture.Application.Services.IRoleMenuService, CommonArchitecture.Application.Services.RoleMenuService>();
 

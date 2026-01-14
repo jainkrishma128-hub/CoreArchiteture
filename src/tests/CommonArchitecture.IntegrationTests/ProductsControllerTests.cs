@@ -28,7 +28,7 @@ public class ProductsControllerTests : IClassFixture<CustomWebApplicationFactory
         {
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             db.Database.EnsureCreated();
-            db.Products.Add(new Product { Name = "Test Product", Price = 10, Stock = 100, CreatedAt = DateTime.UtcNow });
+            db.Products.Add(new Product { Name = "Test Product", Price = 10, CreatedAt = DateTime.UtcNow });
             await db.SaveChangesAsync();
         }
 

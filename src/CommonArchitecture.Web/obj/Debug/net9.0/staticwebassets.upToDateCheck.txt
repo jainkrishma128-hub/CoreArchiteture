@@ -28,6 +28,7 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\boot
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\js\admin-inventory.js
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\jquery\dist\jquery.js
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
@@ -82,6 +83,7 @@ wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\js\admin.js
 wwwroot\js\admin-categories.js
+wwwroot\js\admin-inventory.js
 wwwroot\js\admin-menus.js
 wwwroot\js\admin-products.js
 wwwroot\js\admin-roles.js

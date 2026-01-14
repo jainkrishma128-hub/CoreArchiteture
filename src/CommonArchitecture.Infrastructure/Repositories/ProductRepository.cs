@@ -16,7 +16,6 @@ public class ProductRepository : IProductRepository
         nameof(Product.Id),
         nameof(Product.Name),
         nameof(Product.Price),
-        nameof(Product.Stock),
         nameof(Product.CreatedAt)
     };
 

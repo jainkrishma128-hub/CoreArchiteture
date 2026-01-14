@@ -16,6 +16,7 @@ $(document).ready(function () {
 
     // Initialize
     loadProducts();
+    loadCategories();
     initializeValidation();
     attachEventHandlers();
 
@@ -27,8 +28,8 @@ $(document).ready(function () {
             rules: {
                 Name: { required: true, maxlength: 100 },
                 Description: { required: true, maxlength: 500 },
-                Price: { required: true, number: true, min: 0.01 },
-                Stock: { required: true, digits: true, min: 0 }
+                CategoryId: { required: true },
+                Price: { required: true, number: true, min: 0.01 }
             },
             errorPlacement: function (error, element) {
                 $(`#error-${element.attr('name')}`).html(error);
@@ -176,6 +177,39 @@ $(document).ready(function () {
         });
     }
 
+    function loadCategories(callback) {
+        $.ajax({
+            url: `${areaPrefix}/Products/GetCategories`,
+            type: 'GET',
+            success: function (response) {
+                if (response.success) {
+                    var categorySelect = $('#CategoryId');
+                    categorySelect.empty();
+                    categorySelect.append('<option value="">Select Category</option>');
+
+                    $.each(response.data, function (i, item) {
+                        if (item.IsActive !== false) {
+                            // Handle both camelCase and PascalCase property names
+                            const categoryId = item.id || item.Id;
+                            const categoryName = item.name || item.Name;
+
+                            var option = $('<option>', {
+                                value: String(categoryId),
+                                text: categoryName
+                            });
+                            categorySelect.append(option);
+                        }
+                    });
+
+                    // Call callback if provided
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                }
+            }
+        });
+    }
+
     function loadProductForEdit(productId) {
         isEditMode = true;
         currentProductId = productId;
@@ -192,8 +226,37 @@ $(document).ready(function () {
                     $('#productName').val(product.name);
                     $('#productDescription').val(product.description);
                     $('#productPrice').val(product.price);
-                    $('#productStock').val(product.stock);
-                    $('#productModal').modal('show');
+
+                    // Load categories first, then set the value
+                    loadCategories(function () {
+                        // Handle potential casing issues (camelCase vs PascalCase)
+                        const categoryIdRaw = product.categoryId || product.CategoryId;
+                        const catId = String(categoryIdRaw);
+
+                        console.log('Trying to set Category ID:', catId);
+
+                        // Debug available options
+                        const availableOptions = $('#CategoryId option').map((_, opt) => $(opt).val()).get();
+                        console.log('Available Category IDs:', availableOptions);
+
+                        // METHOD 1: Direct Val Set
+                        $('#CategoryId').val(catId);
+
+                        // METHOD 2: Prop Selected (Fallback)
+                        if ($('#CategoryId').val() !== catId) {
+                            $('#CategoryId option[value="' + catId + '"]').prop('selected', true);
+                        }
+
+                        // METHOD 3: Timeout retry (modal animation might interfere)
+                        setTimeout(() => {
+                            if ($('#CategoryId').val() !== catId) {
+                                console.warn('Retrying Category Set...');
+                                $('#CategoryId').val(catId);
+                            }
+                        }, 200);
+
+                        $('#productModal').modal('show');
+                    });
                 } else {
                     showAlert('danger', 'Failed to load product details.');
                 }
@@ -223,17 +286,13 @@ $(document).ready(function () {
         $('#emptyState').hide();
 
         result.items.forEach(function (product) {
-            const stockBadge = product.stock > 0
-                ? `<span class="badge bg-success">${product.stock}</span>`
-                : `<span class="badge bg-danger">Out of Stock</span>`;
-
             const row = `
                 <tr>
                     <td>${product.id}</td>
                     <td>${escapeHtml(product.name)}</td>
+                    <td>${escapeHtml(product.categoryName || 'Uncategorized')}</td>
                     <td>${escapeHtml(product.description)}</td>
                     <td>$${product.price.toFixed(2)}</td>
-                    <td>${stockBadge}</td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-warning btn-edit" data-id="${product.id}">
                             <i class="bi bi-pencil"></i>
@@ -297,8 +356,8 @@ $(document).ready(function () {
         const formData = {
             Name: $('#productName').val(),
             Description: $('#productDescription').val(),
-            Price: parseFloat($('#productPrice').val()),
-            Stock: parseInt($('#productStock').val())
+            CategoryId: parseInt($('#CategoryId').val()),
+            Price: parseFloat($('#productPrice').val())
         };
 
         const url = isEditMode
@@ -321,7 +380,7 @@ $(document).ready(function () {
             type: isEditMode ? 'PUT' : 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),
-            headers: { 
+            headers: {
                 'RequestVerificationToken': token,
                 'X-CSRF-TOKEN': token
             },
@@ -375,7 +434,7 @@ $(document).ready(function () {
         $.ajax({
             url: `${areaPrefix}/Products/Delete/${currentProductId}`,
             type: 'DELETE',
-            headers: { 
+            headers: {
                 'RequestVerificationToken': token,
                 'X-CSRF-TOKEN': token // Add as header for DELETE requests
             },
@@ -432,4 +491,3 @@ $(document).ready(function () {
         return text.replace(/[&<>"']/g, function (m) { return map[m]; });
     }
 });
-

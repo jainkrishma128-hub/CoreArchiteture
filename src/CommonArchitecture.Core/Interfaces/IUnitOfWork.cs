@@ -13,6 +13,7 @@ public interface IUnitOfWork : IDisposable
     IRoleMenuRepository RoleMenus { get; }
     IRefreshTokenRepository RefreshTokens { get; }
     ICategoryRepository Categories { get; }
+    IInventoryTransactionRepository InventoryTransactions { get; }
 
     /// <summary>
     /// Persist changes to the underlying store.

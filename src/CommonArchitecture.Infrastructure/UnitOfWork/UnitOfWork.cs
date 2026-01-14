@@ -18,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
     private IRoleMenuRepository? _roleMenus;
     private IRefreshTokenRepository? _refreshTokens;
     private ICategoryRepository? _categories;
+    private IInventoryTransactionRepository? _inventoryTransactions;
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -32,6 +33,7 @@ public class UnitOfWork : IUnitOfWork
     public IRoleMenuRepository RoleMenus => _roleMenus ??= new RoleMenuRepository(_context);
     public IRefreshTokenRepository RefreshTokens => _refreshTokens ??= new RefreshTokenRepository(_context);
     public ICategoryRepository Categories => _categories ??= new CategoryRepository(_context);
+    public IInventoryTransactionRepository InventoryTransactions => _inventoryTransactions ??= new InventoryTransactionRepository(_context);
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
