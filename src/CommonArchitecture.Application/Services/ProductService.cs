@@ -18,24 +18,31 @@ public class ProductService : IProductService
 
     public async Task<PaginatedResult<ProductDto>> GetAllAsync(ProductQueryParameters parameters)
     {
-        var items = await _unitOfWork.Products.GetPagedAsync(parameters.SearchTerm, parameters.SortBy, parameters.SortOrder, parameters.PageNumber, parameters.PageSize);
-        var total = await _unitOfWork.Products.GetTotalCountAsync(parameters.SearchTerm);
+        var items = await _unitOfWork.Products.GetPagedAsync(parameters.SearchTerm, parameters.CategoryId, parameters.SortBy, parameters.SortOrder, parameters.PageNumber, parameters.PageSize);
+        var total = await _unitOfWork.Products.GetTotalCountAsync(parameters.SearchTerm, parameters.CategoryId);
 
 
         // Category is already loaded via Include in repository - no N+1 query issue
-        var dtos = items.Select(p => new ProductDto
+        // Fetch stock for all items
+        var dtosList = new List<ProductDto>();
+        foreach (var p in items)
         {
-            Id = p.Id,
-            Name = p.Name,
-            Description = p.Description,
-            Price = p.Price,
-            CategoryId = p.CategoryId,
-            CategoryName = p.Category?.Name ?? "Uncategorized"
-        });
+            var stock = await _unitOfWork.InventoryTransactions.GetCurrentStockAsync(p.Id);
+            dtosList.Add(new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category?.Name ?? "Uncategorized",
+                Stock = stock
+            });
+        }
 
         return new PaginatedResult<ProductDto>
         {
-            Items = dtos,
+            Items = dtosList,
             TotalCount = total,
             PageNumber = parameters.PageNumber,
             PageSize = parameters.PageSize
@@ -47,6 +54,8 @@ public class ProductService : IProductService
         var product = await _unitOfWork.Products.GetByIdAsync(id);
         if (product == null) return null;
 
+        var stock = await _unitOfWork.InventoryTransactions.GetCurrentStockAsync(product.Id);
+
         return new ProductDto
         {
             Id = product.Id,
@@ -54,7 +63,8 @@ public class ProductService : IProductService
             Description = product.Description,
             Price = product.Price,
             CategoryId = product.CategoryId,
-            CategoryName = product.Category?.Name ?? "Uncategorized"
+            CategoryName = product.Category?.Name ?? "Uncategorized",
+            Stock = stock
         };
     }
 

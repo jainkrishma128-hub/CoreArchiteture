@@ -8,20 +8,77 @@ namespace CommonArchitecture.Web.Areas.Ecommerce.Controllers;
 public class ShopController : Controller
 {
     private readonly IProductApiService _productApiService;
+    private readonly ICategoryApiService _categoryApiService;
     private readonly ILogger<ShopController> _logger;
 
     public ShopController(
         IProductApiService productApiService,
+        ICategoryApiService categoryApiService,
         ILogger<ShopController> logger)
     {
         _productApiService = productApiService;
+        _categoryApiService = categoryApiService;
         _logger = logger;
     }
 
-    // GET: Ecommerce/Shop
-    public IActionResult Index()
+    // GET: Ecommerce/Shop - Main landing page with grouped products
+    public async Task<IActionResult> Index()
     {
+        try
+        {
+            var categories = await _categoryApiService.GetActiveAsync();
+            var model = new List<CategoryProductGroup>();
+
+            foreach (var category in categories)
+            {
+                var result = await _productApiService.GetAllAsync(new ProductQueryParameters
+                {
+                    CategoryId = category.Id,
+                    PageSize = 4,
+                    PageNumber = 1,
+                    SortBy = "Id",
+                    SortOrder = "desc"
+                });
+
+                if (result.Items.Any())
+                {
+                    model.Add(new CategoryProductGroup
+                    {
+                        Category = category,
+                        Products = result.Items.ToList()
+                    });
+                }
+            }
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading shop index");
+            return View(new List<CategoryProductGroup>());
+        }
+    }
+
+    // GET: Ecommerce/Shop/ProductList
+    public IActionResult ProductList(int? categoryId)
+    {
+        ViewBag.SelectedCategoryId = categoryId;
         return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Categories()
+    {
+        try
+        {
+            var result = await _categoryApiService.GetActiveAsync();
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching categories for shop");
+            return Json(new List<object>());
+        }
     }
 
     // GET: Ecommerce/Shop/Products - AJAX endpoint
@@ -70,3 +127,9 @@ public class ShopController : Controller
     }
 }
 
+
+public class CategoryProductGroup
+{
+    public CategoryDto Category { get; set; } = null!;
+    public List<ProductDto> Products { get; set; } = new();
+}

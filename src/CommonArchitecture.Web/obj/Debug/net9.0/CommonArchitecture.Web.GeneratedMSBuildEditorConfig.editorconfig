@@ -92,6 +92,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Ecommerce/Views/Shared/_ProductCard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRWNvbW1lcmNlXFZpZXdzXFNoYXJlZFxfUHJvZHVjdENhcmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Ecommerce/Views/Shared/_ShopLayout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRWNvbW1lcmNlXFZpZXdzXFNoYXJlZFxfU2hvcExheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -106,6 +110,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Ecommerce/Views/Shop/ProductDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRWNvbW1lcmNlXFZpZXdzXFNob3BcUHJvZHVjdERldGFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Ecommerce/Views/Shop/ProductList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRWNvbW1lcmNlXFZpZXdzXFNob3BcUHJvZHVjdExpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Ecommerce/Views/_ViewImports.cshtml]
@@ -134,6 +142,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Views/Shared/Components/Category/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcQ2F0ZWdvcnlcRGVmYXVsdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Views/Shared/Components/Sidebar/Default.cshtml]

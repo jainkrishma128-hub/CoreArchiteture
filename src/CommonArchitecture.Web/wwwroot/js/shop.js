@@ -12,8 +12,17 @@ $(document).ready(function () {
     let selectedCategoryId = '';
 
     // Initialize
+    if (typeof window.targetCategoryId !== 'undefined' && window.targetCategoryId) {
+        selectedCategoryId = window.targetCategoryId;
+    }
+
     loadCategories();
-    loadProducts();
+
+    // Only load products if we are on the product list page
+    if ($('#productsGrid').length > 0) {
+        loadProducts();
+    }
+
     attachEventHandlers();
 
     // ========================================
@@ -24,7 +33,7 @@ $(document).ready(function () {
         $('#productSearch').on('input', function () {
             const val = $(this).val();
             $('#clearSearch').toggle(val.length > 0);
-            
+
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(function () {
                 searchTerm = $('#productSearch').val();
@@ -70,12 +79,52 @@ $(document).ready(function () {
             loadProducts();
         });
 
-        // Category change
+        // Category change (dropdown)
         $('#categorySelect').change(function () {
             selectedCategoryId = $(this).val();
+            updateTopMenuSelection(selectedCategoryId);
             currentPage = 1;
             loadProducts();
         });
+
+        // Top Menu Category Clicks
+        $(document).on('click', '.dynamic-category-link', function (e) {
+            e.preventDefault();
+            selectedCategoryId = $(this).data('category-id');
+
+            // Sync with dropdown
+            $('#categorySelect').val(selectedCategoryId);
+
+            updateTopMenuSelection(selectedCategoryId);
+
+            currentPage = 1;
+            loadProducts();
+
+            // Scroll to products if not there
+            $('html, body').animate({
+                scrollTop: $('#products').offset().top - 100
+            }, 500);
+        });
+
+        // "All Products" in top menu
+        $(document).on('click', '[asp-action="Index"][data-category=""]', function (e) {
+            if ($(this).hasClass('nav-link')) {
+                selectedCategoryId = '';
+                $('#categorySelect').val('');
+                updateTopMenuSelection('');
+                currentPage = 1;
+                loadProducts();
+            }
+        });
+
+        function updateTopMenuSelection(categoryId) {
+            $('.nav-link').removeClass('active');
+            if (!categoryId) {
+                $('[asp-action="Index"][data-category=""]').addClass('active');
+            } else {
+                $(`.dynamic-category-link[data-category-id="${categoryId}"]`).addClass('active');
+            }
+        }
         $('.btn-view').click(function () {
             $('.btn-view').removeClass('active');
             $(this).addClass('active');
@@ -114,14 +163,21 @@ $(document).ready(function () {
     // ========================================
     function loadCategories() {
         $.ajax({
-            url: '/api/categories/active',
+            url: '/Ecommerce/Shop/Categories',
             type: 'GET',
             success: function (response) {
                 if (response && Array.isArray(response)) {
                     const select = $('#categorySelect');
-                    response.forEach(function (category) {
-                        select.append(`<option value="${category.id}">${category.name}</option>`);
-                    });
+                    if (select.length > 0) {
+                        response.forEach(function (category) {
+                            select.append(`<option value="${category.id}">${category.name}</option>`);
+                        });
+
+                        // Set initial selection if exists
+                        if (selectedCategoryId) {
+                            select.val(selectedCategoryId);
+                        }
+                    }
                 }
             }
         });
@@ -179,49 +235,51 @@ $(document).ready(function () {
 
         result.items.forEach(function (product) {
             const stockStatus = getStockStatus(product.stock);
-            const discountPrice = (product.price * 1.2).toFixed(2);
+            const discountPrice = (product.price * 1.25).toFixed(2);
             const randomRating = (4 + Math.random()).toFixed(1);
             const randomReviews = Math.floor(Math.random() * 200) + 10;
 
             const card = `
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="https://picsum.photos/seed/${product.id}/400/400" alt="${escapeHtml(product.name)}" loading="lazy" />
-                        <div class="product-badges">
-                            ${product.stock <= 5 && product.stock > 0 ? '<span class="badge bg-warning">Low Stock</span>' : ''}
-                            ${product.stock === 0 ? '<span class="badge bg-danger">Sold Out</span>' : ''}
+                <div class="product-card h-100 shadow-sm border-0 transition-hover ${currentView === 'list' ? 'list-view' : ''}">
+                    <div class="product-image position-relative overflow-hidden" style="height: ${currentView === 'list' ? '150px' : '250px'}; min-width: ${currentView === 'list' ? '200px' : 'auto'};">
+                        <img src="https://picsum.photos/seed/${product.id}/400/400" class="card-img-top h-100 w-100 object-fit-cover" alt="${escapeHtml(product.name)}" loading="lazy" />
+                        
+                        <div class="product-badges position-absolute top-0 start-0 m-2">
+                            ${product.stock <= 5 && product.stock > 0 ? '<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle-fill me-1"></i>Low Stock</span>' : ''}
+                            ${product.stock === 0 ? '<span class="badge bg-danger"><i class="bi bi-x-circle-fill me-1"></i>Out of Stock</span>' : ''}
+                            ${product.stock > 5 ? '<span class="badge bg-success shadow-sm"><i class="bi bi-check-circle-fill me-1"></i>In Stock</span>' : ''}
                         </div>
-                        <div class="product-actions-overlay">
-                            <button class="btn btn-quick-view" data-id="${product.id}" title="Quick View">
+
+                        <div class="product-actions-overlay position-absolute bottom-0 start-0 w-100 p-3 bg-gradient-dark d-flex justify-content-center gap-2 translate-y-100 transition-all">
+                            <button class="btn btn-light btn-sm rounded-circle shadow-sm btn-quick-view" data-id="${product.id}" title="Quick View">
                                 <i class="bi bi-eye"></i>
                             </button>
-                            <button class="btn" title="Add to Wishlist">
-                                <i class="bi bi-heart"></i>
-                            </button>
-                            <button class="btn btn-add-to-cart" data-product-id="${product.id}" title="Add to Cart" ${product.stock === 0 ? 'disabled' : ''}>
+                            <button class="btn btn-primary btn-sm rounded-circle shadow-sm btn-add-to-cart" data-product-id="${product.id}" title="Add to Cart" ${product.stock === 0 ? 'disabled' : ''}>
                                 <i class="bi bi-cart-plus"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="product-info">
-                        <span class="product-category">${product.categoryName || 'General'}</span>
-                        <h3 class="product-name">
-                            <a href="/Ecommerce/Shop/ProductDetail/${product.id}">${escapeHtml(product.name)}</a>
-                        </h3>
-                        <div class="product-rating">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-half"></i>
-                            <span>(${randomRating}) ${randomReviews} reviews</span>
+                    
+                    <div class="card-body p-3">
+                        <span class="text-muted small text-uppercase mb-1 d-block">${product.categoryName || 'General'}</span>
+                        <h5 class="card-title mb-2 text-truncate">
+                            <a href="/Ecommerce/Shop/ProductDetail/${product.id}" class="text-decoration-none text-dark fw-bold">${escapeHtml(product.name)}</a>
+                        </h5>
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="text-warning small me-2">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                            </div>
+                            <span class="text-muted small">(${randomReviews})</span>
                         </div>
-                        <div class="product-price">
-                            <span class="current-price">$${product.price.toFixed(2)}</span>
-                            <span class="original-price">$${discountPrice}</span>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-5 fw-bold text-primary">$${product.price.toFixed(2)}</span>
+                            <span class="text-muted text-decoration-line-through small text-opacity-50">$${discountPrice}</span>
                         </div>
-                        <div class="product-stock ${stockStatus.class}">
-                            <i class="bi ${stockStatus.icon}"></i> ${stockStatus.text}
+                        
+                        <div class="mt-2 ${stockStatus.class} small fw-bold">
+                            <i class="bi ${stockStatus.icon} me-1"></i> ${stockStatus.text}
                         </div>
                     </div>
                 </div>
@@ -311,11 +369,21 @@ $(document).ready(function () {
                     const product = response.data.items.find(p => p.id === productId);
                     if (product) {
                         $('#quickViewName').text(product.name);
+                        $('#quickViewCategory').text(product.categoryName || 'General');
                         $('#quickViewPrice').text('$' + product.price.toFixed(2));
+                        $('#quickViewOldPrice').text('$' + (product.price * 1.25).toFixed(2));
                         $('#quickViewDescription').text(product.description);
-                        $('#quickViewStock').text(product.stock + ' units in stock');
-                        $('#quickViewImage').attr('src', `https://picsum.photos/seed/${product.id}/500/500`);
+
+                        const stockStatus = getStockStatus(product.stock);
+                        $('#quickViewStock').html(`<i class="bi ${stockStatus.icon} me-1"></i> ${stockStatus.text}`)
+                            .attr('class', 'fw-bold ' + stockStatus.class);
+
+                        $('#quickViewImage').attr('src', `https://picsum.photos/seed/${product.id}/600/600`);
                         $('#quickViewQty').val(1);
+
+                        $('.btn-add-cart-modal').attr('onclick', `addToCart(${product.id})`)
+                            .prop('disabled', product.stock === 0);
+
                         $('#quickViewModal').modal('show');
                     }
                 }
@@ -330,16 +398,16 @@ $(document).ready(function () {
         // Simple cart implementation using localStorage
         let cart = JSON.parse(localStorage.getItem('shopCart') || '[]');
         const existingItem = cart.find(item => item.id === productId);
-        
+
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
             cart.push({ id: productId, quantity: 1 });
         }
-        
+
         localStorage.setItem('shopCart', JSON.stringify(cart));
         updateCartCount();
-        
+
         // Show feedback
         showToast('Product added to cart!');
     }
@@ -400,28 +468,40 @@ $(document).ready(function () {
     }
 
     // Quick View quantity controls
-    window.incrementQty = function() {
+    window.incrementQty = function () {
         const input = $('#quickViewQty');
         input.val(parseInt(input.val()) + 1);
     };
 
-    window.decrementQty = function() {
+    window.decrementQty = function () {
         const input = $('#quickViewQty');
         const val = parseInt(input.val());
         if (val > 1) input.val(val - 1);
     };
 
     // Clear filters function
-    window.clearFilters = function() {
+    window.clearFilters = function () {
         searchTerm = '';
         currentPage = 1;
         sortBy = 'Name';
         sortOrder = 'asc';
+        selectedCategoryId = '';
         $('#productSearch').val('');
         $('#sortSelect').val('Name-asc');
+        $('#categorySelect').val('');
+        updateTopMenuSelection('');
         $('#clearSearch').hide();
         loadProducts();
     };
+
+    function updateTopMenuSelection(categoryId) {
+        $('.nav-link').removeClass('active');
+        if (!categoryId) {
+            $('[asp-action="Index"][data-category=""]').addClass('active');
+        } else {
+            $(`.dynamic-category-link[data-category-id="${categoryId}"]`).addClass('active');
+        }
+    }
 });
 
 // Toast notification styles (added dynamically)

@@ -46,28 +46,7 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="shopNavbar">
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" asp-area="Ecommerce" asp-controller="Shop" asp-action="Index">
-                                <i class="bi bi-grid-3x3-gap"></i> All Products
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-category="electronics">
-                                <i class="bi bi-cpu"></i> Electronics
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-category="fashion">
-                                <i class="bi bi-handbag"></i> Fashion
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-category="home">
-                                <i class="bi bi-house-heart"></i> Home & Living
-                            </a>
-                        </li>
-                    </ul>
+                    @await Component.InvokeAsync("Category")
 
                     <div class="nav-icons">
                         <div class="search-wrapper">
@@ -98,6 +77,65 @@
     <main class="shop-main">
         @RenderBody()
     </main>
+
+    <!-- Product Quick View Modal -->
+    <div class="modal fade" id="quickViewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-5">
+                            <div class="quick-view-image rounded-4 overflow-hidden border shadow-sm h-100">
+                                <img id="quickViewImage" src="" alt="Product Image" class="w-100 h-100 object-fit-cover" />
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="quick-view-details h-100 d-flex flex-column">
+                                <span id="quickViewCategory" class="text-primary fw-bold text-uppercase small mb-1"></span>
+                                <h2 id="quickViewName" class="fw-bold mb-3"></h2>
+                                
+                                <div class="quick-view-rating mb-3">
+                                    <div class="text-warning small d-inline me-2">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-half"></i>
+                                    </div>
+                                    <span class="text-muted small">(4.5 Rating)</span>
+                                </div>
+
+                                <div class="quick-view-price mb-3">
+                                    <span class="price h3 fw-bold text-primary" id="quickViewPrice"></span>
+                                    <span class="text-muted text-decoration-line-through ms-2" id="quickViewOldPrice"></span>
+                                </div>
+
+                                <p class="quick-view-description text-muted mb-4 fs-6" id="quickViewDescription"></p>
+                                
+                                <div class="quick-view-stock mb-4 p-2 rounded bg-light d-inline-block">
+                                    <span id="quickViewStock" class="fw-bold"></span>
+                                </div>
+
+                                <div class="quick-view-actions mt-auto d-flex gap-3">
+                                    <div class="input-group" style="max-width: 130px;">
+                                        <button class="btn btn-outline-secondary border-0 bg-light" type="button" onclick="decrementQty()"><i class="bi bi-dash"></i></button>
+                                        <input type="number" class="form-control text-center border-0 bg-light fw-bold" id="quickViewQty" value="1" min="1" readonly />
+                                        <button class="btn btn-outline-secondary border-0 bg-light" type="button" onclick="incrementQty()"><i class="bi bi-plus"></i></button>
+                                    </div>
+                                    <button class="btn btn-primary rounded-pill px-4 flex-grow-1 btn-add-cart-modal">
+                                        <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="shop-footer">

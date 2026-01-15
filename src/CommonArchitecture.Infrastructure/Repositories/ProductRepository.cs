@@ -70,14 +70,14 @@ public class ProductRepository : IProductRepository
     /// <param name="pageNumber">Page number (1-based)</param>
     /// <param name="pageSize">Number of items per page</param>
     /// <returns>Paginated list of products</returns>
-    public async Task<IEnumerable<Product>> GetPagedAsync(string? searchTerm, string sortBy, string sortOrder, int pageNumber, int pageSize)
+    public async Task<IEnumerable<Product>> GetPagedAsync(string? searchTerm, int? categoryId, string sortBy, string sortOrder, int pageNumber, int pageSize)
     {
         var query = _context.Products
             .Include(p => p.Category)
             .AsQueryable();
 
-        // Apply search filter
-        query = ApplySearchFilter(query, searchTerm);
+        // Apply filters
+        query = ApplyFilters(query, searchTerm, categoryId);
 
         // Apply dynamic sorting using System.Linq.Dynamic.Core
         query = ApplySorting(query, sortBy, sortOrder);
@@ -91,12 +91,12 @@ public class ProductRepository : IProductRepository
         return products;
     }
 
-    public async Task<int> GetTotalCountAsync(string? searchTerm)
+    public async Task<int> GetTotalCountAsync(string? searchTerm, int? categoryId)
     {
         var query = _context.Products.AsQueryable();
 
-        // Apply search filter
-        query = ApplySearchFilter(query, searchTerm);
+        // Apply filters
+        query = ApplyFilters(query, searchTerm, categoryId);
 
         return await query.CountAsync();
     }
@@ -112,15 +112,18 @@ public class ProductRepository : IProductRepository
     /// Uses database collation (CI_AS in SQL Server) for case-insensitive search.
     /// This allows proper index usage instead of forcing LOWER() which prevents index usage.
     /// </summary>
-    private static IQueryable<Product> ApplySearchFilter(IQueryable<Product> query, string? searchTerm)
+    private static IQueryable<Product> ApplyFilters(IQueryable<Product> query, string? searchTerm, int? categoryId)
     {
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            // Rely on database collation (CI_AS in SQL Server) for case-insensitive search
-            // This allows proper index usage instead of forcing LOWER() which prevents index usage
             query = query.Where(p => 
                 p.Name.Contains(searchTerm) || 
                 p.Description.Contains(searchTerm));
+        }
+
+        if (categoryId.HasValue && categoryId.Value > 0)
+        {
+            query = query.Where(p => p.CategoryId == categoryId.Value);
         }
 
         return query;

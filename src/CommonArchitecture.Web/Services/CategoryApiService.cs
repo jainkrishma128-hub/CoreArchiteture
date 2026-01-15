@@ -38,6 +38,20 @@ public class CategoryApiService : ICategoryApiService
         }
     }
 
+    public async Task<IEnumerable<CategoryDto>> GetActiveAsync()
+    {
+        try
+        {
+            var result = await _httpClient.GetFromJsonAsync<IEnumerable<CategoryDto>>("api/categories/active");
+            return result ?? new List<CategoryDto>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching active categories from API");
+            return new List<CategoryDto>();
+        }
+    }
+
     public async Task<CategoryDto?> GetByIdAsync(int id)
     {
         try

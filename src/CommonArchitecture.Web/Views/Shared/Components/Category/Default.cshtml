@@ -1,0 +1,88 @@
+@using CommonArchitecture.Application.DTOs
+@model IEnumerable<CategoryDto>
+
+<ul class="navbar-nav mx-auto">
+    <li class="nav-item dropdown shop-category-dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-grid-3x3-gap me-1"></i> Shop by Category
+        </a>
+        <ul class="dropdown-menu shadow-lg border-0" aria-labelledby="categoryDropdown">
+            <li>
+                <a class="dropdown-item @(ViewContext.RouteData.Values["action"]?.ToString() == "ProductList" && Context.Request.Query["categoryId"].Count == 0 ? "active" : "")" 
+                   asp-area="Ecommerce" asp-controller="Shop" asp-action="ProductList">
+                    <i class="bi bi-grid-fill me-2 text-primary"></i> <strong>All Products</strong>
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            @foreach (var category in Model)
+            {
+                <li>
+                    <a class="dropdown-item" asp-area="Ecommerce" asp-controller="Shop" asp-action="ProductList" asp-route-categoryId="@category.Id">
+                        @if (category.Name.Contains("Electronics", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <i class="bi bi-cpu me-2 text-secondary"></i>
+                        }
+                        else if (category.Name.Contains("Fashion", StringComparison.OrdinalIgnoreCase) || category.Name.Contains("Clothing", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <i class="bi bi-handbag me-2 text-secondary"></i>
+                        }
+                        else if (category.Name.Contains("Home", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <i class="bi bi-house-heart me-2 text-secondary"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-tag me-2 text-secondary"></i>
+                        }
+                        @category.Name
+                    </a>
+                </li>
+            }
+        </ul>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" 
+           asp-area="Ecommerce" asp-controller="Shop" asp-action="Index">
+            <i class="bi bi-house"></i> Home
+        </a>
+    </li>
+</ul>
+
+<style>
+    .shop-category-dropdown .dropdown-menu {
+        border-radius: 12px;
+        padding: 0.75rem;
+        min-width: 240px;
+        margin-top: 0.5rem;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .shop-category-dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .shop-category-dropdown .dropdown-item {
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+    }
+
+    .shop-category-dropdown .dropdown-item:hover {
+        background-color: #f8f9fa;
+        color: #0d6efd;
+        padding-left: 1.25rem;
+    }
+
+    .shop-category-dropdown .dropdown-item.active {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+</style>

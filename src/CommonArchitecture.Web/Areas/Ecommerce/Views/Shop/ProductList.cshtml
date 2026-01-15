@@ -1,0 +1,159 @@
+@using CommonArchitecture.Application.DTOs
+@{
+    ViewData["Title"] = "Product List";
+    var selectedCategoryId = ViewBag.SelectedCategoryId as int?;
+}
+
+<!-- Products Section -->
+<section class="products-section py-5" id="products">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="section-header mb-4">
+            <div class="section-title">
+                <h2><i class="bi bi-box-seam"></i> @(selectedCategoryId.HasValue ? "Category Products" : "All Products")</h2>
+                <p>Explore our wide range of quality products</p>
+            </div>
+            <div class="section-actions">
+                <div class="view-toggle">
+                    <button class="btn btn-view active" data-view="grid" title="Grid View">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </button>
+                    <button class="btn btn-view" data-view="list" title="List View">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Bar -->
+        <div class="filters-bar card shadow-sm p-4 mb-4 border-0">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-4 col-md-6">
+                    <div class="search-box position-relative">
+                        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                        <input type="text" class="form-control ps-5" id="productSearch" placeholder="Search products...">
+                        <button class="btn-clear position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent" type="button" id="clearSearch" style="display: none;">
+                            <i class="bi bi-x-circle-fill text-muted"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <select class="form-select" id="categorySelect">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <select class="form-select" id="sortSelect">
+                        <option value="Name-asc">Name: A to Z</option>
+                        <option value="Name-desc">Name: Z to A</option>
+                        <option value="Price-asc">Price: Low to High</option>
+                        <option value="Price-desc">Price: High to Low</option>
+                        <option value="Id-desc">Newest First</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <select class="form-select" id="pageSizeSelect">
+                        <option value="8">8 products</option>
+                        <option value="12" selected>12 products</option>
+                        <option value="24">24 products</option>
+                        <option value="48">48 products</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="results-info text-end text-muted small" id="resultsInfo">
+                        <span>Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-container min-vh-50">
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded dynamically -->
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-state py-5 text-center" id="loadingState">
+                <div class="spinner-wrapper">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Finding best products for you...</p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state py-5 text-center" id="emptyState" style="display: none;">
+                <div class="empty-icon mb-3">
+                    <i class="bi bi-box-seam display-1 text-muted"></i>
+                </div>
+                <h3>No Products Found</h3>
+                <p class="text-muted">Try adjusting your search or filters</p>
+                <button class="btn btn-primary rounded-pill px-4" onclick="clearFilters()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Clear Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-wrapper mt-5 d-flex justify-content-center">
+            <nav aria-label="Product pagination">
+                <ul class="pagination pagination-rounded" id="pagination">
+                    <!-- Pagination will be generated dynamically -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Set the initial category if provided
+        const initialCategoryId = '@(selectedCategoryId.HasValue ? selectedCategoryId.Value.ToString() : "")';
+        if (initialCategoryId) {
+            window.targetCategoryId = initialCategoryId;
+        }
+    </script>
+    <script src="~/js/shop.js"></script>
+}
+
+<style>
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .pagination-rounded .page-link {
+        border-radius: 50% !important;
+        margin: 0 3px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        color: #444;
+        font-weight: 500;
+    }
+
+    .pagination-rounded .page-item.active .page-link {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .filters-bar {
+        border-radius: 15px;
+    }
+
+    .search-box .form-control {
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #eee;
+    }
+
+    .form-select {
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #eee;
+    }
+</style>

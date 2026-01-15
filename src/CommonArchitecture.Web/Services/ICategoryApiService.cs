@@ -6,6 +6,7 @@ namespace CommonArchitecture.Web.Services;
 public interface ICategoryApiService
 {
     Task<PaginatedResult<CategoryDto>> GetAllAsync(CategoryQueryParameters parameters);
+    Task<IEnumerable<CategoryDto>> GetActiveAsync();
     Task<CategoryDto?> GetByIdAsync(int id);
     Task<CategoryDto> CreateAsync(CreateCategoryDto createDto);
     Task<bool> UpdateAsync(int id, UpdateCategoryDto updateDto);

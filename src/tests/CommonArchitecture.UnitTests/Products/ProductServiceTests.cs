@@ -45,13 +45,14 @@ public class ProductServiceTests
 
         _productRepositoryMock.Setup(x => x.GetPagedAsync(
             parameters.SearchTerm,
+            parameters.CategoryId,
             parameters.SortBy,
             parameters.SortOrder,
             parameters.PageNumber,
             parameters.PageSize))
             .ReturnsAsync(products);
 
-        _productRepositoryMock.Setup(x => x.GetTotalCountAsync(parameters.SearchTerm))
+        _productRepositoryMock.Setup(x => x.GetTotalCountAsync(parameters.SearchTerm, parameters.CategoryId))
             .ReturnsAsync(2);
 
         // Act
