@@ -51,11 +51,12 @@ public class DbSeeder
             new() { Name = "Products", Url = "/Admin/Products", Icon = "bi bi-box-seam", DisplayOrder = 2, IsActive = true },
             new() { Name = "Categories", Url = "/Admin/Categories", Icon = "bi bi-tags", DisplayOrder = 3, IsActive = true },
             new() { Name = "Inventory", Url = "/Admin/Inventory", Icon = "bi bi-box", DisplayOrder = 4, IsActive = true },
-            new() { Name = "Role Master", Url = "/Admin/Roles", Icon = "bi bi-shield-lock", DisplayOrder = 5, IsActive = true },
-            new() { Name = "User Master", Url = "/Admin/Users", Icon = "bi bi-people", DisplayOrder = 6, IsActive = true },
-            new() { Name = "Menu Master", Url = "/Admin/Menus", Icon = "bi bi-list", DisplayOrder = 7, IsActive = true },
-            new() { Name = "Role Permission", Url = "/Admin/RoleMenus", Icon = "bi bi-gear", DisplayOrder = 8, IsActive = true },
-            new() { Name = "Hangfire Jobs", Url = "/Admin/HangfireJobs", Icon = "bi bi-clock-history", DisplayOrder = 9, IsActive = true }
+            new() { Name = "Orders", Url = "/Admin/Orders", Icon = "bi bi-cart-check", DisplayOrder = 5, IsActive = true },
+            new() { Name = "Role Master", Url = "/Admin/Roles", Icon = "bi bi-shield-lock", DisplayOrder = 6, IsActive = true },
+            new() { Name = "User Master", Url = "/Admin/Users", Icon = "bi bi-people", DisplayOrder = 7, IsActive = true },
+            new() { Name = "Menu Master", Url = "/Admin/Menus", Icon = "bi bi-list", DisplayOrder = 8, IsActive = true },
+            new() { Name = "Role Permission", Url = "/Admin/RoleMenus", Icon = "bi bi-gear", DisplayOrder = 9, IsActive = true },
+            new() { Name = "Hangfire Jobs", Url = "/Admin/HangfireJobs", Icon = "bi bi-clock-history", DisplayOrder = 10, IsActive = true }
         };
 
         foreach (var menu in defaultMenus)

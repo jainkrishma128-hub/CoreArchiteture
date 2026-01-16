@@ -123,6 +123,13 @@ builder.Services.AddHttpClient<IInventoryApiService, InventoryApiService>(client
 })
 .AddHttpMessageHandler<RefreshTokenHandler>();
 
+builder.Services.AddHttpClient<CommonArchitecture.Web.Services.IOrderApiService, CommonArchitecture.Web.Services.OrderApiService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5089");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.AddHttpMessageHandler<RefreshTokenHandler>();
+
 // Register JwtTokenHandler (kept for compatibility if used elsewhere)
 builder.Services.AddTransient<CommonArchitecture.Web.Services.JwtTokenHandler>();
 

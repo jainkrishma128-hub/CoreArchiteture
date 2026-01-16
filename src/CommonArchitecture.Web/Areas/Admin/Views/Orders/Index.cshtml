@@ -1,0 +1,139 @@
+@using CommonArchitecture.Core.Enums
+@{
+    ViewData["Title"] = "Order Management";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-dark mb-1">Order Management</h1>
+            <p class="text-muted mb-0">Track and manage customer orders</p>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="icon-box bg-primary-subtle text-primary rounded-circle me-3">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <span class="text-muted fw-medium text-uppercase small">Total Orders</span>
+                </div>
+                <h2 class="fw-bold mb-0 text-dark" id="statTotalOrders">...</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="icon-box bg-warning-subtle text-warning rounded-circle me-3">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <span class="text-muted fw-medium text-uppercase small">Pending</span>
+                </div>
+                <h2 class="fw-bold mb-0 text-dark" id="statPendingOrders">...</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="icon-box bg-success-subtle text-success rounded-circle me-3">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                    <span class="text-muted fw-medium text-uppercase small">Delivered</span>
+                </div>
+                <h2 class="fw-bold mb-0 text-dark" id="statDeliveredOrders">...</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-white p-4 rounded-4 shadow-sm border-0 h-100">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="icon-box bg-info-subtle text-info rounded-circle me-3">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <span class="text-muted fw-medium text-uppercase small">Total Revenue</span>
+                </div>
+                <h2 class="fw-bold mb-0 text-dark" id="statTotalRevenue">...</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <!-- Filter Bar -->
+        <div class="card-header bg-white border-bottom p-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 ps-3 rounded-start-pill text-muted">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchBox" class="form-control bg-light border-0 py-2 rounded-end-pill" placeholder="Search by order #, customer name...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select id="statusFilter" class="form-select border-0 bg-light py-2 rounded-pill ps-3">
+                        <option value="">All Statuses</option>
+                        @foreach (var status in Enum.GetValues(typeof(OrderStatus)))
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </select>
+                </div>
+               <div class="col-md-4 text-end">
+                    <button class="btn btn-light text-muted rounded-pill px-3" id="btnClearSearch">
+                        Reset
+                    </button>
+                    <button class="btn btn-primary rounded-pill px-4 ms-2" id="btnFilter">
+                        <i class="fas fa-filter me-2"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card-body p-0">
+            <div class="table-admin-wrapper table-responsive">
+                <table class="table table-hover align-middle mb-0 table-admin" id="ordersTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-uppercase text-muted small fw-bold">Order #</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold">Date</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold">Customer</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold text-end">Amount</th>
+                            <th class="py-3 text-uppercase text-muted small fw-bold text-center">Status</th>
+                            <th class="pe-4 py-3 text-uppercase text-muted small fw-bold text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="border-top-0">
+                        <!-- Data loaded via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Loading & Empty States -->
+            <div id="loadingIndicator" class="text-center py-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Loading orders...</p>
+            </div>
+            
+            <div id="emptyState" class="text-center py-5" style="display: none;">
+                <div class="mb-3">
+                    <i class="fas fa-box-open text-muted opacity-25" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="text-muted">No orders found</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        window.adminAreaPrefix = '/Admin';
+    </script>
+    <script src="~/js/admin-orders.js"></script>
+}

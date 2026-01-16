@@ -9,15 +9,18 @@ public class ShopController : Controller
 {
     private readonly IProductApiService _productApiService;
     private readonly ICategoryApiService _categoryApiService;
+    private readonly IOrderApiService _orderApiService;
     private readonly ILogger<ShopController> _logger;
 
     public ShopController(
         IProductApiService productApiService,
         ICategoryApiService categoryApiService,
+        IOrderApiService orderApiService,
         ILogger<ShopController> logger)
     {
         _productApiService = productApiService;
         _categoryApiService = categoryApiService;
+        _orderApiService = orderApiService;
         _logger = logger;
     }
 
@@ -124,6 +127,48 @@ public class ShopController : Controller
     public IActionResult Cart()
     {
         return View();
+    }
+
+    // GET: Ecommerce/Shop/Checkout
+    public IActionResult Checkout()
+    {
+        return View();
+    }
+
+    // POST: Ecommerce/Shop/PlaceOrder
+    [HttpPost]
+    public async Task<IActionResult> PlaceOrder([FromBody] CreateOrderDto orderDto)
+    {
+        try
+        {
+            var result = await _orderApiService.CreateOrderAsync(orderDto);
+            if (result != null)
+            {
+                return Json(new { success = true, orderId = result.Id, orderNumber = result.OrderNumber });
+            }
+            return Json(new { success = false, message = "Failed to place order" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error placing order");
+            return Json(new { success = false, message = "Error placing order" });
+        }
+    }
+
+    // GET: Ecommerce/Shop/Confirmation/5
+    public async Task<IActionResult> Confirmation(int id)
+    {
+        try
+        {
+            var order = await _orderApiService.GetOrderByIdAsync(id);
+            if (order == null) return NotFound();
+            return View(order);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading confirmation page for order {OrderId}", id);
+            return NotFound();
+        }
     }
 }
 

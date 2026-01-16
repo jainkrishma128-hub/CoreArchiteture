@@ -1,0 +1,215 @@
+@model CommonArchitecture.Application.DTOs.OrderDto
+@using CommonArchitecture.Core.Enums
+@{
+    ViewData["Title"] = $"Order {Model.OrderNumber}";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="/Admin/Orders">Orders</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.OrderNumber</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold text-dark mb-0">Order @Model.OrderNumber</h1>
+            <span class="text-muted small">Placed on @Model.OrderDate.ToString("MMM dd, yyyy HH:mm")</span>
+        </div>
+        <div>
+            <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle rounded-pill px-4" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Change Status: <span class="fw-bold">@Model.Status</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3" aria-labelledby="statusDropdown">
+                    @foreach (var status in Enum.GetValues(typeof(OrderStatus)))
+                    {
+                        <li>
+                            <button class="dropdown-item @(Model.Status == (OrderStatus)status ? "active" : "")" 
+                                    onclick="updateOrderStatus(@Model.Id, '@status')">
+                                @status
+                            </button>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Items Card -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h5 class="fw-bold mb-0">Order Items</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Product</th>
+                                    <th class="text-center">Price</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-end pe-4">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded p-2 me-3" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-box text-muted"></i>
+                                                </div>
+                                                <div>
+                                                    <span class="fw-medium d-block">@item.ProductName</span>
+                                                    <span class="text-muted small">SKU: PROD-@item.ProductId</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">@item.UnitPrice.ToString("C")</td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="text-end pe-4 fw-bold">@item.TotalPrice.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financials Summary -->
+            <div class="row g-4">
+                <div class="col-md-6 offset-md-6">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Subtotal</span>
+                                <span class="fw-medium">@Model.Subtotal.ToString("C")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Tax (10%)</span>
+                                <span class="fw-medium">@Model.Tax.ToString("C")</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <h5 class="fw-bold mb-0">Total</h5>
+                                <h5 class="fw-bold mb-0 text-primary">@Model.TotalAmount.ToString("C")</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="col-lg-4">
+            <!-- Customer Card -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h5 class="fw-bold mb-0">Customer Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                            @Model.CustomerName[0]
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">@Model.CustomerName</h6>
+                            <span class="text-muted small">@Model.Email</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase fw-bold d-block mb-1">Phone</label>
+                        <span>@Model.Phone</span>
+                    </div>
+                    
+                    <div>
+                        <label class="text-muted small text-uppercase fw-bold d-block mb-1">Shipping Address</label>
+                        <p class="mb-0">
+                            @Model.Address<br>
+                            @Model.City, @Model.ZipCode
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History/Status Card -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h5 class="fw-bold mb-0">Order Status</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="status-timeline">
+                        @{
+                            var statuses = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().ToList();
+                            var currentIndex = statuses.IndexOf(Model.Status);
+                        }
+                        
+                        @for (int i = 0; i <= currentIndex; i++)
+                        {
+                            <div class="d-flex mb-3">
+                                <div class="timeline-icon bg-success text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 25px; height: 25px; font-size: 0.8rem; flex-shrink: 0;">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <span class="fw-bold d-block small">@statuses[i]</span>
+                                    <span class="text-muted" style="font-size: 0.75rem;">Status changed to @statuses[i]</span>
+                                </div>
+                            </div>
+                        }
+                        
+                        @if (Model.Status != OrderStatus.Cancelled && Model.Status != OrderStatus.Delivered)
+                        {
+                             <div class="d-flex opacity-50">
+                                <div class="timeline-icon bg-light text-muted rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 25px; height: 25px; font-size: 0.8rem; flex-shrink: 0;">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <span class="fw-bold d-block small">Next Step Pending</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        function updateOrderStatus(id, status) {
+            if (!confirm('Are you sure you want to change the status to ' + status + '?')) return;
+
+            $.ajax({
+                url: '/Admin/Orders/UpdateStatus',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ orderId: id, status: status }),
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while updating the status.');
+                }
+            });
+        }
+    </script>
+}
+
+@Html.AntiForgeryToken()

@@ -17,6 +17,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Menu> Menus { get; set; }
     public DbSet<RoleMenu> RoleMenus { get; set; }
     public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
 
     // Logging tables
     public DbSet<ErrorLog> ErrorLogs { get; set; }
@@ -208,6 +210,45 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(it => it.ProductId);
             entity.HasIndex(it => it.TransactionType);
             entity.HasIndex(it => it.CreatedAt);
+        });
+
+        // Configure Order entity
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(o => o.Id);
+            entity.Property(o => o.OrderNumber).IsRequired().HasMaxLength(50);
+            entity.Property(o => o.CustomerName).IsRequired().HasMaxLength(256);
+            entity.Property(o => o.Email).IsRequired().HasMaxLength(256);
+            entity.Property(o => o.Phone).HasMaxLength(20);
+            entity.Property(o => o.Address).IsRequired().HasMaxLength(500);
+            entity.Property(o => o.City).IsRequired().HasMaxLength(100);
+            entity.Property(o => o.ZipCode).IsRequired().HasMaxLength(20);
+            entity.Property(o => o.Subtotal).HasPrecision(18, 2);
+            entity.Property(o => o.Tax).HasPrecision(18, 2);
+            entity.Property(o => o.TotalAmount).HasPrecision(18, 2);
+            entity.Property(o => o.OrderDate).HasDefaultValueSql("GETUTCDATE()");
+
+            entity.HasIndex(o => o.OrderNumber).IsUnique();
+            entity.HasIndex(o => o.OrderDate);
+        });
+
+        // Configure OrderItem entity
+        modelBuilder.Entity<OrderItem>(entity =>
+        {
+            entity.HasKey(oi => oi.Id);
+            entity.Property(oi => oi.ProductName).IsRequired().HasMaxLength(256);
+            entity.Property(oi => oi.UnitPrice).HasPrecision(18, 2);
+            entity.Property(oi => oi.TotalPrice).HasPrecision(18, 2);
+
+            entity.HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(oi => oi.Product)
+                .WithMany()
+                .HasForeignKey(oi => oi.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

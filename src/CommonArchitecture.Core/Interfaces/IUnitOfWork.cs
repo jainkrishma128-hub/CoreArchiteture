@@ -14,6 +14,7 @@ public interface IUnitOfWork : IDisposable
     IRefreshTokenRepository RefreshTokens { get; }
     ICategoryRepository Categories { get; }
     IInventoryTransactionRepository InventoryTransactions { get; }
+    IOrderRepository Orders { get; }
 
     /// <summary>
     /// Persist changes to the underlying store.

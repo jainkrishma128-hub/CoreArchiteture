@@ -71,6 +71,7 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\jque
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\js\shop.js
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\js\admin-orders.js
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\wwwroot\css\shop.css
@@ -85,6 +86,7 @@ wwwroot\js\admin.js
 wwwroot\js\admin-categories.js
 wwwroot\js\admin-inventory.js
 wwwroot\js\admin-menus.js
+wwwroot\js\admin-orders.js
 wwwroot\js\admin-products.js
 wwwroot\js\admin-roles.js
 wwwroot\js\admin-users.js

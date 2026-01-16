@@ -117,14 +117,6 @@ $(document).ready(function () {
             }
         });
 
-        function updateTopMenuSelection(categoryId) {
-            $('.nav-link').removeClass('active');
-            if (!categoryId) {
-                $('[asp-action="Index"][data-category=""]').addClass('active');
-            } else {
-                $(`.dynamic-category-link[data-category-id="${categoryId}"]`).addClass('active');
-            }
-        }
         $('.btn-view').click(function () {
             $('.btn-view').removeClass('active');
             $(this).addClass('active');
@@ -154,8 +146,44 @@ $(document).ready(function () {
         // Add to cart button
         $(document).on('click', '.btn-add-to-cart', function () {
             const productId = $(this).data('product-id');
-            addToCart(productId);
+            const qtyInput = $('#quickViewQty');
+            const quantity = (qtyInput.length > 0 && $('#quickViewModal').hasClass('show')) ? parseInt(qtyInput.val()) : 1;
+            addToCart(productId, quantity);
         });
+
+        // Cart page events
+        if ($('#cartItems').length > 0) {
+            renderCartPage();
+        }
+
+        $(document).on('click', '.btn-remove-cart', function () {
+            const id = $(this).data('id');
+            removeFromCart(id);
+        });
+
+        $(document).on('click', '.btn-qty-minus', function () {
+            const id = $(this).data('id');
+            updateCartQuantity(id, -1);
+        });
+
+        $(document).on('click', '.btn-qty-plus', function () {
+            const id = $(this).data('id');
+            updateCartQuantity(id, 1);
+        });
+
+        $('.btn-checkout').click(function () {
+            window.location.href = '/Ecommerce/Shop/Checkout';
+        });
+
+        // Checkout page events
+        if ($('#checkoutForm').length > 0) {
+            renderCheckoutSummary();
+
+            $('#checkoutForm').submit(function (e) {
+                e.preventDefault();
+                processCheckout();
+            });
+        }
     }
 
     // ========================================
@@ -394,22 +422,46 @@ $(document).ready(function () {
     // ========================================
     // Cart Functions
     // ========================================
-    function addToCart(productId) {
-        // Simple cart implementation using localStorage
+    function addToCart(productId, quantity = 1) {
         let cart = JSON.parse(localStorage.getItem('shopCart') || '[]');
         const existingItem = cart.find(item => item.id === productId);
 
         if (existingItem) {
-            existingItem.quantity += 1;
+            existingItem.quantity += quantity;
         } else {
-            cart.push({ id: productId, quantity: 1 });
+            cart.push({ id: productId, quantity: quantity });
         }
 
         localStorage.setItem('shopCart', JSON.stringify(cart));
         updateCartCount();
 
-        // Show feedback
         showToast('Product added to cart!');
+        if ($('#quickViewModal').hasClass('show')) {
+            $('#quickViewModal').modal('hide');
+        }
+    }
+
+    function removeFromCart(productId) {
+        let cart = JSON.parse(localStorage.getItem('shopCart') || '[]');
+        cart = cart.filter(item => item.id !== productId);
+        localStorage.setItem('shopCart', JSON.stringify(cart));
+        updateCartCount();
+        renderCartPage();
+    }
+
+    function updateCartQuantity(productId, change) {
+        let cart = JSON.parse(localStorage.getItem('shopCart') || '[]');
+        const item = cart.find(item => item.id === productId);
+        if (item) {
+            item.quantity += change;
+            if (item.quantity <= 0) {
+                removeFromCart(productId);
+            } else {
+                localStorage.setItem('shopCart', JSON.stringify(cart));
+                updateCartCount();
+                renderCartPage();
+            }
+        }
     }
 
     function updateCartCount() {
@@ -418,8 +470,163 @@ $(document).ready(function () {
         $('.cart-count').text(totalItems);
     }
 
-    // Initialize cart count
-    updateCartCount();
+    async function renderCartPage() {
+        const cart = JSON.parse(localStorage.getItem('shopCart') || '[]');
+        const container = $('#cartItems');
+        const emptyState = $('#cartEmpty');
+        const summary = $('#cartSummary');
+
+        if (cart.length === 0) {
+            container.hide();
+            summary.hide();
+            emptyState.show();
+            return;
+        }
+
+        emptyState.hide();
+        container.show();
+        summary.show();
+        container.html('<div class="text-center p-5"><div class="spinner-border text-primary"></div></div>');
+
+        try {
+            // Get product details for cart items
+            const response = await $.ajax({ url: '/Ecommerce/Shop/Products?PageSize=1000', type: 'GET' });
+            if (response.success) {
+                const products = response.data.items;
+                let html = '';
+                let subtotal = 0;
+
+                cart.forEach(item => {
+                    const product = products.find(p => p.id === item.id);
+                    if (product) {
+                        const total = product.price * item.quantity;
+                        subtotal += total;
+                        html += `
+                            <div class="cart-item d-flex align-items-center p-3 mb-3 border rounded shadow-sm">
+                                <img src="https://picsum.photos/seed/${product.id}/100/100" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-1">${escapeHtml(product.name)}</h5>
+                                    <p class="text-muted small mb-0">${product.categoryName || 'General'}</p>
+                                    <div class="fw-bold text-primary">$${product.price.toFixed(2)}</div>
+                                </div>
+                                <div class="quantity-controls d-flex align-items-center me-4">
+                                    <button class="btn btn-sm btn-outline-secondary btn-qty-minus" data-id="${product.id}"><i class="bi bi-dash"></i></button>
+                                    <span class="mx-3 fw-bold">${item.quantity}</span>
+                                    <button class="btn btn-sm btn-outline-secondary btn-qty-plus" data-id="${product.id}"><i class="bi bi-plus"></i></button>
+                                </div>
+                                <div class="text-end me-4" style="min-width: 100px;">
+                                    <div class="fw-bold fs-5">$${total.toFixed(2)}</div>
+                                </div>
+                                <button class="btn btn-link text-danger btn-remove-cart" data-id="${product.id}"><i class="bi bi-trash fs-4"></i></button>
+                            </div>
+                        `;
+                    }
+                });
+
+                container.html(html);
+                const tax = subtotal * 0.10;
+                const total = subtotal + tax;
+
+                $('#cartSubtotal').text('$' + subtotal.toFixed(2));
+                $('#cartTax').text('$' + tax.toFixed(2));
+                $('#cartTotal').text('$' + total.toFixed(2));
+            }
+        } catch (error) {
+            console.error('Error rendering cart:', error);
+            container.html('<div class="alert alert-danger">Error loading cart items</div>');
+        }
+    }
+
+    async function renderCheckoutSummary() {
+        const cart = JSON.parse(localStorage.getItem('shopCart') || '[]');
+        const container = $('#checkoutSummaryItems');
+
+        if (cart.length === 0) {
+            window.location.href = '/Ecommerce/Shop/Cart';
+            return;
+        }
+
+        try {
+            const response = await $.ajax({ url: '/Ecommerce/Shop/Products?PageSize=1000', type: 'GET' });
+            if (response.success) {
+                const products = response.data.items;
+                let html = '';
+                let subtotal = 0;
+
+                cart.forEach(item => {
+                    const product = products.find(p => p.id === item.id);
+                    if (product) {
+                        const total = product.price * item.quantity;
+                        subtotal += total;
+                        html += `
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h6 class="mb-0">${escapeHtml(product.name)}</h6>
+                                    <small class="text-muted">${item.quantity} x $${product.price.toFixed(2)}</small>
+                                </div>
+                                <span class="fw-bold">$${total.toFixed(2)}</span>
+                            </div>
+                        `;
+                    }
+                });
+
+                container.html(html);
+                const tax = subtotal * 0.10;
+                const total = subtotal + tax;
+
+                $('#checkoutSubtotal').text('$' + subtotal.toFixed(2));
+                $('#checkoutTax').text('$' + tax.toFixed(2));
+                $('#checkoutTotal').text('$' + total.toFixed(2));
+
+                // Also update the ones in footer (if different IDs used)
+                $('#checkoutSubtotal, #cartSubtotal').text('$' + subtotal.toFixed(2));
+                $('#checkoutTax, #cartTax').text('$' + tax.toFixed(2));
+                $('#checkoutTotal, #cartTotal').text('$' + total.toFixed(2));
+            }
+        } catch (error) {
+            console.error('Error rendering checkout summary:', error);
+        }
+    }
+
+    function processCheckout() {
+        const cart = JSON.parse(localStorage.getItem('shopCart') || '[]');
+        if (cart.length === 0) return;
+
+        const orderData = {
+            customerName: $('#customerName').val(),
+            email: $('#email').val(),
+            phone: $('#phone').val(),
+            address: $('#address').val(),
+            city: $('#city').val(),
+            zipCode: $('#zipCode').val(),
+            orderItems: cart.map(item => ({
+                productId: item.id,
+                quantity: item.quantity
+            }))
+        };
+
+        $('#btnPlaceOrder').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Processing...');
+
+        $.ajax({
+            url: '/Ecommerce/Shop/PlaceOrder',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(orderData),
+            success: function (response) {
+                if (response.success) {
+                    localStorage.removeItem('shopCart');
+                    window.location.href = `/Ecommerce/Shop/Confirmation/${response.orderId}`;
+                } else {
+                    alert('Error: ' + (response.message || 'Failed to place order'));
+                    $('#btnPlaceOrder').prop('disabled', false).html('<i class="bi bi-lock-fill me-1"></i> Place Order Now');
+                }
+            },
+            error: function () {
+                alert('An error occurred while placing your order.');
+                $('#btnPlaceOrder').prop('disabled', false).html('<i class="bi bi-lock-fill me-1"></i> Place Order Now');
+            }
+        });
+    }
 
     // ========================================
     // Utility Functions
@@ -502,6 +709,9 @@ $(document).ready(function () {
             $(`.dynamic-category-link[data-category-id="${categoryId}"]`).addClass('active');
         }
     }
+
+    // Initialize cart count
+    updateCartCount();
 });
 
 // Toast notification styles (added dynamically)
@@ -529,4 +739,3 @@ $('<style>').text(`
         font-size: 1.25rem;
     }
 `).appendTo('head');
-

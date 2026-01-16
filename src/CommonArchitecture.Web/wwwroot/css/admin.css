@@ -15,14 +15,15 @@
 
     /* Theme Colors - Transparent/Dark */
     --admin-bg: #0f172a;
-    --admin-sidebar-bg: rgba(15, 23, 42, 0.16);
+    --admin-sidebar-bg: rgba(15, 23, 42, 0.15);
     --admin-text-main: #ffffff;
     --admin-text-muted: #94a3b8;
-    --admin-border-color: rgba(255, 255, 255, 0.10);
+    --admin-border-color: rgba(255, 255, 255, 0.1);
     --admin-border-strong: rgba(255, 255, 255, 0.2);
-    --admin-card-bg: rgba(15, 23, 42, 0.10);
+    --admin-card-bg: rgba(15, 23, 42, 0.1);
     --admin-modal-bg: rgba(15, 23, 42, 0.6);
 }
+
 
 /* Body & Wrapper */
 .admin-body {
@@ -488,7 +489,7 @@
     color: #fff !important;
 
     /* Corner Brackets */
-    --c-color: rgba(255, 255, 255, 0.8);
+    --c-color: rgba(255, 255, 255, 0.6);
     --c-size: 2px;
     --c-len: 12px;
 
@@ -496,9 +497,21 @@
         linear-gradient(var(--c-color), var(--c-color)),
         linear-gradient(var(--c-color), var(--c-color)),
         linear-gradient(var(--c-color), var(--c-color)),
+        linear-gradient(var(--c-color), var(--c-color)),
+        linear-gradient(var(--c-color), var(--c-color)),
+        linear-gradient(var(--c-color), var(--c-color)),
+        linear-gradient(var(--c-color), var(--c-color)),
         linear-gradient(var(--c-color), var(--c-color)) !important;
-    background-position: top left, top right, bottom right, bottom left !important;
-    background-size: var(--c-len) var(--c-size), var(--c-size) var(--c-len), var(--c-len) var(--c-size), var(--c-size) var(--c-len) !important;
+    background-position:
+        0 0, 0 0,
+        100% 0, 100% 0,
+        100% 100%, 100% 100%,
+        0 100%, 0 100% !important;
+    background-size:
+        var(--c-len) var(--c-size), var(--c-size) var(--c-len),
+        var(--c-len) var(--c-size), var(--c-size) var(--c-len),
+        var(--c-len) var(--c-size), var(--c-size) var(--c-len),
+        var(--c-len) var(--c-size), var(--c-size) var(--c-len) !important;
     background-repeat: no-repeat !important;
 }
 
@@ -582,7 +595,7 @@ th {
 
 .table thead th {
     border-bottom: 1px dashed rgba(255, 255, 255, 0.28) !important;
-    background-color: var(--admin-card-bg) !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: 0.75rem;

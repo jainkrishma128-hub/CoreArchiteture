@@ -60,6 +60,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcTWVudXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Admin/Views/Orders/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcT3JkZXJzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Admin/Views/Orders/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcT3JkZXJzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Admin/Views/Products/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUHJvZHVjdHNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -102,6 +110,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Ecommerce/Views/Shop/Cart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRWNvbW1lcmNlXFZpZXdzXFNob3BcQ2FydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Ecommerce/Views/Shop/Checkout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRWNvbW1lcmNlXFZpZXdzXFNob3BcQ2hlY2tvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Ecommerce/Views/Shop/Confirmation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRWNvbW1lcmNlXFZpZXdzXFNob3BcQ29uZmlybWF0aW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/My Archi/Git/CoreArchiteture-main/src/CommonArchitecture.Web/Areas/Ecommerce/Views/Shop/Index.cshtml]

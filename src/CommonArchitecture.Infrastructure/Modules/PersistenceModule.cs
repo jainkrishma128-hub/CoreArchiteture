@@ -47,6 +47,7 @@ namespace CommonArchitecture.Infrastructure.Modules
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IMenuRepository, MenuRepository>();
             services.AddScoped<IRoleMenuRepository, RoleMenuRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
 
             // Register Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();

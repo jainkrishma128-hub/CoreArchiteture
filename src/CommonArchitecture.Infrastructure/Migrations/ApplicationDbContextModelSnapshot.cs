@@ -61,7 +61,7 @@ namespace CommonArchitecture.Infrastructure.Migrations
                     b.HasIndex("IsActive", "Name")
                         .HasDatabaseName("IX_Category_IsActive_Name");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.ErrorLog", b =>
@@ -106,7 +106,7 @@ namespace CommonArchitecture.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ErrorLogs", (string)null);
+                    b.ToTable("ErrorLogs");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.InventoryTransaction", b =>
@@ -202,7 +202,119 @@ namespace CommonArchitecture.Infrastructure.Migrations
 
                     b.HasIndex("ParentMenuId");
 
-                    b.ToTable("Menus", (string)null);
+                    b.ToTable("Menus");
+                });
+
+            modelBuilder.Entity("CommonArchitecture.Core.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("OrderNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Tax")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ZipCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderDate");
+
+                    b.HasIndex("OrderNumber")
+                        .IsUnique();
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("CommonArchitecture.Core.Entities.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.Product", b =>
@@ -252,7 +364,7 @@ namespace CommonArchitecture.Infrastructure.Migrations
                     b.HasIndex("CategoryId", "Price")
                         .HasDatabaseName("IX_Product_CategoryId_Price");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.RefreshToken", b =>
@@ -310,7 +422,7 @@ namespace CommonArchitecture.Infrastructure.Migrations
 
                     b.HasIndex("UserId", "DeviceFingerprint");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.RequestResponseLog", b =>
@@ -380,7 +492,7 @@ namespace CommonArchitecture.Infrastructure.Migrations
                     b.HasIndex("CreatedAt", "ResponseStatusCode")
                         .HasDatabaseName("IX_RequestResponseLogs_CreatedAt_ResponseStatusCode");
 
-                    b.ToTable("RequestResponseLogs", (string)null);
+                    b.ToTable("RequestResponseLogs");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.Role", b =>
@@ -409,7 +521,7 @@ namespace CommonArchitecture.Infrastructure.Migrations
                     b.HasIndex("RoleName")
                         .IsUnique();
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.RoleMenu", b =>
@@ -456,7 +568,7 @@ namespace CommonArchitecture.Infrastructure.Migrations
                     b.HasIndex("RoleId", "MenuId")
                         .IsUnique();
 
-                    b.ToTable("RoleMenus", (string)null);
+                    b.ToTable("RoleMenus");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.User", b =>
@@ -505,7 +617,7 @@ namespace CommonArchitecture.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.InventoryTransaction", b =>
@@ -527,6 +639,25 @@ namespace CommonArchitecture.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("ParentMenu");
+                });
+
+            modelBuilder.Entity("CommonArchitecture.Core.Entities.OrderItem", b =>
+                {
+                    b.HasOne("CommonArchitecture.Core.Entities.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CommonArchitecture.Core.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CommonArchitecture.Core.Entities.Product", b =>
@@ -584,6 +715,11 @@ namespace CommonArchitecture.Infrastructure.Migrations
             modelBuilder.Entity("CommonArchitecture.Core.Entities.Menu", b =>
                 {
                     b.Navigation("SubMenus");
+                });
+
+            modelBuilder.Entity("CommonArchitecture.Core.Entities.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618
         }

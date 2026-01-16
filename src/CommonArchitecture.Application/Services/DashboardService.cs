@@ -30,29 +30,51 @@ public class DashboardService : IDashboardService
         var to = DateTime.UtcNow;
         var from = to.AddDays(-30);
 
-        // Optimization: Execute queries in parallel
-        // LoggingService uses DbContextFactory (new context), so it's safe to run alongside UnitOfWork
-        var registrationsTask = _unitOfWork.Users.GetDailyRegistrationsAsync(from, to);
-        var logsTask = _loggingService.GetDashboardStatsAsync(from, to);
+        // UoW operations must be sequential because they share a single DbContext
+        var registrations = await _unitOfWork.Users.GetDailyRegistrationsAsync(from, to).ConfigureAwait(false);
+        var (totalRevenue, recentOrdersCount) = await _unitOfWork.Orders.GetDashboardSummaryAsync(from, to).ConfigureAwait(false);
+        var revenueTrends = await _unitOfWork.Orders.GetRevenueTrendsAsync(from, to).ConfigureAwait(false);
+        var recentOrdersList = await _unitOfWork.Orders.GetRecentOrdersAsync(5).ConfigureAwait(false);
+        var topProductsRaw = await _unitOfWork.Orders.GetTopSellingProductsAsync(5).ConfigureAwait(false);
+        var inventorySummary = await _unitOfWork.InventoryTransactions.GetInventorySummaryAsync(null, null, "CurrentStock", "asc", 1, 1000).ConfigureAwait(false);
 
-        await Task.WhenAll(registrationsTask, logsTask).ConfigureAwait(false);
-
-        var registrations = await registrationsTask;
-        var (apiCalls, statusDist, avgDuration) = await logsTask;
+        var lowStockCount = inventorySummary.Count(i => i.CurrentStock < 10);
 
         var result = new DashboardStatsDto
         {
             UserRegistrations = registrations,
-            ApiCalls = apiCalls,
-            StatusCodes = statusDist,
-            AverageResponseTime = avgDuration
+            
+            // Ecommerce Data
+            TotalRevenue = totalRevenue,
+            RecentOrdersCount = recentOrdersCount,
+            LowStockCount = lowStockCount,
+            RevenueTrends = revenueTrends.Select(t => new DailyRevenueDto { Date = t.Date, Amount = t.Amount, OrderCount = t.Count }).ToList(),
+            RecentOrders = recentOrdersList.Select(o => new RecentOrderDto
+
+            {
+                Id = o.Id,
+                OrderNumber = o.OrderNumber,
+                CustomerName = o.CustomerName,
+                TotalAmount = o.TotalAmount,
+                Status = o.Status.ToString(),
+                OrderDate = o.OrderDate
+            }).ToList(),
+            TopSellingProducts = topProductsRaw.Select(p => new TopProductDto
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                TotalSold = p.TotalSold,
+                Revenue = p.Revenue
+            }).ToList()
         };
+
+
 
         // OPTIMIZATION: Cache the result for 5 minutes
         _memoryCache.Set(DashboardStatsCacheKey, result, new MemoryCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = CacheDuration,
-            SlidingExpiration = TimeSpan.FromMinutes(2) // Reset if accessed within 2 minutes
+            SlidingExpiration = TimeSpan.FromMinutes(2)
         });
 
         return result;
