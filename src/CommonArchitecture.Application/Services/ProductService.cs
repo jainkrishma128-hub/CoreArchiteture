@@ -23,22 +23,21 @@ public class ProductService : IProductService
 
 
         // Category is already loaded via Include in repository - no N+1 query issue
-        // Fetch stock for all items
-        var dtosList = new List<ProductDto>();
-        foreach (var p in items)
+        
+        // Fetch stock for all items in one go
+        var productIds = items.Select(p => p.Id).ToList();
+        var stockDict = await _unitOfWork.InventoryTransactions.GetBulkStockAsync(productIds);
+
+        var dtosList = items.Select(p => new ProductDto
         {
-            var stock = await _unitOfWork.InventoryTransactions.GetCurrentStockAsync(p.Id);
-            dtosList.Add(new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price,
-                CategoryId = p.CategoryId,
-                CategoryName = p.Category?.Name ?? "Uncategorized",
-                Stock = stock
-            });
-        }
+            Id = p.Id,
+            Name = p.Name,
+            Description = p.Description,
+            Price = p.Price,
+            CategoryId = p.CategoryId,
+            CategoryName = p.Category?.Name ?? "Uncategorized",
+            Stock = stockDict.TryGetValue(p.Id, out var stock) ? stock : 0
+        }).ToList();
 
         return new PaginatedResult<ProductDto>
         {
@@ -183,6 +182,31 @@ public class ProductService : IProductService
         {
           return false;
         }
+    }
+
+    public async Task<List<CategoryProductGroupDto>> GetShopIndexDataAsync()
+    {
+        var rawData = await _unitOfWork.Products.GetShopIndexProductsAsync();
+        
+        // Group the flat data into categories
+        return rawData
+            .GroupBy(x => new { x.CategoryId, x.CategoryName })
+            .Select(g => new CategoryProductGroupDto
+            {
+                CategoryId = g.Key.CategoryId,
+                CategoryName = g.Key.CategoryName,
+                Products = g.Select(p => new ProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    CategoryId = p.CategoryId,
+                    CategoryName = p.CategoryName,
+                    Stock = p.Stock
+                }).ToList()
+            })
+            .ToList();
     }
 }
 

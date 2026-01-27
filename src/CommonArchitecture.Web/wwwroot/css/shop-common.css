@@ -1,0 +1,83 @@
+/* Ecommerce Shop - Common Styles */
+
+.z-index-10 {
+    z-index: 10;
+}
+
+.hero-pattern {
+    opacity: 0.1;
+}
+
+.shop-hero {
+    border-radius: 0 0 50px 50px;
+    box-shadow: 0 10px 30px rgba(13, 110, 253, 0.1);
+}
+
+.category-group h2 {
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.category-group h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 4px;
+    background-color: var(--bs-primary);
+    border-radius: 2px;
+}
+
+.features-section .bi {
+    transition: transform 0.3s ease;
+}
+
+.features-section .bi:hover {
+    transform: scale(1.1);
+}
+
+/* Product Transitions */
+.transition-hover {
+    transition: all 0.3s ease !important;
+}
+
+.transition-hover:hover {
+    transform: translateY(-8px);
+}
+
+/* Product List Specific */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.pagination-rounded .page-link {
+    border-radius: 50% !important;
+    margin: 0 3px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    color: #444;
+    font-weight: 500;
+}
+
+.pagination-rounded .page-item.active .page-link {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.filters-bar {
+    border-radius: 15px;
+}
+
+.search-box .form-control,
+.form-select {
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #eee;
+}

@@ -29,36 +29,13 @@ public class ShopController : Controller
     {
         try
         {
-            var categories = await _categoryApiService.GetActiveAsync();
-            var model = new List<CategoryProductGroup>();
-
-            foreach (var category in categories)
-            {
-                var result = await _productApiService.GetAllAsync(new ProductQueryParameters
-                {
-                    CategoryId = category.Id,
-                    PageSize = 4,
-                    PageNumber = 1,
-                    SortBy = "Id",
-                    SortOrder = "desc"
-                });
-
-                if (result.Items.Any())
-                {
-                    model.Add(new CategoryProductGroup
-                    {
-                        Category = category,
-                        Products = result.Items.ToList()
-                    });
-                }
-            }
-
+            var model = await _productApiService.GetShopIndexDataAsync();
             return View(model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading shop index");
-            return View(new List<CategoryProductGroup>());
+            return View(new List<CategoryProductGroupDto>());
         }
     }
 
@@ -173,8 +150,4 @@ public class ShopController : Controller
 }
 
 
-public class CategoryProductGroup
-{
-    public CategoryDto Category { get; set; } = null!;
-    public List<ProductDto> Products { get; set; } = new();
-}
+

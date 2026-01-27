@@ -18,25 +18,25 @@
                 <div class="badge bg-white bg-opacity-10 border border-white border-opacity-25 text-white rounded-pill px-3 py-2 mb-4 fw-light backdrop-blur shadow-sm">
                     <span class="dot bg-success d-inline-block rounded-circle me-2"></span> 10+ Years of Full-Stack Expertise
                 </div>
-                <h1 class="display-3 fw-bolder text-white mb-4 leading-tight">
+                <h1 class="display-3 display-md-4 display-lg-3 fw-bolder text-white mb-4 leading-tight">
                     Anant Dosi's <span class="text-gradient-cyan">Clean Architecture</span> Ecosystem.
                 </h1>
                 <p class="lead text-white-50 mb-5 pe-lg-5">
                     A professional-grade reference architecture powered by <strong>.NET 9</strong>. Featuring <strong>CQRS</strong>, <strong>Domain-Driven Design</strong>, and <strong>Enterprise Security</strong> patterns tailored for extreme scalability.
                 </p>
-                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
-                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg fw-bold hover-lift">
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start mb-5 mb-lg-0">
+                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-primary btn-lg rounded-pill px-4 px-sm-5 shadow-lg fw-bold hover-lift">
                         Launch Admin Portal <i class="bi bi-shield-lock-fill ms-1"></i>
                     </a>
-                    <a asp-area="Ecommerce" asp-controller="Shop" asp-action="Index" class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold hover-lift">
+                    <a asp-area="Ecommerce" asp-controller="Shop" asp-action="Index" class="btn btn-outline-light btn-lg rounded-pill px-4 px-sm-5 fw-bold hover-lift">
                         Visit Storefront <i class="bi bi-cart3 ms-1"></i>
                     </a>
                 </div>
             </div>
             <div class="col-lg-6">
                 <!-- Ecosystem Architecture Visualization -->
-                <div class="hero-visual position-relative ps-lg-5">
-                    <div class="tech-card glass-card p-4 rounded-4 shadow-2xl animate-float-slow">
+                <div class="hero-visual position-relative ps-lg-5 mt-4 mt-lg-0">
+                    <div class="tech-card glass-card p-3 p-md-4 rounded-4 shadow-2xl animate-float-slow">
                         <div class="d-flex align-items-center mb-4">
                             <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:52px;height:52px">
                                 <i class="bi bi-layers-half fs-4"></i>
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                     
-                    <div class="floating-badge glass-card p-3 rounded-4 shadow-lg position-absolute bottom-0 start-0 translate-middle-x animate-float-fast" style="width: 200px; margin-bottom: -20px;">
+                    <div class="floating-badge glass-card p-3 rounded-4 shadow-lg position-absolute bottom-0 start-0 translate-middle-x animate-float-fast d-none d-sm-block" style="width: 200px; margin-bottom: -20px;">
                         <div class="d-flex align-items-center gap-3">
                              <div class="icon-box bg-info text-white rounded-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px">
                                 <i class="bi bi-shield-check"></i>
@@ -321,8 +321,8 @@
                     <div class="profile-blob animate-blob"></div>
                     <img src="https://ui-avatars.com/api/?name=Anant+Dosi&background=4f46e5&color=fff&size=512&bold=true" 
                          alt="Anant Dosi" 
-                         class="img-fluid rounded-4 shadow-2xl position-relative z-2 object-fit-cover" 
-                         style="width: 350px; height: 450px; border: 8px solid white;">
+                         class="img-fluid rounded-4 shadow-2xl position-relative z-2 object-fit-cover profile-img" 
+                         style="border: 8px solid white;">
                     <div class="experience-badge shadow-lg animate-float-slow">
                         <span class="d-block fw-bold display-6">10+</span>
                         <small class="text-uppercase tracking-wider">Years Exp.</small>
@@ -413,7 +413,18 @@
     .hero-wrapper {
         min-height: 90vh;
         background-color: #0f172a;
-        padding-top: 80px; /* Navbar offset */
+        padding-top: 100px; /* Navbar offset */
+        padding-bottom: 60px;
+    }
+
+    @@media (max-width: 991.98px) {
+        .hero-wrapper {
+            padding-top: 120px;
+            text-align: center;
+        }
+        .display-3 {
+            font-size: calc(1.525rem + 3.3vw);
+        }
     }
     
     .hero-bg-shapes .shape {
@@ -599,6 +610,33 @@
     .tech-card {
         max-width: 450px;
         margin: 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    @@media (max-width: 575.98px) {
+        .tech-card {
+            max-width: 100%;
+        }
+        .hero-visual {
+            padding-left: 0 !important;
+        }
+    }
+
+    .profile-img {
+        width: 350px;
+        height: 450px;
+    }
+
+    @@media (max-width: 575.98px) {
+        .profile-img {
+            width: 280px;
+            height: 380px;
+        }
+        .experience-badge {
+            right: -10px !important;
+            padding: 0.75rem 1rem !important;
+        }
     }
 
     .stack-list .badge {

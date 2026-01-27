@@ -25,6 +25,14 @@ public class ProductsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("shop-index")]
+    [AllowAnonymous]
+    public async Task<ActionResult<List<CategoryProductGroupDto>>> GetShopIndexData()
+    {
+        var result = await _productService.GetShopIndexDataAsync();
+        return Ok(result);
+    }
+
     [HttpGet("{id}")]
     [AllowAnonymous]
     public async Task<ActionResult<ProductDto>> GetById(int id)

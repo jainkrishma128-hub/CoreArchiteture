@@ -562,7 +562,6 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\staticwebassets.build.json.cache
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\staticwebassets.development.json
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\staticwebassets.build.endpoints.json
-D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\CommonAr.C3994394.Up2Date
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\CommonArchitecture.API.dll
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\refint\CommonArchitecture.API.dll

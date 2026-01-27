@@ -90,4 +90,13 @@ public class InventoryTransactionRepository : IInventoryTransactionRepository
 
         return await query.CountAsync();
     }
+
+    public async Task<Dictionary<int, int>> GetBulkStockAsync(IEnumerable<int> productIds)
+    {
+        return await _context.InventoryTransactions
+            .Where(it => productIds.Contains(it.ProductId))
+            .GroupBy(it => it.ProductId)
+            .Select(g => new { ProductId = g.Key, Stock = g.Sum(it => it.Quantity) })
+            .ToDictionaryAsync(x => x.ProductId, x => x.Stock);
+    }
 }

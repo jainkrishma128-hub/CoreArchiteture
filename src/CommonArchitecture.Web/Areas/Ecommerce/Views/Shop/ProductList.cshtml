@@ -105,6 +105,10 @@
     </div>
 </section>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/shop-common.css" asp-append-version="true" />
+}
+
 @section Scripts {
     <script>
         // Set the initial category if provided
@@ -114,45 +118,3 @@
         }
     </script>
 }
-
-<style>
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 2rem;
-    }
-
-    .pagination-rounded .page-link {
-        border-radius: 50% !important;
-        margin: 0 3px;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        color: #444;
-        font-weight: 500;
-    }
-
-    .pagination-rounded .page-item.active .page-link {
-        background-color: #0d6efd;
-        color: white;
-    }
-
-    .filters-bar {
-        border-radius: 15px;
-    }
-
-    .search-box .form-control {
-        border-radius: 10px;
-        background-color: #f8f9fa;
-        border: 1px solid #eee;
-    }
-
-    .form-select {
-        border-radius: 10px;
-        background-color: #f8f9fa;
-        border: 1px solid #eee;
-    }
-</style>

@@ -12,4 +12,5 @@ public interface IProductRepository
     Task<IEnumerable<Product>> GetPagedAsync(string? searchTerm, int? categoryId, string sortBy, string sortOrder, int pageNumber, int pageSize);
     Task<int> GetTotalCountAsync(string? searchTerm, int? categoryId);
     Task BulkAddAsync(IEnumerable<Product> products);
+    Task<IEnumerable<CommonArchitecture.Core.Models.ShopIndexDataResult>> GetShopIndexProductsAsync();
 }

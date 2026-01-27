@@ -11,4 +11,5 @@ public interface IProductService
  Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
  Task<byte[]> ExportAsync();
  Task<bool> ImportAsync(Stream fileStream);
+ Task<List<CategoryProductGroupDto>> GetShopIndexDataAsync();
 }

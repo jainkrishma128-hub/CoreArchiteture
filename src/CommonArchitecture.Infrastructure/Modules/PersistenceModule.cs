@@ -51,6 +51,9 @@ namespace CommonArchitecture.Infrastructure.Modules
 
             // Register Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
+
+            // Register DbSeeder
+            services.AddScoped<DbSeeder>();
         }
     }
 }

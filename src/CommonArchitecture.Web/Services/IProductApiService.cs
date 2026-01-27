@@ -12,4 +12,5 @@ public interface IProductApiService
     Task<bool> DeleteAsync(int id);
     Task<byte[]> ExportAsync();
     Task<bool> ImportAsync(IFormFile file);
+    Task<List<CategoryProductGroupDto>> GetShopIndexDataAsync();
 }

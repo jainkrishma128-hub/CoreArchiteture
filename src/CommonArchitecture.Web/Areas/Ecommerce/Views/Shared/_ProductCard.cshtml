@@ -5,11 +5,12 @@
     var discountPrice = Model.Price * 1.25m;
     var randomRating = 4.0 + (new Random().NextDouble() * 1.0);
     var randomReviews = new Random().Next(10, 200);
+    var categoryKeyword = Model.CategoryName?.ToLower() ?? "product";
 }
 
 <div class="product-card h-100 shadow-sm border-0 transition-hover">
     <div class="product-image position-relative overflow-hidden" style="height: 250px;">
-        <img src="https://picsum.photos/seed/@Model.Id/400/400" class="card-img-top h-100 w-100 object-fit-cover" alt="@Model.Name" loading="lazy" />
+        <img src="https://picsum.photos/seed/@(Model.Id + Model.CategoryName)/400/400" class="card-img-top h-100 w-100 object-fit-cover" alt="@Model.Name" loading="lazy" />
         
         <div class="product-badges position-absolute top-0 start-0 m-2">
             @if (Model.Stock <= 5 && Model.Stock > 0)

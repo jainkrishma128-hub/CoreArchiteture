@@ -11,12 +11,14 @@ $(document).ready(function () {
     let sortBy = 'Id';
     let sortOrder = 'asc';
     let searchTerm = '';
+    let categoryId = '';
     let searchTimeout = null;
     const token = $('input[name="__RequestVerificationToken"]').val();
 
     // Initialize
     loadProducts();
     loadCategories();
+    setupCategoryFilter();
     initializeValidation();
     attachEventHandlers();
 
@@ -57,7 +59,9 @@ $(document).ready(function () {
         // Clear search
         $('#btnClearSearch').click(function () {
             $('#searchBox').val('');
+            $('#categoryFilter').val('');
             searchTerm = '';
+            categoryId = '';
             currentPage = 1;
             loadProducts();
         });
@@ -102,20 +106,50 @@ $(document).ready(function () {
             $('#productModal').modal('show');
         });
 
-        // Edit product button
-        $(document).on('click', '.btn-edit', function () {
-            const productId = $(this).data('id');
-            loadProductForEdit(productId);
+        // Import form submission
+        $('#importForm').on('submit', function (e) {
+            e.preventDefault();
+            const fileInput = $('#importFile')[0];
+            if (fileInput.files.length === 0) {
+                showAlert('warning', 'Please select a file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            $('#btnImport').prop('disabled', true);
+            $('#importSpinner').removeClass('d-none');
+            $('#importButtonText').text('Importing...');
+
+            $.ajax({
+                url: `${areaPrefix}/Products/Import`,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        $('#importModal').modal('hide');
+                        $('#importForm')[0].reset();
+                        showAlert('success', 'Products imported successfully');
+                        loadProducts();
+                    } else {
+                        showAlert('danger', response.message || 'Import failed');
+                    }
+                },
+                error: function () {
+                    showAlert('danger', 'An error occurred during import');
+                },
+                complete: function () {
+                    $('#btnImport').prop('disabled', false);
+                    $('#importSpinner').addClass('d-none');
+                    $('#importButtonText').text('Import Products');
+                }
+            });
         });
 
-        // Delete product button
-        $(document).on('click', '.btn-delete', function () {
-            currentProductId = $(this).data('id');
-            $('#deleteProductName').text($(this).data('name'));
-            $('#deleteModal').modal('show');
-        });
-
-        // Form submission
+        // Form submission for Create/Edit
         $('#productForm').submit(function (e) {
             e.preventDefault();
             if (!$(this).valid()) return;
@@ -136,11 +170,11 @@ $(document).ready(function () {
     // ========================================
     function updateSortIndicators() {
         $('.sortable').removeClass('active');
-        $('.sortable i').removeClass('bi-arrow-up bi-arrow-down').addClass('bi-arrow-down-up');
+        $('.sortable i').removeClass('fas fa-sort-up fas fa-sort-down').addClass('fas fa-sort');
         const activeHeader = $(`.sortable[data-column="${sortBy}"]`);
         activeHeader.addClass('active');
-        activeHeader.find('i').removeClass('bi-arrow-down-up')
-            .addClass(sortOrder === 'asc' ? 'bi-arrow-up' : 'bi-arrow-down');
+        activeHeader.find('i').removeClass('fas fa-sort')
+            .addClass(sortOrder === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down');
     }
 
     // ========================================
@@ -159,6 +193,7 @@ $(document).ready(function () {
         };
 
         if (searchTerm) params.SearchTerm = searchTerm;
+        if (categoryId) params.CategoryId = categoryId;
 
         $.ajax({
             url: `${areaPrefix}/Products/GetAll`,
@@ -170,9 +205,10 @@ $(document).ready(function () {
                     renderProducts(response.data);
                 }
             },
-            error: function () {
+            error: function (xhr) {
                 $('#loadingIndicator').hide();
-                showAlert('danger', 'Error loading products. Please try again.');
+                console.error('API Error:', xhr);
+                showAlert('danger', 'Error loading products. Check console for details.');
             }
         });
     }
@@ -183,87 +219,42 @@ $(document).ready(function () {
             type: 'GET',
             success: function (response) {
                 if (response.success) {
-                    var categorySelect = $('#CategoryId');
+                    const categorySelect = $('#CategoryId');
                     categorySelect.empty();
                     categorySelect.append('<option value="">Select Category</option>');
 
-                    $.each(response.data, function (i, item) {
-                        if (item.IsActive !== false) {
-                            // Handle both camelCase and PascalCase property names
-                            const categoryId = item.id || item.Id;
-                            const categoryName = item.name || item.Name;
-
-                            var option = $('<option>', {
-                                value: String(categoryId),
-                                text: categoryName
-                            });
-                            categorySelect.append(option);
-                        }
+                    response.data.forEach(function (item) {
+                        const id = item.id || item.Id;
+                        const name = item.name || item.Name;
+                        categorySelect.append(`<option value="${id}">${name}</option>`);
                     });
 
-                    // Call callback if provided
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
+                    if (typeof callback === 'function') callback();
                 }
             }
         });
     }
 
-    function loadProductForEdit(productId) {
-        isEditMode = true;
-        currentProductId = productId;
-        $('#productModalLabel').text('Edit Product');
-        $('#saveButtonText').text('Update Product');
-
+    function setupCategoryFilter() {
         $.ajax({
-            url: `${areaPrefix}/Products/GetById/${productId}`,
+            url: `${areaPrefix}/Products/GetCategories`,
             type: 'GET',
             success: function (response) {
                 if (response.success) {
-                    const product = response.data;
-                    $('#productId').val(product.id);
-                    $('#productName').val(product.name);
-                    $('#productDescription').val(product.description);
-                    $('#productPrice').val(product.price);
-
-                    // Load categories first, then set the value
-                    loadCategories(function () {
-                        // Handle potential casing issues (camelCase vs PascalCase)
-                        const categoryIdRaw = product.categoryId || product.CategoryId;
-                        const catId = String(categoryIdRaw);
-
-                        console.log('Trying to set Category ID:', catId);
-
-                        // Debug available options
-                        const availableOptions = $('#CategoryId option').map((_, opt) => $(opt).val()).get();
-                        console.log('Available Category IDs:', availableOptions);
-
-                        // METHOD 1: Direct Val Set
-                        $('#CategoryId').val(catId);
-
-                        // METHOD 2: Prop Selected (Fallback)
-                        if ($('#CategoryId').val() !== catId) {
-                            $('#CategoryId option[value="' + catId + '"]').prop('selected', true);
-                        }
-
-                        // METHOD 3: Timeout retry (modal animation might interfere)
-                        setTimeout(() => {
-                            if ($('#CategoryId').val() !== catId) {
-                                console.warn('Retrying Category Set...');
-                                $('#CategoryId').val(catId);
-                            }
-                        }, 200);
-
-                        $('#productModal').modal('show');
+                    const filter = $('#categoryFilter');
+                    response.data.forEach(cat => {
+                        const id = cat.id || cat.Id;
+                        const name = cat.name || cat.Name;
+                        filter.append(`<option value="${id}">${name}</option>`);
                     });
-                } else {
-                    showAlert('danger', 'Failed to load product details.');
                 }
-            },
-            error: function () {
-                showAlert('danger', 'Error loading product details. Please try again.');
             }
+        });
+
+        $('#categoryFilter').on('change', function () {
+            categoryId = $(this).val();
+            currentPage = 1;
+            loadProducts();
         });
     }
 
@@ -288,18 +279,36 @@ $(document).ready(function () {
         result.items.forEach(function (product) {
             const row = `
                 <tr>
-                    <td>${product.id}</td>
-                    <td>${escapeHtml(product.name)}</td>
-                    <td>${escapeHtml(product.categoryName || 'Uncategorized')}</td>
-                    <td>${escapeHtml(product.description)}</td>
-                    <td>$${product.price.toFixed(2)}</td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-warning btn-edit" data-id="${product.id}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger btn-delete" data-id="${product.id}" data-name="${escapeHtml(product.name)}">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                    <td class="ps-4 text-muted small">${product.id}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="product-icon me-3 shadow-sm border d-none d-sm-flex">
+                                <i class="fas fa-box text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark">${escapeHtml(product.name)}</h6>
+                                <small class="text-muted d-none d-md-block text-truncate" style="max-width: 250px;">${escapeHtml(product.description)}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="d-none d-md-table-cell">
+                        <span class="badge bg-light text-primary border fw-medium">${escapeHtml(product.categoryName || 'Uncategorized')}</span>
+                    </td>
+                    <td class="d-none d-lg-table-cell text-end">
+                        <span class="fw-bold text-dark">$${product.price.toFixed(2)}</span>
+                    </td>
+                    <td class="pe-4 text-end">
+                        <div class="d-flex justify-content-end gap-1">
+                            <button class="btn btn-light btn-sm rounded-pill px-2 d-md-none text-info fw-bold" onclick="viewProductDetail(${product.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-light btn-sm rounded-pill px-3 text-primary fw-bold" onclick="editProduct(${product.id})">
+                                <i class="fas fa-pencil-alt"></i><span class="d-none d-lg-inline ms-1">Edit</span>
+                            </button>
+                            <button class="btn btn-light btn-sm rounded-pill px-3 text-danger fw-bold" onclick="deleteProduct(${product.id}, '${escapeHtml(product.name)}')">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -308,6 +317,9 @@ $(document).ready(function () {
 
         renderPagination(result);
         updateResultInfo(result);
+
+        // Update stats
+        $('#statTotalProducts').text(result.totalCount);
     }
 
     function renderPagination(result) {
@@ -319,26 +331,32 @@ $(document).ready(function () {
         const prevDisabled = !result.hasPrevious ? 'disabled' : '';
         pagination.append(`
             <li class="page-item ${prevDisabled}">
-                <a class="page-link" href="#" data-page="${result.pageNumber - 1}">Previous</a>
+                <a class="page-link rounded-start-pill" href="#" data-page="${result.pageNumber - 1}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
             </li>
         `);
 
-        const startPage = Math.max(1, result.pageNumber - 2);
-        const endPage = Math.min(result.totalPages, result.pageNumber + 2);
-
-        for (let i = startPage; i <= endPage; i++) {
-            const active = i === result.pageNumber ? 'active' : '';
-            pagination.append(`
-                <li class="page-item ${active}">
-                    <a class="page-link" href="#" data-page="${i}">${i}</a>
-                </li>
-            `);
+        // Simple pagination logic
+        for (let i = 1; i <= result.totalPages; i++) {
+            if (i === 1 || i === result.totalPages || (i >= result.pageNumber - 2 && i <= result.pageNumber + 2)) {
+                const active = i === result.pageNumber ? 'active' : '';
+                pagination.append(`
+                    <li class="page-item ${active}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `);
+            } else if (i === result.pageNumber - 3 || i === result.pageNumber + 3) {
+                pagination.append('<li class="page-item disabled"><span class="page-link">...</span></li>');
+            }
         }
 
         const nextDisabled = !result.hasNext ? 'disabled' : '';
         pagination.append(`
             <li class="page-item ${nextDisabled}">
-                <a class="page-link" href="#" data-page="${result.pageNumber + 1}">Next</a>
+                <a class="page-link rounded-end-pill" href="#" data-page="${result.pageNumber + 1}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
             </li>
         `);
     }
@@ -348,6 +366,56 @@ $(document).ready(function () {
         const end = Math.min(result.pageNumber * result.pageSize, result.totalCount);
         $('#resultInfo').text(`Showing ${start}-${end} of ${result.totalCount} products`);
     }
+
+    // ========================================
+    // Global Access Functions (for onclick)
+    // ========================================
+    window.editProduct = function (productId) {
+        isEditMode = true;
+        currentProductId = productId;
+        $('#productModalLabel').text('Edit Product');
+        $('#saveButtonText').text('Update Product');
+
+        $.ajax({
+            url: `${areaPrefix}/Products/GetById/${productId}`,
+            type: 'GET',
+            success: function (response) {
+                if (response.success) {
+                    const product = response.data;
+                    $('#productId').val(product.id);
+                    $('#productName').val(product.name);
+                    $('#productDescription').val(product.description);
+                    $('#productPrice').val(product.price);
+                    $('#CategoryId').val(product.categoryId || product.CategoryId);
+                    $('#productModal').modal('show');
+                }
+            }
+        });
+    };
+
+    window.deleteProduct = function (productId, name) {
+        currentProductId = productId;
+        $('#deleteProductName').text(name);
+        $('#deleteModal').modal('show');
+    };
+
+    window.viewProductDetail = function (productId) {
+        $.ajax({
+            url: `${areaPrefix}/Products/GetById/${productId}`,
+            type: 'GET',
+            success: function (response) {
+                if (response.success) {
+                    const p = response.data;
+                    $('#detailName').text(p.name);
+                    $('#detailCategory').text(p.categoryName || 'Uncategorized');
+                    $('#detailPrice').text('$' + p.price.toFixed(2));
+                    $('#detailId').text(p.id);
+                    $('#detailDescription').text(p.description);
+                    $('#detailModal').modal('show');
+                }
+            }
+        });
+    };
 
     // ========================================
     // CRUD Operations
@@ -367,25 +435,13 @@ $(document).ready(function () {
         $('#saveSpinner').removeClass('d-none');
         $('#btnSaveProduct').prop('disabled', true);
 
-        console.log('Saving product:', {
-            url: url,
-            method: isEditMode ? 'PUT' : 'POST',
-            formData: formData,
-            token: token ? 'Present' : 'Missing',
-            productId: currentProductId
-        });
-
         $.ajax({
             url: url,
             type: isEditMode ? 'PUT' : 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),
-            headers: {
-                'RequestVerificationToken': token,
-                'X-CSRF-TOKEN': token
-            },
+            headers: { 'RequestVerificationToken': token },
             success: function (response) {
-                console.log('Save response:', response);
                 if (response.success) {
                     $('#productModal').modal('hide');
                     showAlert('success', response.message);
@@ -399,26 +455,7 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr) {
-                console.error('Save error:', {
-                    status: xhr.status,
-                    statusText: xhr.statusText,
-                    response: xhr.responseJSON || xhr.responseText
-                });
-
-                if (xhr.status === 401) {
-                    showAlert('danger', 'Your session has expired. Please login again.');
-                    setTimeout(() => {
-                        window.location.href = '/Admin/Auth/Login';
-                    }, 2000);
-                } else if (xhr.status === 403) {
-                    showAlert('danger', 'You do not have permission to perform this action.');
-                } else if (xhr.status === 404) {
-                    showAlert('danger', 'Product not found on server.');
-                } else if (xhr.status === 500) {
-                    showAlert('danger', 'Server error: ' + (xhr.responseJSON?.message || 'Please check the API logs'));
-                } else {
-                    showAlert('danger', `Error (${xhr.status}): ${xhr.statusText}. Check browser console for details.`);
-                }
+                showAlert('danger', 'Error saving product. Check console.');
             },
             complete: function () {
                 $('#saveSpinner').addClass('d-none');
@@ -434,27 +471,12 @@ $(document).ready(function () {
         $.ajax({
             url: `${areaPrefix}/Products/Delete/${currentProductId}`,
             type: 'DELETE',
-            headers: {
-                'RequestVerificationToken': token,
-                'X-CSRF-TOKEN': token // Add as header for DELETE requests
-            },
+            headers: { 'RequestVerificationToken': token },
             success: function (response) {
                 if (response.success) {
                     $('#deleteModal').modal('hide');
                     showAlert('success', response.message);
                     loadProducts();
-                } else {
-                    showAlert('danger', response.message || 'Failed to delete product.');
-                }
-            },
-            error: function (xhr) {
-                if (xhr.status === 401) {
-                    showAlert('danger', 'Your session has expired. Please login again.');
-                    window.location.href = '/Admin/Auth/Login';
-                } else if (xhr.status === 403) {
-                    showAlert('danger', 'You do not have permission to perform this action.');
-                } else {
-                    showAlert('danger', 'An error occurred while deleting the product. Please try again.');
                 }
             },
             complete: function () {
@@ -475,19 +497,19 @@ $(document).ready(function () {
 
     function showAlert(type, message) {
         const alert = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            <div class="alert alert-${type} alert-dismissible fade show border-0 shadow-sm" role="alert">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         `;
         $('#alertContainer').html(alert);
-        setTimeout(function () {
-            $('.alert').fadeOut('slow', function () { $(this).remove(); });
-        }, 5000);
+        setTimeout(() => { $('.alert').fadeOut(() => $(this).remove()); }, 4000);
     }
 
     function escapeHtml(text) {
+        if (!text) return '';
         const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-        return text.replace(/[&<>"']/g, function (m) { return map[m]; });
+        return text.replace(/[&<>"']/g, m => map[m]);
     }
 });

@@ -23,6 +23,11 @@ public class ProductApiService : IProductApiService
             // Build query string
             var queryString = $"api/products?PageNumber={parameters.PageNumber}&PageSize={parameters.PageSize}&SortBy={parameters.SortBy}&SortOrder={parameters.SortOrder}";
             
+            if (parameters.CategoryId.HasValue)
+            {
+                queryString += $"&CategoryId={parameters.CategoryId.Value}";
+            }
+
             if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
             {
                 queryString += $"&SearchTerm={Uri.EscapeDataString(parameters.SearchTerm)}";
@@ -203,6 +208,20 @@ public class ProductApiService : IProductApiService
         {
             _logger.LogError(ex, "Error importing products");
             return false;
+        }
+    }
+
+    public async Task<List<CategoryProductGroupDto>> GetShopIndexDataAsync()
+    {
+        try
+        {
+            var result = await _httpClient.GetFromJsonAsync<List<CategoryProductGroupDto>>("api/products/shop-index");
+            return result ?? new List<CategoryProductGroupDto>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching shop index data from API");
+            return new List<CategoryProductGroupDto>();
         }
     }
 }

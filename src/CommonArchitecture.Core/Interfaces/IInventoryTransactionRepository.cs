@@ -10,4 +10,5 @@ public interface IInventoryTransactionRepository
     Task<int> GetCurrentStockAsync(int productId);
     Task<IEnumerable<ProductInventorySummary>> GetInventorySummaryAsync(string? searchTerm, int? categoryId, string sortBy, string sortOrder, int pageNumber, int pageSize);
     Task<int> GetInventorySummaryCountAsync(string? searchTerm, int? categoryId);
+    Task<Dictionary<int, int>> GetBulkStockAsync(IEnumerable<int> productIds);
 }

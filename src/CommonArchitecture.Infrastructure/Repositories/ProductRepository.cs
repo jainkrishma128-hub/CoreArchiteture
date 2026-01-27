@@ -155,4 +155,10 @@ public class ProductRepository : IProductRepository
         
         return query.OrderBy(orderByExpression);
     }
+    public async Task<IEnumerable<CommonArchitecture.Core.Models.ShopIndexDataResult>> GetShopIndexProductsAsync()
+    {
+        return await _context.Database
+            .SqlQueryRaw<CommonArchitecture.Core.Models.ShopIndexDataResult>("EXEC sp_GetShopIndexData")
+            .ToListAsync();
+    }
 }

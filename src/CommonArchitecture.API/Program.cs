@@ -12,6 +12,8 @@ using System.Text;
 using Hangfire;
 using Hangfire.SqlServer;
 using Hangfire.Dashboard;
+using Microsoft.EntityFrameworkCore;
+using CommonArchitecture.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -150,12 +152,25 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Auto-migrate and Seed Database
+using (var scope = app.Services.CreateScope())
 {
- app.MapOpenApi();
- app.MapScalarApiReference();
+    var services = scope.ServiceProvider;
+    try
+    {
+        var seeder = services.GetRequiredService<DbSeeder>();
+        await seeder.SeedAsync();
+    }
+    catch (Exception ex)
+    {
+        var seederLogger = services.GetRequiredService<ILogger<Program>>();
+        seederLogger.LogError(ex, "An error occurred while migrating or seeding the database.");
+    }
 }
+
+// Configure the HTTP request pipeline.
+app.MapOpenApi();
+app.MapScalarApiReference();
 
 app.UseHttpsRedirection();
 

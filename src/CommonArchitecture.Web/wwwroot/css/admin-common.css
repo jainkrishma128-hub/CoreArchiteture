@@ -1,0 +1,62 @@
+/* Admin Area - Common Styles */
+
+/* Stat Cards */
+.stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+}
+.icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Tables */
+.table-admin thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #eee;
+    letter-spacing: 0.5px;
+}
+.product-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #f0f7ff;
+    color: #0d6efd;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Forms & Selects */
+.rounded-pill {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+}
+.form-control:focus, .form-select:focus {
+    box-shadow: none;
+    background-color: #fff !important;
+    border: 1px solid #0d6efd !important;
+}
+
+/* Helpers */
+.cursor-pointer { cursor: pointer; }
+.z-index-10 { z-index: 10; }
+.bg-primary-subtle { background-color: #e7f1ff; }
+.bg-success-subtle { background-color: #e1f7ec; }
+.bg-info-subtle { background-color: #e0f7fa; }
+.bg-danger-subtle { background-color: #fdeaea; }
+
+/* Modal Customization */
+.modal-content {
+    border: none;
+}
+.modal-header.bg-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+}
