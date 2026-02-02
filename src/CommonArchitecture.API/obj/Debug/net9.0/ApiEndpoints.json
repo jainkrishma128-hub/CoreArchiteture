@@ -834,6 +834,26 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "CommonArchitecture.API.Controllers.ProductsController",
+    "Method": "GetShopIndexData",
+    "RelativePath": "api/Products/shop-index",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[CommonArchitecture.Application.DTOs.CategoryProductGroupDto, CommonArchitecture.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "CommonArchitecture.API.Controllers.RoleMenusController",
     "Method": "GetByRole",
     "RelativePath": "api/RoleMenus/role/{roleId}",

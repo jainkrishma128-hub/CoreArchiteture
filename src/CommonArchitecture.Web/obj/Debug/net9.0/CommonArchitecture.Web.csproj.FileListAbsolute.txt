@@ -1644,8 +1644,6 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\xmqu3cgy6u-hyoec0zd2t.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\ybgltv12f7-8s9pevhhfs.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\fqyhnwmmn0-hyoec0zd2t.gz
-D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\2xdrmlnrca-60wsuww6zo.gz
-D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\yub067ao4b-o9771q8tbe.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\1jxv7ujpv7-83ltnpea1m.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\98bbbbtgwa-57fsij84y6.gz
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\sxt71w4box-z3r6k9wp5t.gz
@@ -1736,3 +1734,6 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonArchitecture.Web.pdb
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\CommonArchitecture.Web.genruntimeconfig.cache
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\ref\CommonArchitecture.Web.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\yub067ao4b-407hkitwcd.gz
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.Web\obj\Debug\net9.0\compressed\2xdrmlnrca-tp7ttp1ho2.gz

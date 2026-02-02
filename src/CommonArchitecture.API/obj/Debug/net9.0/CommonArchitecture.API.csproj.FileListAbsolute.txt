@@ -568,3 +568,4 @@ D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\CommonArchitecture.API.pdb
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\CommonArchitecture.API.genruntimeconfig.cache
 D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\ref\CommonArchitecture.API.dll
+D:\My Archi\Git\CoreArchiteture-main\src\CommonArchitecture.API\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

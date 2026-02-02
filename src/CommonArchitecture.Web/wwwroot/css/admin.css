@@ -1,4 +1,4 @@
-/* Admin Panel Styles - Dark Theme (HUD Inspired) */
+/* Admin Panel Styles - Ultra-Transparent Hacker/HUD Theme */
 :root {
     --admin-sidebar-width: 260px;
     --admin-sidebar-collapsed: 70px;
@@ -13,42 +13,184 @@
     --admin-danger: #ef4444;
     --admin-info: #06b6d4;
 
-    /* Theme Colors - Transparent/Dark */
-    --admin-bg: #0f172a;
-    --admin-sidebar-bg: rgba(15, 23, 42, 0.15);
+    /* Theme Colors - ULTRA TRANSPARENT */
+    --admin-bg: #0a0e1a;
+    --admin-sidebar-bg: rgba(15, 23, 42, 0.05);
     --admin-text-main: #ffffff;
     --admin-text-muted: #94a3b8;
-    --admin-border-color: rgba(255, 255, 255, 0.1);
-    --admin-border-strong: rgba(255, 255, 255, 0.2);
-    --admin-card-bg: rgba(15, 23, 42, 0.1);
-    --admin-modal-bg: rgba(15, 23, 42, 0.6);
+    --admin-border-color: rgba(255, 255, 255, 0.15);
+    --admin-border-strong: rgba(255, 255, 255, 0.3);
+    --admin-card-bg: rgba(15, 23, 42, 0.01);
+    --admin-modal-bg: rgba(15, 23, 42, 0.12);
 }
 
+/* 3D Animated Globe Background */
+.globe-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    z-index: 0;
+    pointer-events: none !important;
+    perspective: 1000px;
+}
+
+.globe {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    pointer-events: none !important;
+    transform-style: preserve-3d;
+    animation: rotateGlobe 60s linear infinite;
+}
+
+@keyframes rotateGlobe {
+    0% {
+        transform: rotateY(0deg) rotateX(15deg);
+    }
+
+    100% {
+        transform: rotateY(360deg) rotateX(15deg);
+    }
+}
+
+/* Globe wireframe rings */
+.globe-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    border-radius: 50%;
+    transform-style: preserve-3d;
+}
+
+.globe-ring:nth-child(1) {
+    width: 600px;
+    height: 600px;
+    margin: -300px 0 0 -300px;
+    transform: rotateY(0deg);
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.1);
+}
+
+.globe-ring:nth-child(2) {
+    width: 600px;
+    height: 600px;
+    margin: -300px 0 0 -300px;
+    transform: rotateY(30deg);
+}
+
+.globe-ring:nth-child(3) {
+    width: 600px;
+    height: 600px;
+    margin: -300px 0 0 -300px;
+    transform: rotateY(60deg);
+}
+
+.globe-ring:nth-child(4) {
+    width: 600px;
+    height: 600px;
+    margin: -300px 0 0 -300px;
+    transform: rotateY(90deg);
+}
+
+.globe-ring:nth-child(5) {
+    width: 600px;
+    height: 600px;
+    margin: -300px 0 0 -300px;
+    transform: rotateY(120deg);
+}
+
+.globe-ring:nth-child(6) {
+    width: 600px;
+    height: 600px;
+    margin: -300px 0 0 -300px;
+    transform: rotateY(150deg);
+}
+
+/* Latitude rings */
+.globe-ring:nth-child(7) {
+    width: 600px;
+    height: 300px;
+    margin: -150px 0 0 -300px;
+    transform: rotateX(90deg);
+    border-color: rgba(79, 70, 229, 0.15);
+}
+
+.globe-ring:nth-child(8) {
+    width: 600px;
+    height: 450px;
+    margin: -225px 0 0 -300px;
+    transform: rotateX(90deg);
+    border-color: rgba(79, 70, 229, 0.12);
+}
+
+.globe-ring:nth-child(9) {
+    width: 600px;
+    height: 150px;
+    margin: -75px 0 0 -300px;
+    transform: rotateX(90deg);
+    border-color: rgba(79, 70, 229, 0.12);
+}
+
+/* Scan line overlay effect */
+.scan-line-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none !important;
+    background: linear-gradient(to bottom,
+            transparent 0%,
+            rgba(79, 70, 229, 0.02) 50%,
+            transparent 100%);
+    background-size: 100% 4px;
+    animation: scanLine 8s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes scanLine {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 100vh;
+    }
+}
 
 /* Body & Wrapper */
 .admin-body {
     background-color: var(--admin-bg);
     color: var(--admin-text-main);
     min-height: 100vh;
-    /* Globe/Grid Background Effect */
+    position: relative;
+    overflow-x: hidden;
+    /* Subtle grid background */
     background-image:
-        radial-gradient(circle at 50% 0%, rgba(79, 70, 229, 0.15) 0%, transparent 50%),
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 100% 100%, 50px 50px, 50px 50px;
+        radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.08) 0%, transparent 70%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
     background-attachment: fixed;
 }
 
 .admin-wrapper {
     display: flex;
     min-height: 100vh;
+    position: relative;
+    z-index: 2;
 }
 
 /* Sidebar */
 .admin-sidebar {
     width: var(--admin-sidebar-width);
     background: var(--admin-sidebar-bg);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     position: fixed;
     top: 0;
     left: 0;
@@ -57,6 +199,7 @@
     transition: all 0.3s ease;
     overflow-y: auto;
     border-right: 1px solid var(--admin-border-color);
+    box-shadow: 0 0 30px rgba(79, 70, 229, 0.1);
 }
 
 /* Enhanced sidebar scrolling visuals and overlay fades */
@@ -105,12 +248,12 @@
 
 .admin-sidebar::before {
     top: 0;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0));
+    background: linear-gradient(180deg, rgba(10, 14, 26, 0.95), rgba(10, 14, 26, 0));
 }
 
 .admin-sidebar::after {
     bottom: 0;
-    background: linear-gradient(0deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0));
+    background: linear-gradient(0deg, rgba(10, 14, 26, 0.95), rgba(10, 14, 26, 0));
 }
 
 /* Sidebar inner nav spacing and polished link styles */
@@ -123,27 +266,32 @@
     padding: 0.9rem 1.25rem;
     border-left: 3px solid transparent;
     transition: background 0.18s ease, color 0.18s ease, transform 0.08s ease;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .sidebar-nav .nav-link:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.08);
     transform: translateX(3px);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
 .sidebar-nav .nav-link i {
     transition: transform 0.18s ease;
+    filter: drop-shadow(0 0 5px rgba(79, 70, 229, 0.3));
 }
 
 .sidebar-nav .nav-link:hover i {
     transform: translateX(-2px);
+    filter: drop-shadow(0 0 10px rgba(79, 70, 229, 0.6));
 }
 
 .sidebar-nav .nav-link.active {
     color: #fff;
-    background: linear-gradient(90deg, rgba(79, 70, 229, 0.12), rgba(79, 70, 229, 0.04));
+    background: linear-gradient(90deg, rgba(79, 70, 229, 0.2), rgba(79, 70, 229, 0.05));
     border-left-color: var(--admin-primary);
-    box-shadow: inset 6px 0 18px -8px rgba(79, 70, 229, 0.35);
+    box-shadow: inset 6px 0 18px -8px rgba(79, 70, 229, 0.5), 0 0 20px rgba(79, 70, 229, 0.2);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
 /* Make quick-links and small items look consistent when scrolling */
@@ -181,12 +329,14 @@
     color: #fff;
     font-weight: 700;
     font-size: 1.25rem;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
 }
 
 .sidebar-brand i {
     font-size: 1.75rem;
     color: var(--admin-primary);
-    text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+    text-shadow: 0 0 20px rgba(79, 70, 229, 0.8);
+    filter: drop-shadow(0 0 10px rgba(79, 70, 229, 0.6));
 }
 
 .sidebar-nav {
@@ -202,6 +352,7 @@
     padding: 1.5rem 1.25rem 0.5rem;
     margin: 0;
     list-style: none;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
 }
 
 .sidebar-nav .nav-link {
@@ -217,14 +368,14 @@
 
 .sidebar-nav .nav-link:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-nav .nav-link.active {
     color: #fff;
-    background: rgba(79, 70, 229, 0.15);
+    background: rgba(79, 70, 229, 0.2);
     border-left-color: var(--admin-primary);
-    box-shadow: inset 5px 0 15px -5px rgba(79, 70, 229, 0.4);
+    box-shadow: inset 5px 0 15px -5px rgba(79, 70, 229, 0.6), 0 0 15px rgba(79, 70, 229, 0.2);
 }
 
 .sidebar-nav .nav-link i {
@@ -244,8 +395,9 @@
 
 /* Header */
 .admin-header {
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(10px);
+    background: rgba(15, 23, 42, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     height: var(--admin-header-height);
     padding: 0 1.5rem;
     display: flex;
@@ -255,6 +407,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .header-left {
@@ -266,6 +419,7 @@
 .header-left .page-title {
     font-weight: 600;
     color: var(--admin-text-main);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
 .sidebar-toggle {
@@ -339,12 +493,15 @@
     overflow: hidden;
     position: relative;
     border: 1px solid var(--admin-border-strong);
-    backdrop-filter: none;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 0 30px rgba(79, 70, 229, 0.1), inset 0 0 50px rgba(79, 70, 229, 0.02);
 }
 
 .welcome-content h2 {
     font-size: 1.75rem;
     margin-bottom: 0.5rem;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
 }
 
 .welcome-content p {
@@ -364,15 +521,17 @@
     overflow: hidden;
     border: 1px solid var(--admin-border-color);
     color: var(--admin-text-main);
-    box-shadow: none;
-    backdrop-filter: none;
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.05);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 15px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 0 30px rgba(79, 70, 229, 0.3), 0 0 60px rgba(79, 70, 229, 0.1);
     border-color: var(--admin-border-strong);
+    background: rgba(15, 23, 42, 0.08);
 }
 
 .stat-card-body {
@@ -420,6 +579,7 @@
     color: var(--admin-text-main);
     line-height: 1;
     margin-bottom: 0.25rem;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
 }
 
 .stat-content .stat-label {
@@ -475,23 +635,24 @@
     margin-bottom: 0.5rem;
 }
 
-/* --- MONOCHROME HUD & TRANSPARENCY FIXES START HERE --- */
+/* --- ULTRA-TRANSPARENT HUD & CORNER EFFECTS --- */
 
-/* HUD Corner Effect for Cards */
+/* HUD Corner Effect for Cards - Enhanced with Glow */
 .card,
 .stat-card,
 .welcome-card {
     position: relative;
-    background: var(--admin-card-bg) !important;
+    background: rgba(15, 23, 42, 0.01) !important;
     border: 1px solid var(--admin-border-color) !important;
-    box-shadow: none !important;
-    backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.08) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     color: #fff !important;
 
-    /* Corner Brackets */
-    --c-color: rgba(255, 255, 255, 0.6);
+    /* Corner Brackets with Glow */
+    --c-color: rgba(79, 70, 229, 0.6);
     --c-size: 2px;
-    --c-len: 12px;
+    --c-len: 16px;
 
     background-image:
         linear-gradient(var(--c-color), var(--c-color)),
@@ -515,6 +676,12 @@
     background-repeat: no-repeat !important;
 }
 
+.card:hover,
+.stat-card:hover {
+    --c-color: rgba(79, 70, 229, 0.9);
+    box-shadow: 0 0 40px rgba(79, 70, 229, 0.2), inset 0 0 30px rgba(79, 70, 229, 0.05) !important;
+}
+
 /* Fix for White Blocks - Force inner containers to be transparent */
 .card-body,
 .card-footer,
@@ -527,7 +694,7 @@ th {
     background: transparent !important;
 }
 
-/* Ensure text inside cards is white */
+/* Ensure text inside cards is white with glow */
 .card h1,
 .card h2,
 .card h3,
@@ -541,11 +708,12 @@ th {
 .stat-card h5,
 .stat-card h6 {
     color: #fff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .card-header {
     background: transparent !important;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.2) !important;
+    border-bottom: 1px dashed rgba(79, 70, 229, 0.3) !important;
     padding: 1rem 1.25rem;
 }
 
@@ -553,34 +721,37 @@ th {
     color: rgba(255, 255, 255, 0.6) !important;
 }
 
-/* Modals - Transparent HUD Style */
+/* Modals - Ultra-Transparent HUD Style */
 .modal-content {
     background-color: var(--admin-modal-bg) !important;
     border: 1px solid var(--admin-border-strong) !important;
     color: #fff !important;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.8), 0 0 100px rgba(79, 70, 229, 0.2) !important;
 
-    /* Modal Corners */
+    /* Modal Corners with Glow */
     background-image:
-        linear-gradient(#fff, #fff), linear-gradient(#fff, #fff),
-        linear-gradient(#fff, #fff), linear-gradient(#fff, #fff) !important;
+        linear-gradient(rgba(79, 70, 229, 0.8), rgba(79, 70, 229, 0.8)),
+        linear-gradient(rgba(79, 70, 229, 0.8), rgba(79, 70, 229, 0.8)),
+        linear-gradient(rgba(79, 70, 229, 0.8), rgba(79, 70, 229, 0.8)),
+        linear-gradient(rgba(79, 70, 229, 0.8), rgba(79, 70, 229, 0.8)) !important;
     background-position: top left, top right, bottom right, bottom left !important;
-    background-size: 15px 2px, 2px 15px, 15px 2px, 2px 15px !important;
+    background-size: 20px 2px, 2px 20px, 20px 2px, 2px 20px !important;
     background-repeat: no-repeat !important;
 }
 
 .modal-header,
 .modal-footer {
     background: transparent !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(79, 70, 229, 0.3) !important;
     border-style: dashed !important;
 }
 
 .modal-title {
     color: #fff !important;
     font-weight: 700;
-    text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+    text-shadow: 0 0 20px rgba(79, 70, 229, 0.8);
 }
 
 .modal-header .btn-close {
@@ -762,9 +933,35 @@ select::-ms-expand {
 .bg-warning,
 .bg-danger,
 .bg-info,
-.bg-transparent {
+.bg-transparent,
+.bg-body,
+.bg-body-secondary,
+.bg-body-tertiary {
     background-color: transparent !important;
     background: transparent !important;
+}
+
+/* Additional transparency overrides for admin components */
+.card-body,
+.card-header,
+.card-footer,
+.table,
+.table-responsive,
+.list-group,
+.list-group-item,
+.alert,
+.breadcrumb,
+.nav,
+.navbar,
+.dropdown-menu {
+    background-color: transparent !important;
+}
+
+/* Ensure chart/canvas containers are transparent */
+canvas,
+.chart-container,
+.chart-wrapper {
+    background-color: transparent !important;
 }
 
 /* Text Colors Reset */
@@ -1050,6 +1247,21 @@ select:-webkit-autofill:focus {
 button:focus-visible,
 .btn:focus-visible {
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 0 10px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 9b. Modal Z-Index Fix - Ensure modals appear above globe and scan lines */
+.modal-backdrop {
+    z-index: 1040 !important;
+    pointer-events: auto !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+    pointer-events: auto !important;
+}
+
+.modal-dialog {
+    pointer-events: auto !important;
 }
 
 /* 10. Additional Input States */
